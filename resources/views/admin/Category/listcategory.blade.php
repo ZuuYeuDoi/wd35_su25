@@ -17,7 +17,7 @@
 														<select class="form-control select-style-1 filter-by" name="filter-by">
 															<option value="all" selected>All</option>
 															<option value="1">ID</option>
-															<option value="2">Company Name</option>
+															<option value="2">Company tên</option>
 															<option value="3">Slug</option>
 															<option value="4">Parent Category</option>
 														</select>
