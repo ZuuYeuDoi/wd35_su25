@@ -1,7 +1,7 @@
        <aside id="sidebar-left" class="sidebar-left">
            <div class="sidebar-header">
                <div class="sidebar-title">
-                   Navigation
+                   Điều hướng
                </div>
                <div class="sidebar-toggle d-none d-md-block" data-toggle-class="sidebar-left-collapsed" data-target="html"
                    data-fire-event="sidebar-left-toggle">
@@ -15,7 +15,13 @@
                            <li>
                                <a class="nav-link" href="/admin">
                                    <i class="bx bx-home-alt" aria-hidden="true"></i>
-                                   <span>Dashboard</span>
+                                   <span>Thống kê</span>
+                               </a>
+                           </li>
+                            <li>
+                               <a class="nav-link" href="/admin/info">
+                                   <i class="bx bx-home-alt" aria-hidden="true"></i>
+                                   <span>Thông tin khách sạn</span>
                                </a>
                            </li>
                            <li class="nav-parent">

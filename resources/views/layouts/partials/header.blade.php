@@ -11,7 +11,7 @@
     <div class="header-right">
         <form action="#" class="search nav-form">
             <div class="input-group">
-                <input type="text" class="form-control" name="#" id="#" placeholder="Search...">
+                <input type="text" class="form-control" name="#" id="#" placeholder="Tìm kiếm...">
                 <button class="btn btn-default" type="submit"><i class="bx bx-search"></i></button>
             </div>
         </form>
@@ -193,8 +193,8 @@
                         data-lock-picture="{{ asset('assets/img/%21logged-user.jpg') }}" />
                 </figure>
                 <div class="profile-info" data-lock-name="John Doe" data-lock-email="johndoe@okler.com">
-                    <span class="name">John Doe Junior</span>
-                    <span class="role">Administrator</span>
+                    <span class="name">HoangTaly</span>
+                    <span class="role">Quản trị viên</span>
                 </div>
                 <i class="fa custom-caret"></i>
             </a>
@@ -203,15 +203,15 @@
                     <li class="divider"></li>
                     <li>
                         <a role="menuitem" tabindex="-1" href="pages-user-profile.html"><i
-                                class="bx bx-user-circle"></i> My Profile</a>
+                                class="bx bx-user-circle"></i> Thông tin của tôi</a>
                     </li>
                     <li>
                         <a role="menuitem" tabindex="-1" href="#" data-lock-screen="true"><i
-                                class="bx bx-lock"></i> Lock Screen</a>
+                                class="bx bx-lock"></i> Khóa màn hình</a>
                     </li>
                     <li>
                         <a role="menuitem" tabindex="-1" href="pages-signin.html"><i class="bx bx-power-off"></i>
-                            Logout</a>
+                            Đăng xuất</a>
                     </li>
                 </ul>
             </div>

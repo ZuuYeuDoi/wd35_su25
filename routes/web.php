@@ -8,7 +8,6 @@ Route::get('/', function () {
 Route::get('/admin', function () {
     return view('admin.dashboard');
 });
-
-Route::get('/admin/rooms', function () {
-    return view('admin.rooms.index');
+Route::get('/admin/info', function () {
+    return view('admin.infoHotel');
 });
