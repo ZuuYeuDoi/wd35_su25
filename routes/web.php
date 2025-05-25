@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('client.Home.home');
+    return view('home');
 });
 
 Route::get('/room', function () {
@@ -34,6 +34,7 @@ Route::get('/admin', function () {
 Route::get('/admin/info', function () {
     return view('admin.infoHotel');
 });
+
 //booking phong
 Route::get('/admin/bookingrooms/rooms/servicer', function () {
     return view('admin.bookingrooms.rooms.servicerooms');
@@ -49,13 +50,6 @@ Route::get('/admin/bookingrooms/category/add', function () {
 });
 Route::get('/admin/bookingrooms/category', function () {
     return view('admin.bookingrooms.category.listcategory');
-});
-
-Route::get('/admin/bookingrooms/user', function () {
-    return view('admin.bookingrooms.user.user');
-});
-Route::get('/admin/bookingrooms/user/add', function () {
-    return view('admin.bookingrooms.user.adduser');
 });
 
 Route::get('/admin/bookingrooms/order', function () {
