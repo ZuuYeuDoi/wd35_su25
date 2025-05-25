@@ -3,7 +3,7 @@
 @section('content')
 <section role="main" class="content-body">
     <header class="page-header">
-        <h2 class="font-weight-bold text-6">Danh mục</h2>
+        <h2 class="font-weight-bold text-6">Danh sách sự kiện</h2>
     </header>
 <div class="row">
 	<div class="col">
@@ -13,7 +13,7 @@
 					<div class="datatable-header">
 						<div class="row align-items-center mb-3">
 							<div class="col-12 col-lg-auto mb-3 mb-lg-0">
-								<a href="event-form.html" class="btn btn-primary btn-md font-weight-semibold btn-py-2 px-4">+ Thêm sự kiện</a>
+								<a href="/admin/holiday/holidays/add" class="btn btn-primary btn-md font-weight-semibold btn-py-2 px-4">Thêm sự kiện</a>
 							</div>
 							<div class="col-8 col-lg-auto ms-auto ml-auto mb-3 mb-lg-0">
 								<div class="d-flex align-items-lg-center flex-column flex-lg-row">

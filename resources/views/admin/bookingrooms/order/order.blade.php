@@ -1,9 +1,9 @@
 @extends('layouts.admin')
-@section('title1', 'Hóa Đơn')
+@section('title1', 'Danh sách đơn đặt phòng')
 @section('content')
 <section role="main" class="content-body">
     <header class="page-header">
-        <h2 class="font-weight-bold text-6">Hóa đơn</h2>
+        <h2 class="font-weight-bold text-6">Danh sách đơn đặt phòng</h2>
     </header>
 <div class="row">
     <div class="col">
@@ -13,7 +13,6 @@
                     <div class="datatable-header">
                         <div class="row align-items-center mb-3">
                             <div class="col-12 col-lg-auto mb-3 mb-lg-0">
-                                <a href="ecommerce-orders-detail.html" class="btn btn-primary btn-md font-weight-semibold btn-py-2 px-4">+ Thêm Hóa Đơn</a>
                             </div>
                             <div class="col-8 col-lg-auto ms-auto ml-auto mb-3 mb-lg-0">
                                 <div class="d-flex align-items-lg-center flex-column flex-lg-row">
@@ -64,7 +63,7 @@
                             <tr>
                                 <td width="30"><input type="checkbox" name="checkboxRow1" class="checkbox-style-1 p-relative top-2" value="" /></td>
                                 <td><a href="ecommerce-orders-detail.html"><strong>206</strong></a></td>
-                                <td><a href="ecommerce-orders-detail.html"><strong>Customer Name Example 16</strong></a></td>
+                                <td><a href="/admin/bookingrooms/order/detail"><strong>Customer Name Example 16</strong></a></td>
                                 <td>Nov 16, 2019</td>
                                 <td>$213</td>
                                 <td><span class="ecommerce-status completed">Hoàn thành</span></td>

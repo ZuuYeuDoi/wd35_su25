@@ -3,7 +3,7 @@
 @section('content')
 <section role="main" class="content-body">
 	<header class="page-header">
-		<h2 class="font-weight-bold text-6">Hóa đơn</h2>
+		<h2 class="font-weight-bold text-6">chi tiet </h2>
 	</header>
 <form class="order-details action-buttons-fixed" method="post">
   <div class="row">
@@ -219,7 +219,7 @@
       </button>
     </div>
     <div class="col-12 col-md-auto px-md-0 mt-3 mt-md-0">
-      <a href="ecommerce-orders-list.html" class="cancel-button btn btn-light btn-px-4 py-3 border font-weight-semibold text-color-dark text-3">Hủy</a>
+      <a href="/admin/holiday/order" class="cancel-button btn btn-light btn-px-4 py-3 border font-weight-semibold text-color-dark text-3">Hủy</a>
     </div>
     <div class="col-12 col-md-auto ms-md-auto mt-3 mt-md-0 ms-auto">
       <a href="#" class="delete-button btn btn-danger btn-px-4 py-3 d-flex align-items-center font-weight-semibold line-height-1">

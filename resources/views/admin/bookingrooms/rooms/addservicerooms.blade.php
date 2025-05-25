@@ -110,7 +110,7 @@
                 </button>
             </div>
             <div class="col-12 col-md-auto px-md-0 mt-3 mt-md-0">
-                <a href="ecommerce-products-list.html"
+                <a href="/admin/bookingrooms/rooms/servicer"
                     class="cancel-button btn btn-light btn-px-4 py-3 border font-weight-semibold text-color-dark text-3">Hủy</a>
             </div>
             <div class="col-12 col-md-auto ms-md-auto mt-3 mt-md-0 ms-auto">

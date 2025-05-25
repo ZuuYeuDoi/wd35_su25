@@ -3,7 +3,7 @@
 @section('content')
     <section role="main" class="content-body content-body-modern mt-0">
         <header class="page-header">
-            <h2 class="font-weight-bold text-6">Danh mục phòng</h2>
+            <h2 class="font-weight-bold text-6">Danh mục sự kiện</h2>
         </header>
         <!-- start: page -->
      <form class="ecommerce-form action-buttons-fixed" action="#" method="post">
@@ -15,7 +15,7 @@
                         <div class="col-lg-2-5 col-xl-1-5">
                             <i class="card-big-info-icon bx bx-camera"></i>
                             <h2 class="card-big-info-title">Ảnh danh mục</h2>
-                            <p class="card-big-info-desc">Tải lên ảnh cho danh mục phòng</p>
+                            <p class="card-big-info-desc">Tải lên ảnh cho danh mục sự kiện/p>
                         </div>
                         <div class="col-lg-3-5 col-xl-4-5">
                             <div class="form-group row align-items-center">
@@ -87,7 +87,7 @@
             </button>
         </div>
         <div class="col-12 col-md-auto px-md-0 mt-3 mt-md-0">
-            <a href="ecommerce-category-list.html"
+            <a href="/admin/holiday/category"
                 class="cancel-button btn btn-light btn-px-4 py-3 border font-weight-semibold text-color-dark text-3">Hủy</a>
         </div>
         <div class="col-12 col-md-auto ms-md-auto mt-3 mt-md-0 ms-auto">

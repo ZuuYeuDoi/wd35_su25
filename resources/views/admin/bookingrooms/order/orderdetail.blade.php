@@ -208,10 +208,10 @@
 			</button>
 		</div>
 		<div class="col-12 col-md-auto px-md-0 mt-3 mt-md-0">
-			<a href="#" class="cancel-button btn btn-light btn-px-4 py-3 border font-weight-semibold text-color-dark text-3">Hủy</a>
+			<a href="/admin/bookingrooms/order" class="cancel-button btn btn-light btn-px-4 py-3 border font-weight-semibold text-color-dark text-3">Hủy</a>
 		</div>
 		<div class="col-12 col-md-auto ms-md-auto mt-3 mt-md-0 ms-auto">
-			<a href="#" class="delete-button btn btn-danger btn-px-4 py-3 d-flex align-items-center font-weight-semibold line-height-1">
+			<a href="/admin/bookingrooms/order" class="delete-button btn btn-danger btn-px-4 py-3 d-flex align-items-center font-weight-semibold line-height-1">
 				<i class="bx bx-trash text-4 me-2"></i> Xóa hóa đơn
 			</a>
 		</div>

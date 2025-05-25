@@ -61,20 +61,6 @@
                                     <td>Phòng 305 - Trần Thị B</td>
                                     <td><span class="ecommerce-status pending">Tạm ngưng</span></td>
                                 </tr>
-                                <!-- Lặp động ở đây -->
-                                {{-- @foreach ($services as $key => $service)
-                                <tr>
-                                    <td>{{ $key + 1 }}</td>
-                                    <td>{{ $service->name }}</td>
-                                    <td>{{ number_format($service->price, 0, ',', '.') }}đ</td>
-                                    <td>{{ $service->room->name ?? 'Chưa sử dụng' }} - {{ $service->room->guest->name ?? '' }}</td>
-                                    <td>
-                                        <span class="ecommerce-status {{ $service->status ? 'completed' : 'pending' }}">
-                                            {{ $service->status ? 'Đang hoạt động' : 'Tạm ngưng' }}
-                                        </span>
-                                    </td>
-                                </tr>
-                                @endforeach --}}
                             </tbody>
                         </table>
 
