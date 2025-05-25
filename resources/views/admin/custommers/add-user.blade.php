@@ -1,76 +1,66 @@
 @extends('layouts.admin')
-@section('title1', 'Thông tin khách sạn')
+@section('title1', 'Quản lý người Dùng')
 @section('content')
-    <section role="main" class="content-body">
+    <section role="main" class="content-body content-body-modern mt-0">
         <header class="page-header">
-            <h2 class="font-weight-bold text-6">Thông tin khách sạn</h2>
+            <h2 class="font-weight-bold text-6">Thêm người dùng</h2>
         </header>
         <!-- start: page -->
         <form class="ecommerce-form action-buttons-fixed" action="#" method="post">
-            <div class="row mt-2">
+            <div class="row">
                 <div class="col">
                     <section class="card card-modern card-big-info">
                         <div class="card-body">
                             <div class="row">
                                 <div class="col-lg-2-5 col-xl-1-5">
-                                    <i class="card-big-info-icon bx bx-camera"></i>
-                                    <h2 class="card-big-info-title">Ảnh logo</h2>
-                                    <p class="card-big-info-desc">Sửa Logo khách sạn tại đây</p>
+                                    <i class="card-big-info-icon bx bx-user-circle"></i>
+                                    <h2 class="card-big-info-title">Thông tin tài khoản</h2>
+                                    <p class="card-big-info-desc">Thêm vào đây thông tin tài khoản khách hàng với tất cả các
+                                        chi tiết và thông tin cần thiết.</p>
                                 </div>
                                 <div class="col-lg-3-5 col-xl-4-5">
-                                    <div class="form-group row align-items-center">
-                                        <div class="col">
-                                            <div id="dropzone-form-image" class="dropzone-modern dz-square">
-                                                <span class="dropzone-upload-message text-center">
-                                                    <i class="bx bxs-cloud-upload"></i>
-                                                    <b class="text-color-primary">Kéo/ Tải</b> ảnh của bạn tại đây.
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </section>
-                </div>
-            </div>
-            <div class="row mt-2">
-                <div class="col">
-                    <section class="card card-modern card-big-info">
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-lg-2-5 col-xl-1-5">
-                                    <i class="card-big-info-icon bx bx-slider"></i>
-                                    <h2 class="card-big-info-title">Thông tin</h2>
-                                    <p class="card-big-info-desc">Sửa tất cả thông tin khách sạn tại đây.</p>
-                                </div>
-                                <div class="col-lg-3-5 col-xl-4-5">
-                                    <div class="form-group row align-items-center mb-3">
-                                        <label class="col-lg-5 col-xl-3 control-label text-lg-end mb-0">Địa chỉ</label>
+                                    <div class="form-group row align-items-center pb-3">
+                                        <label class="col-lg-5 col-xl-3 control-label text-lg-end mb-0">Họ tên</label>
                                         <div class="col-lg-7 col-xl-6">
                                             <input type="text" class="form-control form-control-modern"
-                                                name="" value="" required />
+                                                name="customerEmailUsername" value="" required />
                                         </div>
                                     </div>
-                                    <div class="form-group row align-items-center mb-3">
+                                     <div class="form-group row align-items-center pb-3">
+                                        <label class="col-lg-5 col-xl-3 control-label text-lg-end mb-0">Ảnh đại diện</label>
+                                        <div class="col-lg-7 col-xl-6">
+                                            <input type="file" class="form-control form-control-modern"
+                                                name="customerEmailUsername" value="" required />
+                                        </div>
+                                    </div>
+                                    <div class="form-group row align-items-center pb-3">
+                                        <label class="col-lg-5 col-xl-3 control-label text-lg-end mb-0">CCCD</label>
+                                        <div class="col-lg-7 col-xl-6">
+                                            <input type="text" class="form-control form-control-modern"
+                                                name="customerEmailUsername" value="" required />
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group row align-items-center pb-3">
                                         <label class="col-lg-5 col-xl-3 control-label text-lg-end mb-0">Email</label>
                                         <div class="col-lg-7 col-xl-6">
-                                            <input type="text" class="form-control form-control-modern"
-                                                name="" value="" required />
+                                            <input type="email" class="form-control form-control-modern"
+                                                name="customerEmailUsername" value="" required />
                                         </div>
                                     </div>
-                                    <div class="form-group row align-items-center mb-3">
-                                        <label class="col-lg-5 col-xl-3 control-label text-lg-end mb-0">Hotline</label>
+                                    <div class="form-group row align-items-center pb-3">
+                                        <label class="col-lg-5 col-xl-3 control-label text-lg-end mb-0">Mật khẩu</label>
                                         <div class="col-lg-7 col-xl-6">
-                                            <input type="text" class="form-control form-control-modern"
-                                                name="" value="" />
+                                            <input type="password" class="form-control form-control-modern"
+                                                name="customerPassword" value="" required />
                                         </div>
                                     </div>
-                                    <div class="form-group row align-items-center mb-3">
-                                        <label class="col-lg-5 col-xl-3 control-label text-lg-end mb-0">Thời gian tiếp khách</label>
+                                    <div class="form-group row align-items-center">
+                                        <label class="col-lg-5 col-xl-3 control-label text-lg-end mb-0">Xác nhận mật
+                                            khẩu</label>
                                         <div class="col-lg-7 col-xl-6">
-                                            <input type="text" class="form-control form-control-modern"
-                                                name="" value="" />
+                                            <input type="password" class="form-control form-control-modern"
+                                                name="customerPasswordConfirm" value="" />
                                         </div>
                                     </div>
                                 </div>
@@ -79,16 +69,17 @@
                     </section>
                 </div>
             </div>
+
             <div class="row action-buttons">
                 <div class="col-12 col-md-auto">
                     <button type="submit"
                         class="submit-button btn btn-success btn-px-4 py-3 d-flex align-items-center font-weight-semibold line-height-1"
                         data-loading-text="Loading...">
-                        <i class="bx bx-save text-4 me-2"></i> Lưu
+                        <i class="bx bx-save text-4 me-2"></i> Thêm Người dùng
                     </button>
                 </div>
                 <div class="col-12 col-md-auto px-md-0 mt-3 mt-md-0">
-                    <a href="ecommerce-category-list.html"
+                    <a href="ecommerce-customers-list.html"
                         class="cancel-button btn btn-light btn-px-4 py-3 border font-weight-semibold text-color-dark text-3">Hủy</a>
                 </div>
             </div>
@@ -98,14 +89,12 @@
 @endsection
 
 @section('head')
-    <link rel="stylesheet" href="{{ asset('assets/vendor/dropzone/basic.css') }}" />
-    <link rel="stylesheet" href="{{ asset('assets/vendor/dropzone/dropzone.css') }}" />
-    <link rel="stylesheet" href="{{ asset('assets/vendor/bootstrap-markdown/css/bootstrap-markdown.min.css') }}" />
-    <link rel="stylesheet" href="{{ asset('assets/vendor/pnotify/pnotify.custom.css') }}" />
+    <!-- Specific Page Vendor CSS -->
+    <link rel="stylesheet" href="{{ asset('vendor/pnotify/pnotify.custom.css') }}" />
 @endsection
-
 @section('script')
     <!-- Vendor -->
+    <script data-cfasync="false" src="../../../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
     <script src="{{ asset('assets/vendor/jquery/jquery.js') }}"></script>
     <script src="{{ asset('assets/vendor/jquery-browser-mobile/jquery.browser.mobile.js') }}"></script>
     <script src="{{ asset('assets/vendor/jquery-cookie/jquery.cookie.js') }}"></script>
@@ -118,9 +107,8 @@
     <script src="{{ asset('assets/vendor/magnific-popup/jquery.magnific-popup.js') }}"></script>
     <script src="{{ asset('assets/vendor/jquery-placeholder/jquery.placeholder.js') }}"></script>
     <!-- Specific Page Vendor -->
-    <script src="{{ asset('assets/vendor/jquery-validation/jquery.validate.js') }}"></script>
-    <script src="{{ asset('assets/vendor/dropzone/dropzone.js') }}"></script>
-    <script src="{{ asset('assets/vendor/pnotify/pnotify.custom.js') }}"></script>
+    <script src="{{ asset('assets/vendor/datatables/media/js/jquery.dataTables.min.js') }}"></script>
+    <script src="{{ asset('assets/vendor/datatables/media/js/dataTables.bootstrap5.min.js') }}"></script>
     <!-- Theme Base, Components and Settings -->
     <script src="{{ asset('assets/js/theme.js') }}"></script>
     <!-- Theme Custom -->
@@ -145,5 +133,5 @@
     </script>
     <!-- Examples -->
     <script src="{{ asset('assets/js/examples/examples.header.menu.js') }}"></script>
-    <script src="{{ asset('assets/js/examples/examples.ecommerce.form.js') }}"></script>
+    <script src="{{ asset('assets/js/examples/examples.ecommerce.datatables.list.js') }}"></script>
 @endsection

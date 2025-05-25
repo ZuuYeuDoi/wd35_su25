@@ -14,14 +14,114 @@
                        <ul class="nav nav-main">
                            <li>
                                <a class="nav-link" href="/admin">
-                                   <i class="bx bx-home-alt" aria-hidden="true"></i>
+                                   <i class="fas fa-dollar-sign" aria-hidden="true"></i>
                                    <span>Thống kê</span>
                                </a>
                            </li>
-                            <li>
+                           <li>
                                <a class="nav-link" href="/admin/info">
                                    <i class="bx bx-home-alt" aria-hidden="true"></i>
                                    <span>Thông tin khách sạn</span>
+                               </a>
+                           </li>
+                           <li class="nav-parent">
+                               <a class="nav-link" href="#">
+                                   <i class="bx bx-home-alt" aria-hidden="true"></i>
+                                   <span>Quản lý Phòng</span>
+                               </a>
+                               <ul class="nav nav-children">
+                                   <li>
+                                       <a class="nav-link" href="#">
+                                           Danh sách Phòng
+                                       </a>
+                                   </li>
+                                   <li>
+                                       <a class="nav-link" href="#">
+                                           Đơn đặt
+                                       </a>
+                                   </li>
+                                   <li>
+                                       <a class="nav-link" href="#">
+                                           Dịch vụ Phòng
+                                       </a>
+                                   </li>
+                               </ul>
+                           </li>
+                           <li class="nav-parent">
+                               <a class="nav-link" href="#">
+                                   <i class="bx bx-home-alt" aria-hidden="true"></i>
+                                   <span>Quản lý Sự kiện</span>
+                               </a>
+                               <ul class="nav nav-children">
+                                   <li>
+                                       <a class="nav-link" href="#">
+                                           Danh sách Sự kiện
+                                       </a>
+                                   </li>
+                                   <li>
+                                       <a class="nav-link" href="#">
+                                           Đơn đặt
+                                       </a>
+                                   </li>
+                                   <li>
+                                       <a class="nav-link" href="#">
+                                           Dịch vụ Sự kiện
+                                       </a>
+                                   </li>
+                               </ul>
+                           </li>
+                           <li class="nav-parent">
+                               <a class="nav-link" href="#">
+                                   <i class="fas fa-user" aria-hidden="true"></i>
+                                   <span>Quản lý Người dùng</span>
+                               </a>
+                               <ul class="nav nav-children">
+                                   <li>
+                                       <a class="nav-link" href="/admin/users">
+                                           Danh sách Người dùng
+                                       </a>
+                                   </li>
+                                   <li>
+                                       <a class="nav-link" href="/admin/add-user">
+                                           Thêm Người dùng
+                                       </a>
+                                   </li>
+                               </ul>
+                           </li>
+                           <li class="nav-parent">
+                               <a class="nav-link" href="#">
+                                   <i class="fas fa-user" aria-hidden="true"></i>
+                                   <span>Quản lý Nhân viên</span>
+                               </a>
+                               <ul class="nav nav-children">
+                                   <li>
+                                       <a class="nav-link" href="/admin/staffs">
+                                           Danh sách Nhân viên
+                                       </a>
+                                   </li>
+                                   <li>
+                                       <a class="nav-link" href="/admin/add-staff">
+                                           Thêm Nhân viên
+                                       </a>
+                                   </li>
+                               </ul>
+                           </li>
+                           <li>
+                               <a class="nav-link" href="/admin/comments">
+                                   <i class="bx bx-envelope" aria-hidden="true"></i>
+                                   <span>Quản lý Bình luận</span>
+                               </a>
+                           </li>
+                           <li>
+                               <a class="nav-link" href="/admin/">
+                                   <i class="fas fa-user" aria-hidden="true"></i>
+                                   <span>Quản lý hỏi đáp (tư vấn)</span>
+                               </a>
+                           </li>
+                           <li>
+                               <a class="nav-link" href="/admin/media-gallery">
+                                   <i class="fas fa-life-ring" aria-hidden="true"></i>
+                                   <span>Quản lý Kho ảnh</span>
                                </a>
                            </li>
                            <li class="nav-parent">

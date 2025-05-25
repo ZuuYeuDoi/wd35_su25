@@ -202,11 +202,11 @@
                 <ul class="list-unstyled mb-2">
                     <li class="divider"></li>
                     <li>
-                        <a role="menuitem" tabindex="-1" href="pages-user-profile.html"><i
+                        <a role="menuitem" tabindex="-1" href="/admin/profile"><i
                                 class="bx bx-user-circle"></i> Thông tin của tôi</a>
                     </li>
                     <li>
-                        <a role="menuitem" tabindex="-1" href="#" data-lock-screen="true"><i
+                        <a role="menuitem" tabindex="-1" href="/admin/lock-screen" data-lock-screen="true"><i
                                 class="bx bx-lock"></i> Khóa màn hình</a>
                     </li>
                     <li>
