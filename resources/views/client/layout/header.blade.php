@@ -4,7 +4,7 @@
                 <!-- Main box -->
                 <div class="main-box">
                     <div class="logo-box">
-                        <div class="logo"><a href="index.html"><img src="{{ asset('client/images/logo.png') }}"
+                        <div class="logo"><a href="index.html"><img src="{{ asset('client/images/logo-2.png') }}"
                                     alt="" title="Hoteler"></a></div>
                     </div>
 
@@ -43,7 +43,7 @@
                                 <!-- Contact Info Box -->
                                 <div class="contact-info-box">
                                     <i class="icon lnr-icon-phone-handset"></i>
-                                    <span class="title">Call Now</span>
+                                    <span class="title">Gọi Ngay</span>
                                     <a href="tel:+92880098670">+92 (8800) - 98670</a>
                                 </div>
                             </li>
@@ -51,7 +51,7 @@
                                 <!-- Contact Info Box -->
                                 <div class="contact-info-box">
                                     <span class="icon lnr-icon-envelope1"></span>
-                                    <span class="title">Send Email</span>
+                                    <span class="title">Gửi Email</span>
                                     <a
                                         href="https://html.kodesolution.com/cdn-cgi/l/email-protection#95fdf0f9e5d5f6faf8e5f4fbecbbf6faf8"><span
                                             class="__cf_email__"
@@ -62,8 +62,8 @@
                                 <!-- Contact Info Box -->
                                 <div class="contact-info-box">
                                     <span class="icon lnr-icon-clock"></span>
-                                    <span class="title">Send Email</span>
-                                    Mon - Sat 8:00 - 6:30, Sunday - CLOSED
+                                    <span class="title">Khung Giờ</span>
+                                    Thứ Hai - Thứ Bảy 8:00 - 6:30, Chủ Nhật - Đóng cửa
                                 </div>
                             </li>
                         </ul>

@@ -4,10 +4,10 @@
     <section class="page-title" style="background-image: url({{ asset('client/images/background/page-title-bg.png') }});">
         <div class="auto-container">
             <div class="title-outer text-center">
-                <h1 class="title">Room Details</h1>
+                <h1 class="title">Chi tiết phòng</h1>
                 <ul class="page-breadcrumb">
-                    <li><a href="index.html">Home</a></li>
-                    <li>Room Details</li>
+                    <li><a href="index.html">Trang chủ</a></li>
+                    <li>Chi tết phòng</li>
                 </ul>
             </div>
         </div>
@@ -140,7 +140,7 @@
                     </div>
                     <div class="room-details__left">
                         <div class="wrapper">
-                            <h3>Description of Room</h3>
+                            <h3>Mô tả phòng</h3>
                             <p class="text">Mauris non dignissim purus, ac commodo diam. Donec sit amet lacinia nulla.
                                 Aliquam quis purus in justo pulvinar tempor. Aliquam tellus nulla, sollicitudin at euismod
                                 nec, feugiat at nisi. Quisque vitae odio nec lacus interdum tempus. Phasellus a rhoncus
@@ -152,89 +152,84 @@
                                         <div class="room-details__details-box">
                                             <div class="row">
                                                 <div class="col-6 col-md-3">
-                                                    <p class="text mb-0">Room Size</p>
+                                                    <p class="text mb-0">Kích Thước phòng</p>
                                                     <h6>600Sq</h6>
                                                 </div>
                                                 <div class="col-6 col-md-3">
-                                                    <p class="text mb-0">Rooms Bed</p>
-                                                    <h6>2 Single Bed</h6>
+                                                    <p class="text mb-0">Loại Phòng</p>
+                                                    <h6>2 giường đơn</h6>
                                                 </div>
                                                 <div class="col-6 col-md-3">
-                                                    <p class="text mb-0">Occupancy</p>
-                                                    <h6>Three Persons</h6>
+                                                    <p class="text mb-0">Sô lượng</p>
+                                                    <h6>3 người</h6>
                                                 </div>
                                                 <div class="col-6 col-md-3">
                                                     <p class="text mb-0">View</p>
-                                                    <h6>Sea View</h6>
+                                                    <h6>Cảnh biển</h6>
+                                                </div>
+                                                <div class="col-6 col-md-3">
+                                                    <p class="text mb-0">Số phòng</p>
+                                                    <h6>302</h6>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <p class="text">Mauris non dignissim purus, ac commodo diam. Donec sit amet lacinia nulla.
-                                Aliquam quis purus in justo pulvinar tempor. Aliquam tellus nulla, sollicitudin at euismod
-                                nec, feugiat at nisi. Quisque vitae odio nec lacus interdum tempus. Phasellus a rhoncus
-                                erat. Vivamus vel eros vitae est aliquet pellentesque vitae et nunc. Sed vitae leo vitae
-                                nisl pellentesque semper.</p>
                         </div>
                         <div class="mt-40">
-                            <h4>Room Facilities</h4>
+                            <h4>Tiện nghi phòng</h4>
                             <div class="row room-facility-list mb-40">
                                 <div class="col-sm-6 col-xl-4">
                                     <div class="list-one d-flex align-items-center me-sm-4 mb-3">
                                         <div class="icon text-theme-color1 mr-10 flex-shrink-0"><i
                                                 class="far fa-air-conditioner"></i></div>
-                                        <h6 class="title m-0">Air Conditionar</h6>
+                                        <h6 class="title m-0">Máy lạnh</h6>
                                     </div>
                                 </div>
                                 <div class="col-sm-6 col-xl-4">
                                     <div class="list-one d-flex align-items-center me-sm-4 mb-3">
                                         <div class="icon text-theme-color1 mr-10 flex-shrink-0"><i
                                                 class="fas fa-swimming-pool"></i></div>
-                                        <h6 class="title m-0">Swiming Pool</h6>
+                                        <h6 class="title m-0">Bể bơi</h6>
                                     </div>
                                 </div>
                                 <div class="col-sm-6 col-xl-4">
                                     <div class="list-one d-flex align-items-center me-sm-4 mb-3">
                                         <div class="icon text-theme-color1 mr-10 flex-shrink-0"><i
                                                 class="fas fa-dumbbell"></i></div>
-                                        <h6 class="title m-0">Gymnasium</h6>
+                                        <h6 class="title m-0">Phòng tập thể dục</h6>
                                     </div>
                                 </div>
                                 <div class="col-sm-6 col-xl-4">
                                     <div class="list-one d-flex align-items-center me-sm-4 mb-3">
                                         <div class="icon text-theme-color1 mr-10 flex-shrink-0"><i
                                                 class="fas fa-parking-circle"></i></div>
-                                        <h6 class="title m-0">Parking</h6>
+                                        <h6 class="title m-0">Bãi đậu xe</h6>
                                     </div>
                                 </div>
                                 <div class="col-sm-6 col-xl-4">
                                     <div class="list-one d-flex align-items-center me-sm-4 mb-3">
                                         <div class="icon text-theme-color1 mr-10 flex-shrink-0"><i
                                                 class="fas fa-shield-check"></i></div>
-                                        <h6 class="title m-0">Security</h6>
+                                        <h6 class="title m-0">Bảo vệ</h6>
                                     </div>
                                 </div>
                                 <div class="col-sm-6 col-xl-4">
                                     <div class="list-one d-flex align-items-center me-sm-4">
                                         <div class="icon text-theme-color1 mr-10 flex-shrink-0"><i
                                                 class="fas fa-child"></i></div>
-                                        <h6 class="title m-0">Playground</h6>
+                                        <h6 class="title m-0">Sân chơi</h6>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <div class="d-sm-flex align-items-sm-center justify-content-sm-between pt-40 pb-40 border-top">
-                            <h6 class="my-sm-0">Share Details</h6>
-                            <div class="blog-details__social-list"> <a href="room-details.html"><i
-                                        class="fab fa-x-twitter"></i></a> <a href="room-details.html"><i
-                                        class="fab fa-facebook"></i></a> <a href="room-details.html"><i
-                                        class="fab fa-pinterest-p"></i></a> <a href="room-details.html"><i
-                                        class="fab fa-instagram"></i></a> </div>
+                            <h6 class="my-sm-0">Bình Luận</h6>
+
                         </div>
                         <div class="p-4 p-lg-5 bg-light">
-                            <h4 class="mt-0">Send Us Your Question</h4>
+                            <h4 class="mt-0">Gửi câu hỏi của bạn cho chúng tôi</h4>
                             <form id="contact_form" name="contact_form" class=""
                                 action="https://html.kodesolution.com/2025/hoteler-html/includes/sendmail.php"
                                 method="post">
@@ -264,8 +259,7 @@
                                 <div class="mb-0">
                                     <input name="form_botcheck" class="form-control" type="hidden" value="">
                                     <button type="submit" class="theme-btn btn-style-one"
-                                        data-loading-text="Please wait..."><span class="btn-title">Submit
-                                            Comment</span></button>
+                                        data-loading-text="Please wait..."><span class="btn-title">Gửi bình luận</span></button>
                                 </div>
                             </form>
                         </div>
@@ -280,21 +274,21 @@
                                 <div class="row">
                                     <div class="col-sm-12">
                                         <div class="mb-3">
-                                            <label class="form-label">Check In</label>
+                                            <label class="form-label">Đăng ký vào</label>
                                             <input name="form_name" class="form-control bg-white" type="text"
                                                 placeholder="Arrive Date">
                                         </div>
                                     </div>
                                     <div class="col-sm-12">
                                         <div class="mb-3">
-                                            <label class="form-label">Check Out</label>
+                                            <label class="form-label">Kiểm tra</label>
                                             <input name="form_name" class="form-control bg-white" type="text"
                                                 placeholder="Departure Date">
                                         </div>
                                     </div>
                                     <div class="col-sm-12">
                                         <div class="mb-3">
-                                            <label class="form-label">Guests</label>
+                                            <label class="form-label">Số người</label>
                                             <select class="form-select form-control bg-white">
                                                 <option selected disabled value="">Select</option>
                                                 <option>1</option>
@@ -309,13 +303,12 @@
                                 <div class="mb-3">
                                     <input name="form_botcheck" class="form-control" type="hidden" value="">
                                     <button type="submit" class="theme-btn btn-style-one w-100"
-                                        data-loading-text="Please wait..."><span class="btn-title">Book
-                                            Now</span></button>
+                                        data-loading-text="Please wait..."><span class="btn-title">Đặt Ngay</span></button>
                                 </div>
                             </form>
                         </div>
                         <div class="sidebar__single sidebar__post">
-                            <h3 class="sidebar__title">Compare Room</h3>
+                            <h3 class="sidebar__title">Phòng liên quan</h3>
                             <ul class="sidebar__post-list list-unstyled">
                                 <li>
                                     <div class="sidebar__post-image"> <img

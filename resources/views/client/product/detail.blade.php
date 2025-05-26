@@ -131,7 +131,7 @@
                     </div>
 
                     <div class="product-details__quantity">
-                        <h3 class="product-details__quantity-title">Choose quantity</h3>
+                        <h3 class="product-details__quantity-title">Số lượng</h3>
                         <div class="quantity-box">
                             <button type="button" class="sub"><i class="fa fa-minus"></i></button>
                             <input type="number" id="1" value="1" />
@@ -142,12 +142,11 @@
 
                     <div class="product-details__buttons">
                         <div class="product-details__buttons-1">
-                            <a href="shop-cart.html" class="theme-btn btn-style-one"><span class="btn-title">Add to
-                                    Cart</span></a>
+                            <a href="shop-cart.html" class="theme-btn btn-style-one"><span class="btn-title">Thêm vào giỏ hàng</span></a>
                         </div>
                         <div class="product-details__buttons-2">
                             <a href="shop-product-details.html" class="theme-btn btn-style-one"><span
-                                    class="btn-title">Add to Wishlist</span></a>
+                                    class="btn-title">Đặt ngay</span></a>
                         </div>
                     </div>
                     <div class="product-details__social">

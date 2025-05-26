@@ -25,11 +25,11 @@
                                 <thead>
                                     <tr>
                                         <th></th>
-                                        <th>Photo</th>
-                                        <th>Product Name</th>
-                                        <th>Price</th>
-                                        <th>Quantity</th>
-                                        <th>Total</th>
+                                        <th>Ảnh</th>
+                                        <th>Tên Món</th>
+                                        <th>Giá</th>
+                                        <th>Số lượng</th>
+                                        <th>Tổng</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -109,22 +109,11 @@
                                     </tr>
                                     <tr class="cart_item">
                                         <td colspan="3">
-                                            <form class="row g-3 coupon-form">
-                                                <div class="col-auto">
-                                                    <input type="text" name="coupon_code"
-                                                        class="input-text form-control mr-1" id="coupon_code"
-                                                        value="" placeholder="Coupon code">
-                                                </div>
-                                                <div class="col-auto">
-                                                    <button type="submit" class="apply-button" name="apply_coupon"
-                                                        value="Apply Coupon"><span class="btn-title">Apply
-                                                            Coupon</span></button>
-                                                </div>
-                                            </form>
+                                            
                                         </td>
                                         <td colspan="2">&nbsp;</td>
                                         <td><button type="button" class="theme-btn btn-style-one"><span
-                                                    class="btn-title">Update Cart</span></button></td>
+                                                    class="btn-title">Thêm Món</span></button></td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -133,34 +122,23 @@
                     <div class="col-md-12 mt-30">
                         <div class="row">
                             <div class="col-md-5">
-                                <h4>Calculate Shipping</h4>
+                                <h4>Thông tin phòng</h4>
                                 <form class="form" action="#">
+
                                     <div class="mb-10">
-                                        <select class="form-control">
-                                            <option>Select Country</option>
-                                            <option>Australia</option>
-                                            <option>UK</option>
-                                            <option>USA</option>
-                                        </select>
-                                    </div>
-                                    <div class="mb-10">
-                                        <input type="text" class="form-control" placeholder="State/country"
-                                            value="">
-                                    </div>
-                                    <div class="mb-10">
-                                        <input type="text" class="form-control" placeholder="Postcod/zip"
+                                        <input type="text" class="form-control" placeholder="Số Phòng"
                                             value="">
                                     </div>
                                     <div class="mb-30">
                                         <button type="button" class="theme-btn btn-style-one"><span
-                                                class="btn-title">Update Totals</span></button>
+                                                class="btn-title">Thêm</span></button>
                                     </div>
                                 </form>
                             </div>
                             <div class="col-md-2">
                             </div>
                             <div class="col-md-5">
-                                <h4>Cart Totals</h4>
+                                <h4>Tổng thanh toán</h4>
                                 <table class="table table-bordered cart-total">
                                     <tbody>
                                         <tr>
@@ -178,7 +156,7 @@
                                     </tbody>
                                 </table>
                                 <a class="theme-btn btn-style-one" href="shop-checkout.html"><span
-                                        class="btn-title">Proceed to Checkout</span> </a>
+                                        class="btn-title">Tiến hành thanh toán</span> </a>
                             </div>
                         </div>
                     </div>
