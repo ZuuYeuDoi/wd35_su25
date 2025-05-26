@@ -23,7 +23,8 @@
                 <div class="room-block col-lg-6 col-md-6">
                     <div class="inner-box wow fadeIn">
                         <div class="image-box">
-                            <figure class="image-2 overlay-anim"><img src="{{ asset('client/images/resource/room-1.jpg') }}" alt="">
+                            <figure class="image-2 overlay-anim"><img src="{{ asset('client/images/resource/room-1.jpg') }}"
+                                    alt="">
                             </figure>
                         </div>
                         <div class="content-box">
@@ -45,7 +46,8 @@
                 <div class="room-block col-lg-6 col-md-6">
                     <div class="inner-box wow fadeIn" data-wow-delay="200ms">
                         <div class="image-box">
-                            <figure class="image-2 overlay-anim"><img src="{{ asset('client/images/resource/room-2.jpg') }}" alt="">
+                            <figure class="image-2 overlay-anim"><img src="{{ asset('client/images/resource/room-2.jpg') }}"
+                                    alt="">
                             </figure>
                         </div>
                         <div class="content-box">
@@ -67,7 +69,8 @@
                 <div class="room-block col-lg-3 col-md-6">
                     <div class="inner-box wow fadeIn" data-wow-delay="300ms">
                         <div class="image-box">
-                            <figure class="image-2 overlay-anim"><img src="{{ asset('client/images/resource/room-3.jpg') }}" alt="">
+                            <figure class="image-2 overlay-anim"><img src="{{ asset('client/images/resource/room-3.jpg') }}"
+                                    alt="">
                             </figure>
                         </div>
                         <div class="content-box">
@@ -89,7 +92,8 @@
                 <div class="room-block col-lg-6 col-md-6">
                     <div class="inner-box large-style wow fadeIn" data-wow-delay="400ms">
                         <div class="image-box">
-                            <figure class="image-2 overlay-anim"><img src="{{ asset('client/images/resource/room-4.jpg') }}" alt="">
+                            <figure class="image-2 overlay-anim"><img src="{{ asset('client/images/resource/room-4.jpg') }}"
+                                    alt="">
                             </figure>
                         </div>
                         <div class="content-box">
@@ -111,7 +115,8 @@
                 <div class="room-block col-lg-3 col-md-6">
                     <div class="inner-box wow fadeIn" data-wow-delay="500ms">
                         <div class="image-box">
-                            <figure class="image-2 overlay-anim"><img src="i{{ asset('client/mages/resource/room-5.jpg') }}" alt="">
+                            <figure class="image-2 overlay-anim"><img
+                                    src="i{{ asset('client/mages/resource/room-5.jpg') }}" alt="">
                             </figure>
                         </div>
                         <div class="content-box">
@@ -135,15 +140,17 @@
     <!-- End rooms-section -->
 @endsection
 @push('js')
-    <script src="{{ asset('client/js/jquery.js') }}"></script>
+    <script data-cfasync="false" src="../../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
+    <script src="{{ asset('client/js/jquery.js') }} "></script>
     <script src="{{ asset('client/js/popper.min.js') }} "></script>
-    <script src="{{ asset('client/js/bootstrap.min.js') }}"></script>
-    <script src="{{ asset('client/js/slick-animation.min.js') }}"></script>
-    <script src="{{ asset('client/js/jquery.fancybox.js') }}"></script>
-    <script src="{{ asset('client/js/jquery-ui.js') }}"></script>
-    <script src="{{ asset('client/js/wow.js') }}"></script>
-    <script src="{{ asset('client/js/appear.js') }}"></script>
-    <script src="{{ asset('client/js/owl.js') }}"></script>
-    <script src="{{ asset('client/js/swiper.min.js') }}"></script>
-    <script src="{{ asset('client/js/script.js') }}"></script>
+    <script src="{{ asset('client/js/bootstrap.min.js') }} "></script>
+    <script src="{{ asset('client/js/slick.min.js') }} "></script>
+    <script src="{{ asset('client/js/slick-animation.min.js') }} "></script>
+    <script src="{{ asset('client/js/jquery.fancybox.js') }} "></script>
+    <script src="{{ asset('client/js/jquery-ui.js') }} "></script>
+    <script src="{{ asset('client/js/wow.js') }} "></script>
+    <script src="{{ asset('client/js/appear.js') }} "></script>
+    <script src="{{ asset('client/js/owl.js') }} "></script>
+    <script src="{{ asset('client/js/swiper.min.js') }} "></script>
+    <script src="{{ asset('client/js/script.js') }} "></script>
 @endpush
