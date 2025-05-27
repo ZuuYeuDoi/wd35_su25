@@ -21,13 +21,19 @@ Route::get('checkout', function () {
 });
 
 
-Route::get('product', function () {
+Route::get('/product', function () {
     return view('client.product.index');
 });
 
-Route::get('product-detail', function () {
+Route::get('/product-detail', function () {
     return view('client.product.detail');
 });
+Route::get('/service', function () {
+    return view('client.service.index');
+});
+
+
+
 Route::get('/admin', function () {
     return view('admin.dashboard');
 });
@@ -114,3 +120,18 @@ Route::get('/505', function () {
     return view('errors.505');
 });
 
+Route::get('/login', function () {
+    return view('auth.login');
+});
+
+Route::get('/register', function () {
+    return view('auth.register');
+});
+
+Route::get('/account', function () {
+    return view('client.account.account');
+});
+
+Route::get('/account/room', function () {
+    return view('client.account.roomDetail');
+});
