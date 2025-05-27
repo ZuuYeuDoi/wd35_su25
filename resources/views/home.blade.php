@@ -69,7 +69,7 @@
         <div class="auto-container">
             <div class="sec-title text-center">
                 <span class="sub-title">Những gì chúng tôi cung cấp</span>
-                <h2>Nhận ưu đãi đặc biệt của chúng tôi.</h2>
+                <h2>Nhận ưu đãi đặc biệt của chúng tôi</h2>
             </div>
             <div class="outer-box">
                 <div class="row">
