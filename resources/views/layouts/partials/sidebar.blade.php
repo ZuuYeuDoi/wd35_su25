@@ -31,7 +31,7 @@
                                </a>
                                <ul class="nav nav-children">
                                    <li>
-                                       <a class="nav-link" href="#">
+                                       <a class="nav-link" href="{{route('room.index')}}">
                                            Danh sách Phòng
                                        </a>
                                    </li>

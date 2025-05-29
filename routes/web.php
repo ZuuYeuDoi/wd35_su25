@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\RoomController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -41,15 +42,21 @@ Route::get('/admin/info', function () {
     return view('admin.infoHotel');
 });
 
+Route::prefix('admin')->group(function () {
+    Route::controller(RoomController::class)->group(function () {
+        Route::get('rooms', 'index')->name('room.index');
+        Route::get('rooms/add', 'create')->name('room.create');
+        Route::post('rooms/store', 'store')->name('room.store');
+        Route::get('rooms/show/{id}', 'show')->name('room.show');
+        Route::put('rooms/update/{id}', 'update')->name('room.update');
+    });
+});
 //booking phong
 Route::get('/admin/bookingrooms/rooms/servicer', function () {
     return view('admin.bookingrooms.rooms.servicerooms');
 });
 Route::get('/admin/bookingrooms/rooms/servicer/add', function () {
     return view('admin.bookingrooms.rooms.addservicerooms');
-});
-Route::get('/admin/bookingrooms/rooms', function () {
-    return view('admin.bookingrooms.rooms.rooms');
 });
 Route::get('/admin/bookingrooms/category/add', function () {
     return view('admin.bookingrooms.category.addcategory');
