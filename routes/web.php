@@ -1,10 +1,8 @@
 <?php
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('home');
-});
 
 Route::get('/room', function () {
     return view('client.room.index');
@@ -135,3 +133,8 @@ Route::get('/account', function () {
 Route::get('/account/room', function () {
     return view('client.account.roomDetail');
 });
+
+Auth::routes();
+
+Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+

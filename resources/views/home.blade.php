@@ -125,7 +125,7 @@
                         <div class="sec-title">
                             <span class="sub-title style-three">Khách Sạn sang trọng</span>
                             <h2>Chúng tôi cung cấp các dịch<br />vụ và các sự kiện</h2>
-                            <div class="text">Cimora chúng tôi có quang cảnh tuyệt đẹp, bờ biển, 
+                            <div class="text">Cimora chúng tôi có quang cảnh tuyệt đẹp, bờ biển,
                                 đồ ăn tuyệt vời và nhiều lần được bình chọn là thành phố hạnh phúc nhất,
                                  khỏe mạnh nhất và phù hợp nhất tại Việt Nam.</div>
                         </div>
