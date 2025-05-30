@@ -130,6 +130,7 @@ Route::get('/account', function () {
     return view('client.account.account');
 });
 
+
 Route::get('/account/room', function () {
     return view('client.account.roomDetail');
 });
@@ -137,4 +138,11 @@ Route::get('/account/room', function () {
 Auth::routes();
 
 Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+
+Auth::routes();
+
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+
 
