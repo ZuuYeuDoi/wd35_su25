@@ -13,16 +13,16 @@
         <div class="form-container">
             <div class="form-box">
                 <h2>Đăng nhập</h2>
-                <form id="loginForm" method="POST" action="{{ route('login') }}">
+                <form id="loginForm" method="POST" action="{{ route('login') }}" novalidate>
                     @csrf
                     <div class="input-group">
                         <input id="email" type="email" class="form-control @error('email') is-invalid @enderror"
                             name="email" value="{{ old('email') }}" required autocomplete="email" autofocus>
 
                         @error('email')
-                            <span class="invalid-feedback" role="alert">
-                                <strong>{{ $message }}</strong>
-                            </span>
+                            <div class="invalid-feedback">
+                                <span style="color: red">{{ $message }}</span>
+                            </div>
                         @enderror
                         <label for="email">Email</label>
                     </div>
@@ -31,9 +31,9 @@
                             class="form-control @error('password') is-invalid @enderror" name="password" required
                             autocomplete="current-password">
                         @error('password')
-                            <span class="invalid-feedback" role="alert">
-                                <strong>{{ $message }}</strong>
-                            </span>
+                            <div class="invalid-feedback">
+                                <span style="color: red">{{ $message }}</span>
+                            </div>
                         @enderror
                         <label for="password">Mật khẩu</label>
                     </div>

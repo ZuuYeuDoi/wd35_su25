@@ -25,32 +25,31 @@
                 </ul>
             </li>
             <li><a href="page-contact.html">Liên Hệ</a></li>
-            <li class="dropdown"><a href="#">{{ Auth::user()->name }}</a>
-                <!-- Authentication Links -->
-                @guest
-                    @if (Route::has('login'))
-                <li>
-                    <a class="nav-link" href="{{ route('login') }}">{{ __('Login') }}</a>
-                </li>
-                @endif
-
-                @if (Route::has('register'))
-                    <li>
-                        <a class="nav-link" href="{{ route('register') }}">{{ __('Register') }}</a>
-                    </li>
-                @endif
-            @else
+            <li class="dropdown">
+                <a href="#">
+                    {{ Auth::check() ? Auth::user()->name : 'Tài khoản' }}
+                </a>
                 <ul>
-                    <li><a href="/account">Thông tin cá nhân</a></li>
-                    <li><a href="{{ route('logout') }}"
-                            onclick="event.preventDefault();
-                                        document.getElementById('logout-form').submit();">Đăng
-                            xuất</a></li>
-                    <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
-                        @csrf
-                    </form>
+                    @guest
+                        @if (Route::has('login'))
+                            <li><a href="{{ route('login') }}">{{ __('Login') }}</a></li>
+                        @endif
+                        @if (Route::has('register'))
+                            <li><a href="{{ route('register') }}">{{ __('Register') }}</a></li>
+                        @endif
+                    @else
+                        <li><a href="/account">Thông tin cá nhân</a></li>
+                        <li>
+                            <a href="{{ route('logout') }}"
+                                onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                Đăng xuất
+                            </a>
+                        </li>
+                        <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                            @csrf
+                        </form>
+                    @endguest
                 </ul>
-            @endguest
             </li>
         </ul>
     </nav>

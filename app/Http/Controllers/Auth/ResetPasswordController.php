@@ -26,4 +26,14 @@ class ResetPasswordController extends Controller
      * @var string
      */
     protected $redirectTo = '/';
+
+    protected function validationErrorMessages()
+    {
+        return [
+            'email.required' => 'Bạn cần nhập địa chỉ email!',
+            'email.email' => 'Địa chỉ email không hợp lệ!',
+            'password.required' => 'Bạn cần nhập mật khẩu!',
+            'password.confirmed' => 'Mật khẩu xác nhận không khớp!',
+        ];
+    }
 }

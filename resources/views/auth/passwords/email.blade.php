@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,6 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
+
 <body>
     <div class="container">
         <div class="form-container">
@@ -20,24 +22,23 @@
                     </div>
                 @endif
 
-                <form method="POST" action="{{ route('password.email') }}">
+                <form method="POST" action="{{ route('password.email') }}" novalidate>
                     @csrf
 
                     <div class="input-group">
-                        <input id="email" type="email"
-                            class="form-control @error('email') is-invalid @enderror"
+                        <input id="email" type="email" class="form-control @error('email') is-invalid @enderror"
                             name="email" value="{{ old('email') }}" required autocomplete="email" autofocus>
                         <label for="email">Email</label>
 
                         @error('email')
-                            <span class="invalid-feedback" role="alert" style="color: red;">
-                                <strong>{{ $message }}</strong>
-                            </span>
+                            <div class="invalid-feedback">
+                                <span style="color: red">{{ $message }}</span>
+                            </div>
                         @enderror
                     </div>
 
                     <div style="text-align: center; margin-top: 20px;">
-                        <button type="submit" class="btn">Gửi liên kết đặt lại mật khẩu</button>
+                        <button type="submit" class="btn">Gửi qua Email này</button>
                     </div>
                 </form>
 
@@ -48,4 +49,5 @@
         </div>
     </div>
 </body>
+
 </html>
