@@ -14,6 +14,7 @@
                                 <div class="row align-items-center mb-3">
                                     <div class="col-12 col-lg-auto mb-3 mb-lg-0">
                                         <a href="{{route('room.create')}}"><button class="btn btn-primary">Thêm phòng</button></a>
+                                        <a href="{{route('room.trash')}}"><button class="btn btn-warning">Thùng rác</button></a>
                                     </div>
                                     <div class="col-8 col-lg-auto ms-auto ml-auto mb-3 mb-lg-0">
                                         <div class="d-flex align-items-lg-center flex-column flex-lg-row">
@@ -53,29 +54,59 @@
                                 </div>
                             </div>
                             <table class="table table-ecommerce-simple table-borderless table-striped mb-0"
-                                id="datatable-room-list" style="min-width: 640px;">
+                                id="datatable-room-list" style="min-width: 1000px;">
                                 <thead>
                                     <tr>
                                         <th width="3%"><input type="checkbox" name="select-all"
                                                 class="select-all checkbox-style-1 p-relative top-2" value="" /></th>
-                                        <th width="8%">Mã phòng</th>
-                                        <th width="28%">Tên phòng</th>
-                                        <th width="18%">Loại phòng</th>
-                                        <th width="18%">Số giường</th>
-                                        <th width="15%">Trạng thái</th>
+                                        <th >ID</th>
+                                        <th >Tên phòng</th>
+                                        <th >Loại phòng</th>
+                                        <th >Hình ảnh phòng</th>
+                                        <th >Giá phòng</th>
+                                        <th >Số người tối đa</th>
+                                        <th >Trạng thái</th>
+                                        <th>Ngày tạo</th>
+                                        <th>Ngày cập nhật</th>
+                                        <th>Thao tác</th>
                                     </tr>
                                 </thead>
                                 <tbody>
+                                    @foreach($rooms as $room)
                                     <tr>
-                                        <td width="30"><input type="checkbox" name="checkboxRow1"
-                                                class="checkbox-style-1 p-relative top-2" value="" /></td>
-                                        <td><a href="room-detail.html"><strong>206</strong></a></td>
-                                        <td><a href="room-detail.html"><strong>Phòng Deluxe 16</strong></a></td>
-                                        <td>Deluxe</td>
-                                        <td>2</td>
-                                        <td><span class="ecommerce-status completed">Đã đặt</span></td>
+                                        <td><input type="checkbox" name="checkboxRow1" class="checkbox-style-1 p-relative top-2" /></td>
+                                        <td>{{$room->id}}</td>
+                                        <td>{{$room->title}}</td>
+                                        <td>{{$room->roomType->name ?? 'chưa có'}}</td>
+                                        <td>
+                                            @if($room->image_room)
+                                                <img src="{{ asset('storage/' . $room->image_room) }}" alt="{{ $room->title }}" width="80">
+                                            @endif
+                                        </td>
+                                        <td>{{ number_format($room->price) }} VNĐ</td>
+                                        <td>{{$room->max_people}}</td>
+                                        <td>
+                                            @if($room->status == 1)
+                                                <span class="badge bg-success">Hoạt động</span>
+                                            @else
+                                                <span class="badge bg-secondary">Không hoạt động</span>
+                                            @endif
+                                        </td>
+                                        <td>{{ $room->created_at->format('d/m/y ') }}</td>
+                                        <td>{{ $room->updated_at->format('d/m/y ') }}</td>
+                                        <td>
+                                            <a href="{{ route('room.show', $room->id) }}" class="btn btn-sm btn-info">Chi tiết</a>
+                                            <a href="{{ route('room.edit', $room->id) }}" class="btn btn-sm btn-warning">Sửa</a>
+                                            <form action="{{ route('room.destroy', $room->id) }}" method="POST" onsubmit="return confirm('Bạn có chắc muốn xóa?')">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-danger">Xóa</button>
+                                            </form>
+                                        </td>
                                     </tr>
+                                    @endforeach
                                 </tbody>
+
                             </table>
                             <hr class="solid mt-5 opacity-4">
                             <div class="datatable-footer">
