@@ -1,11 +1,10 @@
 <?php
 
-use App\Http\Controllers\RoomController;
+use App\Http\Controllers\HomeController;
+use Illuminate\Support\Facades\Auth;
+
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('home');
-});
 
 Route::get('/room', function () {
     return view('client.room.index');
@@ -146,6 +145,11 @@ Route::get('/account', function () {
     return view('client.account.account');
 });
 
+
 Route::get('/account/room', function () {
     return view('client.account.roomDetail');
 });
+
+Auth::routes(['verify' => true]);
+
+Route::get('/', [HomeController::class, 'index']);
