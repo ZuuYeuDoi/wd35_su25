@@ -25,6 +25,19 @@
                                </a>
                            </li>
                            <li class="nav-parent">
+                               <a class="nav-link" href="{{route('room_types.index')}}">
+                                   <i class="bx bx-home-alt" aria-hidden="true"></i>
+                                   <span>Quản lý Loại Phòng</span>
+                               </a>
+                               <ul class="nav nav-children">
+                                   <li>
+                                       <a class="nav-link" href="{{route('room_types.index')}}">
+                                           Danh sách loại Phòng
+                                       </a>
+                                   </li>
+                               </ul>
+                           </li>
+                           <li class="nav-parent">
                                <a class="nav-link" href="#">
                                    <i class="bx bx-home-alt" aria-hidden="true"></i>
                                    <span>Quản lý Phòng</span>

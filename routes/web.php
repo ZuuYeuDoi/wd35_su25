@@ -1,6 +1,9 @@
 <?php
 
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\RoomController;
+use App\Http\Controllers\RoomTypeController;
+use App\Models\Room;
 use Illuminate\Support\Facades\Auth;
 
 use Illuminate\Support\Facades\Route;
@@ -56,7 +59,23 @@ Route::prefix('admin')->group(function () {
         Route::delete('rooms/forceDelete/{id}', 'forceDelete')->name('room.forceDelete');
 
     });
+    // quan ly loai phong
+    
+    Route::controller(RoomTypeController::class)->group(function () {
+        Route::get('room_types', 'index')->name('room_types.index');
+        Route::get('room_types/add', 'create')->name('room_types.create');
+        Route::post('room_types/store', 'store')->name('room_types.store');
+        Route::get('room_types/show/{id}', 'show')->name('room_types.show');    
+        Route::get('room_types/edit/{id}', 'edit')->name('room_types.edit');  
+        Route::put('room_types/update/{id}', 'update')->name('room_types.update');
+        Route::delete('room_types/delete/{id}', 'destroy')->name('room_types.destroy');
+
+    });
+    
+
 });
+
+
 //booking phong
 Route::get('/admin/bookingrooms/rooms/servicer', function () {
     return view('admin.bookingrooms.rooms.servicerooms');
