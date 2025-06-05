@@ -25,26 +25,26 @@
                                </a>
                            </li>
                            <li class="nav-parent">
-                               <a class="nav-link" href="{{route('room_types.index')}}">
+                               <a class="nav-link" href="javascript:void(0)">
                                    <i class="bx bx-home-alt" aria-hidden="true"></i>
                                    <span>Quản lý Loại Phòng</span>
                                </a>
                                <ul class="nav nav-children">
                                    <li>
-                                       <a class="nav-link" href="{{route('room_types.index')}}">
+                                       <a class="nav-link" href="{{ route('room_types.index') }}">
                                            Danh sách loại Phòng
                                        </a>
                                    </li>
                                </ul>
                            </li>
                            <li class="nav-parent">
-                               <a class="nav-link" href="#">
+                               <a class="nav-link" href="javascript:void(0)">
                                    <i class="bx bx-home-alt" aria-hidden="true"></i>
                                    <span>Quản lý Phòng</span>
                                </a>
                                <ul class="nav nav-children">
                                    <li>
-                                       <a class="nav-link" href="{{route('room.index')}}">
+                                       <a class="nav-link" href="{{ route('room.index') }}">
                                            Danh sách Phòng
                                        </a>
                                    </li>
@@ -61,7 +61,21 @@
                                </ul>
                            </li>
                            <li class="nav-parent">
-                               <a class="nav-link" href="#">
+                               <a class="nav-link" href="javascript:void(0)">
+                                   <i class="bx bx-cog" aria-hidden="true"></i>
+                                   <span>Quản lý Dịch vụ</span>
+                               </a>
+                               <ul class="nav nav-children">
+                                   <li>
+                                       <a class="nav-link" href="{{ route('services.index') }}">
+                                           Danh sách Dịch vụ
+                                       </a>
+                                   </li>
+                               </ul>
+                           </li>
+
+                           <li class="nav-parent">
+                               <a class="nav-link" href="javascript:void(0)">
                                    <i class="bx bx-home-alt" aria-hidden="true"></i>
                                    <span>Quản lý Sự kiện</span>
                                </a>
@@ -84,7 +98,7 @@
                                </ul>
                            </li>
                            <li class="nav-parent">
-                               <a class="nav-link" href="#">
+                               <a class="nav-link" href="javascript:void(0)">
                                    <i class="fas fa-user" aria-hidden="true"></i>
                                    <span>Quản lý Người dùng</span>
                                </a>
@@ -102,7 +116,7 @@
                                </ul>
                            </li>
                            <li class="nav-parent">
-                               <a class="nav-link" href="#">
+                               <a class="nav-link" href="javascript:void(0)">
                                    <i class="fas fa-user" aria-hidden="true"></i>
                                    <span>Quản lý Nhân viên</span>
                                </a>

@@ -3,6 +3,7 @@
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\RoomController;
 use App\Http\Controllers\RoomTypeController;
+use App\Http\Controllers\ServiceController;
 use App\Models\Room;
 use Illuminate\Support\Facades\Auth;
 
@@ -49,30 +50,41 @@ Route::prefix('admin')->group(function () {
         Route::get('rooms', 'index')->name('room.index');
         Route::get('rooms/add', 'create')->name('room.create');
         Route::post('rooms/store', 'store')->name('room.store');
-        Route::get('rooms/show/{id}', 'show')->name('room.show');    
-        Route::get('rooms/edit/{id}', 'edit')->name('room.edit');  
+        Route::get('rooms/show/{id}', 'show')->name('room.show');
+        Route::get('rooms/edit/{id}', 'edit')->name('room.edit');
         Route::put('rooms/update/{id}', 'update')->name('room.update');
         Route::delete('rooms/delete/{id}', 'destroy')->name('room.destroy');
 
-        Route::get('rooms/trash', 'trash')->name('room.trash');                  
-        Route::patch('rooms/restore/{id}', 'restore')->name('room.restore');       
+        Route::get('rooms/trash', 'trash')->name('room.trash');
+        Route::patch('rooms/restore/{id}', 'restore')->name('room.restore');
         Route::delete('rooms/forceDelete/{id}', 'forceDelete')->name('room.forceDelete');
-
     });
     // quan ly loai phong
-    
+
     Route::controller(RoomTypeController::class)->group(function () {
         Route::get('room_types', 'index')->name('room_types.index');
         Route::get('room_types/add', 'create')->name('room_types.create');
         Route::post('room_types/store', 'store')->name('room_types.store');
-        Route::get('room_types/show/{id}', 'show')->name('room_types.show');    
-        Route::get('room_types/edit/{id}', 'edit')->name('room_types.edit');  
+        Route::get('room_types/show/{id}', 'show')->name('room_types.show');
+        Route::get('room_types/edit/{id}', 'edit')->name('room_types.edit');
         Route::put('room_types/update/{id}', 'update')->name('room_types.update');
         Route::delete('room_types/delete/{id}', 'destroy')->name('room_types.destroy');
-
     });
-    
 
+    // Quản lý dịch vụ
+    Route::controller(ServiceController::class)->group(function () {
+        Route::get('services', 'index')->name('services.index');
+        Route::get('services/add', 'create')->name('services.create');
+        Route::post('services/store', 'store')->name('services.store');
+        Route::get('services/show/{id}', 'show')->name('services.show');
+        Route::get('services/edit/{id}', 'edit')->name('services.edit');
+        Route::put('services/update/{id}', 'update')->name('services.update');
+        Route::delete('services/delete/{id}', 'destroy')->name('services.destroy');
+
+        Route::get('/trash', [ServiceController::class, 'trash'])->name('services.trash');
+        Route::post('/{id}/restore', [ServiceController::class, 'restore'])->name('services.restore');
+        Route::delete('/{id}/force-delete', [ServiceController::class, 'forceDelete'])->name('services.forceDelete');
+    });
 });
 
 

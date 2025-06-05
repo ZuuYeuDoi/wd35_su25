@@ -89,13 +89,12 @@ class RoomController extends Controller
      */
     public function show(string $id)
     {
-        try{
-             $room = Room::with('roomType')->findOrFail($id);
-        return view('admin.bookingrooms.rooms.showRoom', compact('room'));
-        }catch(\Throwable $th){
+        try {
+            $room = Room::with('roomType')->findOrFail($id);
+            return view('admin.bookingrooms.rooms.showRoom', compact('room'));
+        } catch (\Throwable $th) {
             return view('errors.404');
         }
-       
     }
 
     /**
@@ -191,16 +190,18 @@ class RoomController extends Controller
     public function destroy(string $id)
     {
         $room = Room::findOrFail($id);
-            $room->delete();
-            return redirect()->route('room.index')->with('success', 'xóa phòng thành công');
-        }
+        $room->delete();
+        return redirect()->route('room.index')->with('success', 'xóa phòng thành công');
+    }
 
-    public function trash(){
+    public function trash()
+    {
         $rooms = Room::onlyTrashed()->with('roomType')->orderBy('deleted_at', 'desc')->paginate(10);
         return view('admin.bookingrooms.rooms.trashRoom', compact('rooms'));
     }
 
-    public function restore($id){
+    public function restore($id)
+    {
         $room = Room::onlyTrashed()->findOrFail($id);
         $room->restore();
         return redirect()->route('room.trash')->with('success', 'Khôi Phục thành công');
@@ -208,14 +209,14 @@ class RoomController extends Controller
     public function forceDelete($id)
     {
         $room = Room::onlyTrashed()->findOrFail($id);
-            if($room->image_room){
-                Storage::disk('public')->delete($room->image_room);
-            }
-            if($room->thumbnail){
-                Storage::disk('public')->delete($room->thumbnail);
-            }
-            $room->forceDelete();
-
-            return redirect()->route('room.trash')->with('success', 'xóa phòng vĩnh viễn thành công');
+        if ($room->image_room) {
+            Storage::disk('public')->delete($room->image_room);
         }
+        if ($room->thumbnail) {
+            Storage::disk('public')->delete($room->thumbnail);
+        }
+        $room->forceDelete();
+
+        return redirect()->route('room.trash')->with('success', 'xóa phòng vĩnh viễn thành công');
     }
+}
