@@ -41,17 +41,6 @@
                     </div>
 
                     <div class="input-group">
-                        <input id="cccd" type="text" class="form-control @error('cccd') is-invalid @enderror"
-                            name="cccd" value="{{ old('cccd') }}" required autocomplete="cccd">
-                        @error('cccd')
-                            <div class="invalid-feedback">
-                                <span style="color: red">{{ $message }}</span>
-                            </div>
-                        @enderror
-                        <label for="cccd" class="form-label">CCCD</label>
-                    </div>
-
-                    <div class="input-group">
                         <input id="email" type="email" class="form-control @error('email') is-invalid @enderror"
                             name="email" value="{{ old('email') }}" required autocomplete="email">
                         @error('email')
