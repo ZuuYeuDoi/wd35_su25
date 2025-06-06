@@ -54,7 +54,7 @@
                                     @foreach ($services as $key => $service)
                                         <tr>
                                             <td>{{ $services->firstItem() + $key }}</td>
-                                            <td>{{ $service->name }}</td>
+                                            <td><a href="{{ route('services.show', $service->id) }}">{{ $service->name }}</a></td>
                                             <td>{{ Str::limit($service->description, 50) }}</td>
                                             <td>{{ number_format($service->price, 0) }} VNĐ</td>
                                             <td>{{ $service->unit }}</td>

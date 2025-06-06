@@ -83,7 +83,13 @@ class ServiceController extends Controller
      */
     public function show(string $id)
     {
-        //
+        try {
+            $service = Service::findOrFail($id);
+
+            return view('admin.services.show', compact('service'));
+        } catch (\Throwable $th) {
+            return view('errors.404');
+        }
     }
 
     /**
