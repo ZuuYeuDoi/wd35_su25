@@ -77,6 +77,10 @@ Route::prefix('admin')->group(function () {
     Route::post('/amenities', [AmenitieController::class, 'store'])->name('amenitie.store');
     Route::get('/amenities/{id}/edit', [AmenitieController::class, 'edit'])->name('amenitie.edit');
     Route::put('/amenities/{id}', [AmenitieController::class, 'update'])->name('amenitie.update');
+    Route::delete('/amenities/{id}', [AmenitieController::class, 'destroy'])->name('amenitie.destroy');
+    Route::get('/amenities/trash', [AmenitieController::class, 'trash'])->name('amenitie.trash');
+    Route::put('/amenities/{id}/restore', [AmenitieController::class, 'restore'])->name('amenitie.restore');
+    Route::delete('/amenities/{id}/force-delete', [AmenitieController::class, 'forceDelete'])->name('amenitie.forceDelete');
 });
 
 

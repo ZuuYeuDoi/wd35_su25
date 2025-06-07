@@ -10,7 +10,8 @@ class AmenitieController extends Controller
 {
     public function index()
     {
-        return 1;
+        $utilities = Amenitie::orderByDesc('created_at')->get(); 
+        return view('admin.bookingrooms.Amenities.index', compact('utilities'));
     }
 
     public function create()
@@ -106,6 +107,40 @@ class AmenitieController extends Controller
             return redirect()->route('amenitie.index')->with('success', 'Cập nhật tiện ích thành công');
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Cập nhật thất bại: ');
+        }
+    }
+    public function destroy($id){
+        try{
+        $amenitie = Amenitie::findOrFail($id);
+        $amenitie->delete();
+        return redirect()->route('amenitie.index')->with('success', 'Xóa tiện ích thành công (đã chuyển vào thùng rác)');
+        } catch (\Exception $e){
+             return redirect()->back()->with('error', 'Xóa thất bại');
+        }
+    }
+    public function trash(){
+        $deletedUtilities = Amenitie::onlyTrashed()->orderByDesc('deleted_at')->get();
+        return view('admin.bookingrooms.Amenities.trash', compact('deletedUtilities'));
+    }
+    public function restore($id){
+        try{
+            $amenitie = Amenitie::onlyTrashed()->findOrFail($id);
+            $amenitie->restore();
+            return redirect()->route('amenitie.trash')->with('success', 'Khôi phục tiện ích thành công');
+        }catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Khôi phục thất bại');
+        }
+    } 
+    public function forceDelete($id){
+        try{
+            $amenitie = Amenitie::onlyTrashed()->findOrFail($id);
+            if ($amenitie->image) {
+                Storage::disk('public')->delete($amenitie->image);
+            }
+            $amenitie->forceDelete();
+            return redirect()->route('amenitie.trash')->with('success', 'Đã xóa vĩnh viễn tiện ích');
+        }catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Xóa vĩnh viễn thất bại');
         }
     }
 }
