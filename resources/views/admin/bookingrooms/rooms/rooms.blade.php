@@ -1,5 +1,5 @@
 @extends('layouts.admin')
-@section('title1', 'Hóa Đơn')
+@section('title1', 'Danh sách phòng')
 @section('content')
     <section role="main" class="content-body">
         <header class="page-header">
