@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AmenitieController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\RoomController;
 use App\Http\Controllers\RoomTypeController;
@@ -49,30 +50,33 @@ Route::prefix('admin')->group(function () {
         Route::get('rooms', 'index')->name('room.index');
         Route::get('rooms/add', 'create')->name('room.create');
         Route::post('rooms/store', 'store')->name('room.store');
-        Route::get('rooms/show/{id}', 'show')->name('room.show');    
-        Route::get('rooms/edit/{id}', 'edit')->name('room.edit');  
+        Route::get('rooms/show/{id}', 'show')->name('room.show');
+        Route::get('rooms/edit/{id}', 'edit')->name('room.edit');
         Route::put('rooms/update/{id}', 'update')->name('room.update');
         Route::delete('rooms/delete/{id}', 'destroy')->name('room.destroy');
 
-        Route::get('rooms/trash', 'trash')->name('room.trash');                  
-        Route::patch('rooms/restore/{id}', 'restore')->name('room.restore');       
+        Route::get('rooms/trash', 'trash')->name('room.trash');
+        Route::patch('rooms/restore/{id}', 'restore')->name('room.restore');
         Route::delete('rooms/forceDelete/{id}', 'forceDelete')->name('room.forceDelete');
-
     });
     // quan ly loai phong
-    
+
     Route::controller(RoomTypeController::class)->group(function () {
         Route::get('room_types', 'index')->name('room_types.index');
         Route::get('room_types/add', 'create')->name('room_types.create');
         Route::post('room_types/store', 'store')->name('room_types.store');
-        Route::get('room_types/show/{id}', 'show')->name('room_types.show');    
-        Route::get('room_types/edit/{id}', 'edit')->name('room_types.edit');  
+        Route::get('room_types/show/{id}', 'show')->name('room_types.show');
+        Route::get('room_types/edit/{id}', 'edit')->name('room_types.edit');
         Route::put('room_types/update/{id}', 'update')->name('room_types.update');
         Route::delete('room_types/delete/{id}', 'destroy')->name('room_types.destroy');
-
     });
-    
 
+    // quan ly tien ich
+    Route::get('/amenities', [AmenitieController::class, 'index'])->name('amenitie.index');
+    Route::get('/amenities/add', [AmenitieController::class, 'create'])->name('amenitie.create');
+    Route::post('/amenities', [AmenitieController::class, 'store'])->name('amenitie.store');
+    Route::get('/amenities/{id}/edit', [AmenitieController::class, 'edit'])->name('amenitie.edit');
+    Route::put('/amenities/{id}', [AmenitieController::class, 'update'])->name('amenitie.update');
 });
 
 
