@@ -94,7 +94,6 @@ class RoomController extends Controller
                     ]);
                 }
             }
-
             return redirect()->route('room.index')->with('success', 'Thêm phòng thành công');
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Thêm phòng thất bại');
