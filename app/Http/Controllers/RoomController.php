@@ -212,7 +212,9 @@ class RoomController extends Controller
     {
         $room = Room::findOrFail($id);
         $room->delete();
-        return redirect()->route('room.index')->with('success', 'Xóa phòng thành công');
+
+        return redirect()->route('room.index')->with('success', 'xóa phòng thành công');
+
     }
 
     public function trash()

@@ -53,7 +53,6 @@ class RegisterController extends Controller
             'email' => ['required', 'string', 'email', 'max:100', 'unique:users'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
             'phone' => ['required', 'numeric', 'regex:/^\d{10}$/'],
-            'cccd' => ['required', 'numeric', 'regex:/^\d{12}$/'],
         ], [
             // Name
             'name.required' => 'Vui lòng nhập tên!',
@@ -78,11 +77,6 @@ class RegisterController extends Controller
             'phone.required' => 'Vui lòng nhập số điện thoại!',
             'phone.numeric' => 'Số điện thoại phải là số!',
             'phone.regex' => 'Số điện thoại phải gồm 10 số!',
-
-            // CCCD
-            'cccd.required' => 'Vui lòng nhập số CCCD!',
-            'cccd.numeric' => 'CCCD phải là số!',
-            'cccd.regex' => 'CCCD phải gồm 12 chữ số!',
         ]);
     }
 
@@ -99,7 +93,6 @@ class RegisterController extends Controller
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
             'phone' => $data['phone'],
-            'cccd' => $data['cccd'],
         ]);
     }
 }
