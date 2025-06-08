@@ -47,6 +47,7 @@ class RoomController extends Controller
             'image_room' => 'required|array|min:1',
             'image_room.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'amenities' => 'required|array',
+            'amenities.*' => 'integer|exists:amenities,id',
         ], [
             'room_type_id.required' => 'Vui lòng chọn loại phòng.',
             'room_type_id.exists' => 'Loại phòng không hợp lệ.',
@@ -66,7 +67,8 @@ class RoomController extends Controller
             'image_room.*.image' => 'Tất cả file phải là hình ảnh.',
             'image_room.*.mimes' => 'Ảnh phải thuộc định dạng jpeg, png, jpg, gif, webp.',
             'image_room.*.max' => 'Kích thước ảnh không vượt quá 2MB.',
-            'amenities.required' => 'Vui lòng chọn tiện ích.',
+            'amenities.required' => 'Vui lòng chọn ít nhất một tiện ích.',
+            'amenities.*.exists' => 'Tiện ích không hợp lệ.',
         ]);
 
         try {
@@ -78,22 +80,23 @@ class RoomController extends Controller
                 'max_people' => $request->max_people,
                 'description' => $request->description,
                 'status' => $request->status,
-                'amenities' => json_encode($request->amenities),
             ]);
 
-            $room = Room::create([
-                'room_type_id' => $request->room_type_id,
-                'title' => $request->title,
-                'price' => $request->price,
-                'max_people' => $request->max_people,
-                'description' => $request->description,
-                'status' => $request->status,
-                'amenities' => json_encode($request->amenities),
-            ]);
+            // Upload & lưu ảnh vào bảng room_images
+            if ($request->hasFile('image_room')) {
+                foreach ($request->file('image_room') as $key => $file) {
+                    $path = $file->store('rooms/image_room', 'public');
 
+                    RoomImage::create([
+                        'room_id' => $room->id,
+                        'image_path' => $path,
+                        'order' => $key + 1,
+                    ]);
+                }
+            }
             return redirect()->route('room.index')->with('success', 'Thêm phòng thành công');
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Có lỗi xảy ra khi thêm phòng: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Thêm phòng thất bại');
         }
     }
 
@@ -198,7 +201,7 @@ class RoomController extends Controller
 
             return redirect()->route('room.index')->with('success', 'Cập nhật phòng thành công');
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Có lỗi xảy ra khi cập nhật phòng: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Sửa thất bại');
         }
     }
 
@@ -209,7 +212,7 @@ class RoomController extends Controller
     {
         $room = Room::findOrFail($id);
         $room->delete();
-        return redirect()->route('room.index')->with('success', 'xóa phòng thành công');
+        return redirect()->route('room.index')->with('success', 'Xóa phòng thành công');
     }
 
     public function trash()

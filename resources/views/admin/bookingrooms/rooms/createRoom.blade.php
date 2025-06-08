@@ -56,6 +56,9 @@
             border-color: #007bff;
             background-color: #eaf4ff;
         }
+        .invalid-feedback {
+            display: block !important;
+        }
     </style>
 @endpush
 
@@ -181,6 +184,9 @@
                                         </label>
                                     </div>
                                 @endforeach
+                                @error('amenities')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
                             </div>
 
                             <div class="row mt-4">
