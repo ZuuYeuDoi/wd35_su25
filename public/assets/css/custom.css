@@ -1,1 +1,6 @@
 /* Add here all your CSS customizations */
+.service-link {
+    color: #000 !important;
+    font-weight: bold;
+    text-decoration: none;
+}
