@@ -6,6 +6,59 @@
             padding: 0px !important;
             border: none;
         }
+
+        .amenitie_room {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .amenitie_card {
+            position: relative;
+            width: 120px;
+        }
+
+        .amenitie_card input[type="checkbox"] {
+            display: none;
+        }
+
+        .amenitie_card label {
+            display: block;
+            cursor: pointer;
+            border: 2px solid transparent;
+            padding: 8px;
+            border-radius: 8px;
+            transition: 0.3s;
+            text-align: center;
+        }
+
+        .amenitie_card label:hover {
+            background-color: #f9f9f9;
+        }
+
+        .amenitie_card img {
+            width: 100%;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 6px;
+        }
+
+        .amenitie_title {
+            margin-top: 6px;
+            font-size: 14px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Hiệu ứng chọn */
+        .amenitie_card input[type="checkbox"]:checked+label {
+            border-color: #007bff;
+            background-color: #eaf4ff;
+        }
+        .invalid-feedback {
+            display: block !important;
+        }
     </style>
 @endpush
 
@@ -21,6 +74,7 @@
                         <form action="{{ route('room.store') }}" method="POST" enctype="multipart/form-data">
                             @csrf
                             <div class="row">
+                                <h3>Thông tin phòng</h3>
                                 <div class="col-md-6">
                                     <div class="form-group mb-4">
                                         <label for="room_type_id" class="form-label">Loại phòng <span
@@ -66,7 +120,7 @@
                                     </div>
 
                                     <div class="form-group mb-4">
-                                        <label for="max_people" class="form-label">Số người tối đa <span
+                                        <label for="max_people" class="form-label">Số giường<span
                                                 class="text-danger">*</span></label>
                                         <input type="number" name="max_people" id="max_people"
                                             class="form-control @error('max_people') is-invalid @enderror"
@@ -81,19 +135,9 @@
                                     <div class="form-group mb-4">
                                         <label for="image_room" class="form-label">Hình ảnh phòng <span
                                                 class="text-danger">*</span></label>
-                                        <input type="file" name="image_room" id="image_room"
-                                            class="form-control @error('image_room') is-invalid @enderror">
+                                        <input type="file" name="image_room[]" id="image_room"
+                                            class="form-control @error('image_room') is-invalid @enderror" multiple>
                                         @error('image_room')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-
-                                    <div class="form-group mb-4">
-                                        <label for="thumbnail" class="form-label">Ảnh thumbnail <span
-                                                class="text-danger">*</span></label>
-                                        <input type="file" name="thumbnail" id="thumbnail"
-                                            class="form-control @error('thumbnail') is-invalid @enderror">
-                                        @error('thumbnail')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
                                     </div>
@@ -123,6 +167,26 @@
                                         @enderror
                                     </div>
                                 </div>
+                            </div>
+                            <div class="row mt-4">
+                                <h3>Danh sách tiện ích</h3>
+                                @foreach ($amenities as $item)
+                                    <div class="amenitie_card">
+                                        <input type="checkbox" id="amenity_{{ $item->id }}" name="amenities[]"
+                                            value="{{ $item->id }}">
+                                        <label for="amenity_{{ $item->id }}">
+                                            <div class="amenitie_img">
+                                                <img src="{{ asset('storage/' . $item->image) }}" class="img-thumbnail">
+                                            </div>
+                                            <div class="amenitie_title text-truncate" title="{{ $item->name }}">
+                                                {{ $item->name }}
+                                            </div>
+                                        </label>
+                                    </div>
+                                @endforeach
+                                @error('amenities')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
                             </div>
 
                             <div class="row mt-4">

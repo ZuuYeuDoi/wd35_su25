@@ -1,9 +1,9 @@
 @extends('layouts.admin')
-@section('title1', 'Danh sách phòng')
+@section('title1', 'Danh sách tiện ích')
 @section('content')
     <section role="main" class="content-body">
         <header class="page-header">
-            <h2 class="font-weight-bold text-6">Danh sách phòng</h2>
+            <h2 class="font-weight-bold text-6">Danh sách tiên ích </h2>
         </header>
         <div class="row">
             <div class="col">
@@ -13,39 +13,14 @@
                             <div class="datatable-header">
                                 <div class="row align-items-center mb-3">
                                     <div class="col-12 col-lg-auto mb-3 mb-lg-0">
-                                        <a href="{{route('room.create')}}"><button class="btn btn-primary">Thêm phòng</button></a>
-                                        <a href="{{route('room.trash')}}"><button class="btn btn-warning">Thùng rác</button></a>
-                                    </div>
-                                    <div class="col-8 col-lg-auto ms-auto ml-auto mb-3 mb-lg-0">
-                                        <div class="d-flex align-items-lg-center flex-column flex-lg-row">
-                                            <label class="ws-nowrap me-3 mb-0">Lọc theo:</label>
-                                            <select class="form-control select-style-1 filter-by" name="filter-by">
-                                                <option value="all" selected>Tất cả</option>
-                                                <option value="1">Mã phòng</option>
-                                                <option value="2">Tên phòng</option>
-                                                <option value="3">Loại phòng</option>
-                                                <option value="4">Số giường</option>
-                                                <option value="5">Trạng thái</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="col-4 col-lg-auto ps-lg-1 mb-3 mb-lg-0">
-                                        <div class="d-flex align-items-lg-center flex-column flex-lg-row">
-                                            <label class="ws-nowrap me-3 mb-0">Hiển thị:</label>
-                                            <select class="form-control select-style-1 results-per-page"
-                                                name="results-per-page">
-                                                <option value="12" selected>12</option>
-                                                <option value="24">24</option>
-                                                <option value="36">36</option>
-                                                <option value="100">100</option>
-                                            </select>
-                                        </div>
+                                        <a href="{{route('amenitie.create')}}"><button class="btn btn-primary">Thêm Tiện ích</button></a>
+                                        <a href="{{route('amenitie.trash')}}"><button class="btn btn-warning">Thùng rác</button></a>
                                     </div>
                                     <div class="col-12 col-lg-auto ps-lg-1">
                                         <div class="search search-style-1 search-style-1-lg mx-lg-auto">
                                             <div class="input-group">
                                                 <input type="text" class="search-term form-control" name="search-term"
-                                                    id="search-term" placeholder="Tìm kiếm phòng">
+                                                    id="search-term" placeholder="Tìm kiếm tiện ích">
                                                 <button class="btn btn-default" type="submit"><i
                                                         class="bx bx-search"></i></button>
                                             </div>
@@ -60,44 +35,39 @@
                                         <th width="3%"><input type="checkbox" name="select-all"
                                                 class="select-all checkbox-style-1 p-relative top-2" value="" /></th>
                                         <th >ID</th>
-                                        <th >Tên phòng</th>
-                                        <th >Loại phòng</th>
-                                        <th >Hình ảnh phòng</th>
-                                        <th >Giá phòng</th>
-                                        <th >Số người tối đa</th>
-                                        <th >Trạng thái</th>
+                                        <th >Tên tiện ích </th>
+                                        <th >Mô tả </th>
+                                        <th >Hình ảnh</th>
+                                        <th >Trạng thái </th>
                                         <th>Ngày tạo</th>
                                         <th>Ngày cập nhật</th>
                                         <th>Thao tác</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach($rooms as $room)
+                                    @foreach($utilities  as $utility)
                                     <tr>
                                         <td><input type="checkbox" name="checkboxRow1" class="checkbox-style-1 p-relative top-2" /></td>
-                                        <td>{{$room->id}}</td>
-                                        <td>{{$room->title}}</td>
-                                        <td>{{$room->roomType->name ?? 'chưa có'}}</td>
+                                        <td>{{$utility->id}}</td>
+                                        <td>{{$utility->name}}</td>
+                                        <td>{{ $utility->description }}</td>
                                         <td>
-                                            @if($room->image_room)
-                                                <img src="{{ asset('storage/' . $room->image_room) }}" alt="{{ $room->title }}" width="80">
+                                            @if($utility->image)
+                                                <img src="{{ asset('storage/' . $utility->image) }}" alt="{{ $utility->name }}" width="80">
                                             @endif
                                         </td>
-                                        <td>{{ number_format($room->price) }} VNĐ</td>
-                                        <td>{{$room->max_people}}</td>
                                         <td>
-                                            @if($room->status == 1)
+                                            @if($utility->status == 1)
                                                 <span class="badge bg-success">Hoạt động</span>
                                             @else
                                                 <span class="badge bg-secondary">Không hoạt động</span>
                                             @endif
                                         </td>
-                                        <td>{{ $room->created_at->format('d/m/y ') }}</td>
-                                        <td>{{ $room->updated_at->format('d/m/y ') }}</td>
+                                        <td>{{ $utility->created_at->format('d/m/y ') }}</td>
+                                        <td>{{ $utility->updated_at->format('d/m/y ') }}</td>
                                         <td>
-                                            <a href="{{ route('room.show', $room->id) }}" class="btn btn-sm btn-info">Chi tiết</a>
-                                            <a href="{{ route('room.edit', $room->id) }}" class="btn btn-sm btn-warning">Sửa</a>
-                                            <form action="{{ route('room.destroy', $room->id) }}" method="POST" onsubmit="return confirm('Bạn có chắc muốn xóa?')">
+                                            <a href="{{ route('amenitie.edit', $utility->id) }}" class="btn btn-sm btn-warning">Sửa</a>
+                                            <form action="{{ route('amenitie.destroy', $utility->id) }}" method="POST" onsubmit="return confirm('Bạn có chắc muốn xóa?')">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="btn btn-danger">Xóa</button>

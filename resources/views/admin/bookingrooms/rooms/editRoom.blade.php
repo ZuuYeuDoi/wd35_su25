@@ -7,21 +7,73 @@
             border: none;
         }
 
-        .image-room {
-            display: flex;
-            gap: 15px;
-            align-items: flex-end;
-        }
+
 
         .img-thumbnail {
-            width: 170px;
-            height: 120px;
+            height: 80px;
         }
 
         .img-thumbnail img {
             width: 100%;
             height: 100%;
+            object-fit: scale-down;
+        }
+
+        .thumbnail-room {
+            display: grid;
+            gap: 5px;
+            grid-template-columns: repeat(4, 120px);
+        }
+
+
+        .amenitie_room {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .amenitie_card {
+            position: relative;
+            width: 120px;
+        }
+
+        .amenitie_card input[type="checkbox"] {
+            display: none;
+        }
+
+        .amenitie_card label {
+            display: block;
+            cursor: pointer;
+            border: 2px solid transparent;
+            padding: 8px;
+            border-radius: 8px;
+            transition: 0.3s;
+            text-align: center;
+        }
+
+        .amenitie_card label:hover {
+            background-color: #f9f9f9;
+        }
+
+        .amenitie_card img {
+            width: 100%;
+            height: 80px;
             object-fit: cover;
+            border-radius: 6px;
+        }
+
+        .amenitie_title {
+            margin-top: 6px;
+            font-size: 14px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Hiệu ứng chọn */
+        .amenitie_card input[type="checkbox"]:checked+label {
+            border-color: #007bff;
+            background-color: #eaf4ff;
         }
     </style>
 @endpush
@@ -113,41 +165,24 @@
 
                                 <div class="col-md-6">
                                     <div class="form-group mb-4  image-room">
-                                        @if ($room->image_room)
-                                            <div class=" img-thumbnail">
-                                                <img src="{{ asset('storage/' . $room->image_room) }}" alt="Room Image"
-                                                    class="">
-                                            </div>
-                                        @endif
+                                        <div class="thumbnail-room">
+                                            @foreach ($room->images_room as $value)
+                                                <div class="img-thumbnail">
+                                                    <img src="{{ asset('storage/' . $value->image_path) }}"
+                                                        alt="Room Image" class="">
+                                                </div>
+                                            @endforeach
+                                        </div>
                                         <div class="">
                                             <label for="image_room" class="form-label">Hình ảnh phòng</label>
-                                            <input type="file" name="image_room" id="image_room"
-                                                class="form-control @error('image_room') is-invalid @enderror">
+                                            <input type="file" name="image_room[]" id="image_room"
+                                                class="form-control @error('image_room') is-invalid @enderror" multiple>
                                             @error('image_room')
                                                 <div class="invalid-feedback">{{ $message }}</div>
                                             @enderror
                                         </div>
 
                                     </div>
-
-                                    <div class="form-group mb-4  image-room">
-                                        @if ($room->thumbnail)
-                                            <div class="mt-2 img-thumbnail">
-                                                <img src="{{ asset('storage/' . $room->thumbnail) }}" alt="Thumbnail"
-                                                    class="">
-                                            </div>
-                                        @endif
-                                        <div class="">
-                                            <label for="thumbnail" class="form-label">Ảnh thumbnail</label>
-                                            <input type="file" name="thumbnail" id="thumbnail"
-                                                class="form-control @error('thumbnail') is-invalid @enderror">
-                                            @error('thumbnail')
-                                                <div class="invalid-feedback">{{ $message }}</div>
-                                            @enderror
-                                        </div>
-
-                                    </div>
-
                                     <div class="form-group mb-4">
                                         <label for="description" class="form-label">Mô tả <span
                                                 class="text-danger">*</span></label>
@@ -160,6 +195,24 @@
 
 
                                 </div>
+                            </div>
+                            <div class="row mt-4">
+                                <h3>Danh sách tiện ích</h3>
+                                @foreach ($amenities as $item)
+                                    <div class="amenitie_card">
+                                        <input type="checkbox" id="amenity_{{ $item->id }}" name="amenities[]"
+                                            value="{{ $item->id }}"
+                                            {{ is_array($room->amenities) && in_array($item->id, $room->amenities) ? 'checked' : '' }}>
+                                        <label for="amenity_{{ $item->id }}">
+                                            <div class="amenitie_img">
+                                                <img src="{{ asset('storage/' . $item->image) }}" class="img-thumbnail">
+                                            </div>
+                                            <div class="amenitie_title text-truncate" title="{{ $item->name }}">
+                                                {{ $item->name }}
+                                            </div>
+                                        </label>
+                                    </div>
+                                @endforeach
                             </div>
 
                             <div class="row mt-4">

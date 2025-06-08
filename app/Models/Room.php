@@ -18,11 +18,17 @@ class Room extends Model
         'image_room',
         'thumbnail',
         'description',
-        'status'
+        'status',
+        'amenities'
     ];
 
     public function roomType()
     {
         return $this->belongsTo(RoomType::class);
+    }
+
+    public function images_room()
+    {
+        return $this->hasMany(RoomImage::class);
     }
 }

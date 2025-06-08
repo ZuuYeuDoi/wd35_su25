@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AmenitieController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\RoomController;
 use App\Http\Controllers\RoomTypeController;
@@ -71,6 +72,7 @@ Route::prefix('admin')->group(function () {
         Route::delete('room_types/delete/{id}', 'destroy')->name('room_types.destroy');
     });
 
+
     // Quản lý dịch vụ
     Route::controller(ServiceController::class)->group(function () {
         Route::get('services', 'index')->name('services.index');
@@ -85,6 +87,18 @@ Route::prefix('admin')->group(function () {
         Route::post('/{id}/restore', [ServiceController::class, 'restore'])->name('services.restore');
         Route::delete('/{id}/force-delete', [ServiceController::class, 'forceDelete'])->name('services.forceDelete');
     });
+
+    // quan ly tien ich
+    Route::get('/amenities', [AmenitieController::class, 'index'])->name('amenitie.index');
+    Route::get('/amenities/add', [AmenitieController::class, 'create'])->name('amenitie.create');
+    Route::post('/amenities', [AmenitieController::class, 'store'])->name('amenitie.store');
+    Route::get('/amenities/{id}/edit', [AmenitieController::class, 'edit'])->name('amenitie.edit');
+    Route::put('/amenities/{id}', [AmenitieController::class, 'update'])->name('amenitie.update');
+    Route::delete('/amenities/{id}', [AmenitieController::class, 'destroy'])->name('amenitie.destroy');
+    Route::get('/amenities/trash', [AmenitieController::class, 'trash'])->name('amenitie.trash');
+    Route::put('/amenities/{id}/restore', [AmenitieController::class, 'restore'])->name('amenitie.restore');
+    Route::delete('/amenities/{id}/force-delete', [AmenitieController::class, 'forceDelete'])->name('amenitie.forceDelete');
+
 });
 
 
