@@ -49,6 +49,11 @@
                                        </a>
                                    </li>
                                    <li>
+                                       <a class="nav-link" href="{{ route('room.map') }}">
+                                           Sơ đồ Phòng
+                                       </a>
+                                   </li>
+                                   <li>
                                        <a class="nav-link" href="#">
                                            Đơn đặt
                                        </a>
@@ -56,6 +61,19 @@
                                    <li>
                                        <a class="nav-link" href="#">
                                            Dịch vụ Phòng
+                                       </a>
+                                   </li>
+                               </ul>
+                           </li>
+                           <li class="nav-parent">
+                               <a class="nav-link" href="javascript:void(0)">
+                                   <i class="bx bx-cog" aria-hidden="true"></i>
+                                   <span>Quản lý Tiện ích</span>
+                               </a>
+                               <ul class="nav nav-children">
+                                   <li>
+                                       <a class="nav-link" href="{{ route('amenitie.index') }}">
+                                           Danh sách tiện ích
                                        </a>
                                    </li>
                                </ul>
