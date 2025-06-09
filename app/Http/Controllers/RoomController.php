@@ -26,7 +26,7 @@ class RoomController extends Controller
      */
     public function create()
     {
-        $roomTypes = RoomType::get();
+        $roomTypes = RoomType::all();
         $amenities = Amenitie::where('status', 1)->get();
         return view('admin.bookingrooms.rooms.createRoom', compact('roomTypes', 'amenities'));
     }
@@ -47,7 +47,7 @@ class RoomController extends Controller
             'image_room' => 'required|array|min:1',
             'image_room.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'amenities' => 'required|array',
-            'amenities.*' => 'integer|exists:amenities,id',
+            'amenities.*' => 'integer|exists:room_amenities,id',
         ], [
             'room_type_id.required' => 'Vui lòng chọn loại phòng.',
             'room_type_id.exists' => 'Loại phòng không hợp lệ.',
@@ -80,6 +80,7 @@ class RoomController extends Controller
                 'max_people' => $request->max_people,
                 'description' => $request->description,
                 'status' => $request->status,
+                'amenities' => $request->input('amenities')
             ]);
 
             // Upload & lưu ảnh vào bảng room_images
@@ -117,18 +118,16 @@ class RoomController extends Controller
      * Show the form for editing the specified resource.
      */
     public function edit(string $id)
-    {
-        try {
-            $room = Room::with(['roomType', 'images_room'])->findOrFail($id);
-            $roomTypes = RoomType::get();
-            $amenities = Amenitie::where('status', 1)->get();
-            $room->amenities = $room->amenities ? json_decode($room->amenities, true) : [];
-            // dd($room->images_room);
-            return view('admin.bookingrooms.rooms.editRoom', compact('room', 'roomTypes', 'amenities'));
-        } catch (\Throwable $th) {
-            return view('errors.404');
-        }
+{
+    try {
+        $room = Room::with(['roomType', 'images_room'])->findOrFail($id);
+        $roomTypes = RoomType::all();
+        $amenities = Amenitie::where('status', 1)->get();
+        return view('admin.bookingrooms.rooms.editRoom', compact('room', 'roomTypes', 'amenities'));
+    } catch (\Throwable $th) {
+        return view('errors.404');
     }
+}
 
     /**
      * Update the specified resource in storage.
