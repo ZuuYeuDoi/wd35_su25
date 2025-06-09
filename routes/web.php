@@ -49,6 +49,7 @@ Route::get('/admin/info', function () {
 Route::prefix('admin')->group(function () {
     Route::controller(RoomController::class)->group(function () {
         Route::get('rooms', 'index')->name('room.index');
+        Route::get('rooms/map', 'map')->name('room.map');
         Route::get('rooms/add', 'create')->name('room.create');
         Route::post('rooms/store', 'store')->name('room.store');
         Route::get('rooms/show/{id}', 'show')->name('room.show');

@@ -20,6 +20,19 @@ class RoomController extends Controller
         $rooms = Room::with('roomType')->orderBy('created_at', 'desc')->get();
         return view('admin.bookingrooms.rooms.rooms', compact('rooms'));
     }
+   public function map(Request $request)
+{
+    $startDate = $request->input('start_date');
+    $endDate   = $request->input('end_date');
+     $rooms = Room::with('roomType')
+        ->when($startDate && $endDate, function ($query) use ($startDate, $endDate) {
+            return $query->whereBetween('created_at', [$startDate, $endDate]);
+        })
+        ->get();
+    return view('admin.bookingrooms.rooms.room-map', compact('rooms', 'startDate', 'endDate'));
+}
+
+
 
     /**
      * Show the form for creating a new resource.
