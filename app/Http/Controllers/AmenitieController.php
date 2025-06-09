@@ -10,13 +10,14 @@ class AmenitieController extends Controller
 {
     public function index()
     {
-        $utilities = Amenitie::orderByDesc('created_at')->get(); 
-        return view('admin.bookingrooms.Amenities.index', compact('utilities'));
+        $amenities = Amenitie::orderByDesc('created_at')->get(); 
+        return view('admin.bookingrooms.Amenities.index', compact('amenities'));
     }
 
     public function create()
     {
-        return view('admin.bookingrooms.Amenities.create');
+        $amenities = Amenitie::whereNull('deleted_at')->where('status', 1)->get();
+        return view('admin.bookingrooms.Amenities.create',compact('amenities'));
     }
 
     public function store(Request $request)

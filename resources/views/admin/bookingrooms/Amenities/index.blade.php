@@ -45,29 +45,29 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach($utilities  as $utility)
+                                    @foreach($amenities  as $item)
                                     <tr>
                                         <td><input type="checkbox" name="checkboxRow1" class="checkbox-style-1 p-relative top-2" /></td>
-                                        <td>{{$utility->id}}</td>
-                                        <td>{{$utility->name}}</td>
-                                        <td>{{ $utility->description }}</td>
+                                        <td>{{$item->id}}</td>
+                                        <td>{{$item->name}}</td>
+                                        <td>{{ $item->description }}</td>
                                         <td>
-                                            @if($utility->image)
-                                                <img src="{{ asset('storage/' . $utility->image) }}" alt="{{ $utility->name }}" width="80">
+                                            @if($item->image)
+                                                <img src="{{ asset('storage/' . $item->image) }}" alt="{{ $item->name }}" width="80">
                                             @endif
                                         </td>
                                         <td>
-                                            @if($utility->status == 1)
+                                            @if($item->status == 1)
                                                 <span class="badge bg-success">Hoạt động</span>
                                             @else
                                                 <span class="badge bg-secondary">Không hoạt động</span>
                                             @endif
                                         </td>
-                                        <td>{{ $utility->created_at->format('d/m/y ') }}</td>
-                                        <td>{{ $utility->updated_at->format('d/m/y ') }}</td>
+                                        <td>{{ $item->created_at->format('d/m/y ') }}</td>
+                                        <td>{{ $item->updated_at->format('d/m/y ') }}</td>
                                         <td>
-                                            <a href="{{ route('amenitie.edit', $utility->id) }}" class="btn btn-sm btn-warning">Sửa</a>
-                                            <form action="{{ route('amenitie.destroy', $utility->id) }}" method="POST" onsubmit="return confirm('Bạn có chắc muốn xóa?')">
+                                            <a href="{{ route('amenitie.edit', $item->id) }}" class="btn btn-sm btn-warning">Sửa</a>
+                                            <form action="{{ route('amenitie.destroy', $item->id) }}" method="POST" onsubmit="return confirm('Bạn có chắc muốn xóa?')">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="btn btn-danger">Xóa</button>

@@ -1,17 +1,80 @@
 @extends('layouts.admin')
 @section('title1', 'Thêm loại phòng')
+@push('css')
+    <style>
+        .form-group+.form-group {
+            padding: 0px !important;
+            border: none;
+        }
+
+        .amenitie_room {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .amenitie_card {
+            position: relative;
+            width: 120px;
+        }
+
+        .amenitie_card input[type="checkbox"] {
+            display: none;
+        }
+
+        .amenitie_card label {
+            display: block;
+            cursor: pointer;
+            border: 2px solid transparent;
+            padding: 8px;
+            border-radius: 8px;
+            transition: 0.3s;
+            text-align: center;
+        }
+
+        .amenitie_card label:hover {
+            background-color: #f9f9f9;
+        }
+
+        .amenitie_card img {
+            width: 100%;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 6px;
+        }
+
+        .amenitie_title {
+            margin-top: 6px;
+            font-size: 14px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Hiệu ứng chọn */
+        .amenitie_card input[type="checkbox"]:checked+label {
+            border-color: #007bff;
+            background-color: #eaf4ff;
+        }
+        .invalid-feedback {
+            display: block !important;
+        }
+    </style>
+@endpush
 @section('content')
 <section role="main" class="content-body">
     <header class="page-header">
         <h2 class="font-weight-bold text-6">Thêm loại phòng</h2>
     </header>
-    <div class="row">
-        <div class="col-lg-6">
-            <div class="card card-modern">
-                <div class="card-body">
-                    <form action="{{ route('room_types.store') }}" method="POST" enctype="multipart/form-data">
-                        @csrf
+    <div class="col-lg-12">
+    <div class="card card-modern">
+        <div class="card-body">
+            <form action="{{ route('room_types.store') }}" method="POST" enctype="multipart/form-data">
+                @csrf
 
+                <div class="row">
+                    <!-- Cột trái: thông tin loại phòng -->
+                    <div class="col-md-6">
                         <div class="mb-3">
                             <label for="name" class="form-label">Tên loại phòng</label>
                             <input type="text" name="name" class="form-control" value="{{ old('name') }}" required>
@@ -31,15 +94,41 @@
                             <label for="image" class="form-label">Hình ảnh đại diện</label>
                             <input type="file" name="image" class="form-control" accept="image/*">
                         </div>
+                    </div>
 
-
-                        <button type="submit" class="btn btn-primary">Thêm mới</button>
-                        <a href="{{ route('room_types.index') }}" class="btn btn-secondary">Quay lại</a>
-                    </form>
+                    <!-- Cột phải: tiện ích -->
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <h5 class="mb-3">Danh sách tiện ích</h5>
+                            <div class="amenitie_room">
+                                @foreach ($amenities as $item)
+                                    <div class="amenitie_card">
+                                        <input type="checkbox" id="amenity_{{ $item->id }}" name="amenities[]" value="{{ $item->id }}">
+                                        <label for="amenity_{{ $item->id }}">
+                                            <div class="amenitie_img">
+                                                <img src="{{ asset('storage/' . $item->image) }}" class="img-thumbnail">
+                                            </div>
+                                            <div class="amenitie_title text-truncate" title="{{ $item->name }}">
+                                                {{ $item->name }}
+                                            </div>
+                                        </label>
+                                    </div>
+                                @endforeach
+                            </div>
+                            @error('amenities')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
                 </div>
-            </div>
+
+                <button type="submit" class="btn btn-primary">Thêm mới</button>
+                <a href="{{ route('room_types.index') }}" class="btn btn-secondary">Quay lại</a>
+            </form>
         </div>
     </div>
+</div>
+
 </section>
 @endsection
 

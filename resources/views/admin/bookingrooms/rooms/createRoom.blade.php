@@ -61,6 +61,37 @@
         }
     </style>
 @endpush
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const roomTypeSelect = document.getElementById('room_type_id');
+        const priceInput = document.getElementById('price');
+        const amenityCheckboxes = document.querySelectorAll('input[name="amenities[]"]');
+
+        roomTypeSelect.addEventListener('change', function () {
+            const selectedId = parseInt(this.value);
+            const selectedRoomType = roomTypesData.find(rt => rt.id === selectedId);
+
+            if (selectedRoomType) {
+                // Gán giá phòng
+                priceInput.value = selectedRoomType.room_type_price;
+
+                // Reset tất cả tiện ích
+                amenityCheckboxes.forEach(cb => cb.checked = false);
+
+                // Check các tiện ích từ loại phòng
+                if (selectedRoomType.amenities && Array.isArray(selectedRoomType.amenities)) {
+                    selectedRoomType.amenities.forEach(id => {
+                        const cb = document.querySelector(`input[name="amenities[]"][value="${id}"]`);
+                        if (cb) cb.checked = true;
+                    });
+                }
+            }
+        });
+    });
+</script>
+@section('script')
+
+@endsection
 
 @section('content')
     <section role="main" class="content-body">
@@ -206,3 +237,6 @@
         </div>
     </section>
 @endsection
+<script>
+    const roomTypesData = @json($roomTypes);
+</script>

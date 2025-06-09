@@ -36,6 +36,7 @@
                                     <th>Loại (type)</th>
                                     <th>Giá mặc định</th>
                                     <th>Hình ảnh</th>
+                                    <th>Tiện ích</th>
                                     <th>Ngày tạo</th>
                                     <th>Ngày cập nhật</th>
                                     <th>Thao tác</th>
@@ -55,6 +56,24 @@
                                             <span class="text-muted">Chưa có</span>
                                         @endif
                                     </td>
+                                    <td>
+                                        @if(!empty($type->amenities))
+                                            <ul class="list-unstyled mb-0">
+                                                @foreach($type->amenities as $amenityId)
+                                                    @php
+                                                        $amenity = \App\Models\Amenitie::find($amenityId);
+                                                    @endphp
+                                                    @if($amenity)
+                                                        <li>{{ $amenity->name }}</li>
+                                                    @endif
+                                                @endforeach
+                                            </ul>
+                                            
+                                        @else
+                                            <span class="text-muted">Không có</span>
+                                        @endif
+                                    </td>
+
                                     <td>{{ $type->created_at->format('d/m/Y') }}</td>
                                     <td>{{ $type->updated_at->format('d/m/Y') }}</td>
                                     <td>

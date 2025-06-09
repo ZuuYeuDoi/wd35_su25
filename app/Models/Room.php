@@ -22,6 +22,10 @@ class Room extends Model
         'amenities'
     ];
 
+    protected $casts = [
+    'amenities' => 'array',
+    ];
+
     public function roomType()
     {
         return $this->belongsTo(RoomType::class);

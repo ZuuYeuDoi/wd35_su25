@@ -15,5 +15,11 @@ class RoomType extends Model
         'name',
         'room_type_price',
         'image',
+        'amenities',
     ];
+
+    protected $casts = [
+    'amenities' => 'array',
+    ];
+
 }
