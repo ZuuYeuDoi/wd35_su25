@@ -151,13 +151,30 @@
                                     </div>
 
                                     <div class="form-group mb-4">
-                                        <label for="max_people" class="form-label">Số giường<span
-                                                class="text-danger">*</span></label>
-                                        <input type="number" name="max_people" id="max_people"
-                                            class="form-control @error('max_people') is-invalid @enderror"
-                                            value="{{ old('max_people') }}">
+                                        <label class="form-label">Loại phòng <span class="text-danger">*</span></label>
+
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="max_people" id="single" value="1" {{ old('max_people') == '1' ? 'checked' : '' }}>
+                                            <label class="form-check-label" for="single">Single Bedroom</label>
+                                        </div>
+
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="max_people" id="twin" value="3" {{ old('max_people') == '3' ? 'checked' : '' }}>
+                                            <label class="form-check-label" for="twin">Twin Bedroom</label>
+                                        </div>
+
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="max_people" id="double" value="3" {{ old('max_people') == '3' ? 'checked' : '' }}>
+                                            <label class="form-check-label" for="double">Double Bedroom</label>
+                                        </div>
+
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="max_people" id="triple" value="4" {{ old('max_people') == '4' ? 'checked' : '' }}>
+                                            <label class="form-check-label" for="triple">Triple Bedroom</label>
+                                        </div>
+
                                         @error('max_people')
-                                            <div class="invalid-feedback">{{ $message }}</div>
+                                            <div class="invalid-feedback d-block">{{ $message }}</div>
                                         @enderror
                                     </div>
                                 </div>

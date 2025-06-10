@@ -80,5 +80,26 @@
             </div>
         </div>
     </div>
+    <!-- Tiện ích -->
+<div class="card card-modern shadow-sm mt-4">
+    <div class="card-body">
+        <h5 class="mb-3">Tiện ích của phòng</h5>
+
+        @if($amenityList->isEmpty())
+            <div class="text-muted">Không có tiện ích nào được chọn cho phòng này.</div>
+        @else
+            <div class="row">
+                @foreach($amenityList as $amenity)
+                    <div class="col-6 col-md-4 col-lg-3 mb-3 text-center">
+                        <img src="{{ asset('storage/' . $amenity->image) }}" alt="{{ $amenity->name }}"
+                             class="img-thumbnail mb-1" style="width: 80px; height: 80px; object-fit: cover;">
+                        <div class="small fw-semibold">{{ $amenity->name }}</div>
+                    </div>
+                @endforeach
+            </div>
+        @endif
+    </div>
+</div>
+
 </section>
 @endsection

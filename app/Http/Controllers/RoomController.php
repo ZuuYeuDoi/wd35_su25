@@ -9,6 +9,7 @@ use App\Models\RoomType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
+use Carbon\Carbon;
 
 class RoomController extends Controller
 {
@@ -32,6 +33,32 @@ class RoomController extends Controller
     return view('admin.bookingrooms.rooms.room-map', compact('rooms', 'startDate', 'endDate'));
 }
 
+
+private function allocateRooms($rooms, $peopleNeeded)
+{
+    $allocatedRooms = [];
+    $remainingPeople = $peopleNeeded;
+
+    // Sắp xếp phòng giảm dần theo sức chứa
+    $sortedRooms = $rooms->sortByDesc('max_people');
+
+    foreach ($sortedRooms as $room) {
+        if ($remainingPeople <= 0) break;
+
+        $useThisRoom = min($room->max_people, $remainingPeople);
+        $allocatedRooms[] = [
+            'room' => $room,
+            'used_slots' => $useThisRoom
+        ];
+
+        $remainingPeople -= $useThisRoom;
+    }
+
+    return [
+        'allocated' => $allocatedRooms,
+        'enough' => $remainingPeople <= 0
+    ];
+}
 
 
     /**
@@ -121,7 +148,12 @@ class RoomController extends Controller
     {
         try {
             $room = Room::with('roomType')->findOrFail($id);
-            return view('admin.bookingrooms.rooms.showRoom', compact('room'));
+            //  $amenityList = Amenitie::whereIn('id', $room->amenities ?? [])->get();
+            $amenityList = Amenitie::whereIn('id', (array) $room->amenities)->get();
+
+            // dd($amenityList);
+
+            return view('admin.bookingrooms.rooms.showRoom', compact('room', 'amenityList'));
         } catch (\Throwable $th) {
             return view('errors.404');
         }
@@ -187,7 +219,7 @@ class RoomController extends Controller
                 'max_people' => $request->max_people,
                 'description' => $request->description,
                 'status' => $request->status,
-                'amenities' => json_encode($request->amenities),
+                'amenities' => $request->amenities, 
             ];
 
             // Xử lý upload ảnh phòng mới nếu có
