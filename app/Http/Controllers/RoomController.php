@@ -21,19 +21,68 @@ class RoomController extends Controller
         $rooms = Room::with('roomType')->orderBy('created_at', 'desc')->get();
         return view('admin.bookingrooms.rooms.rooms', compact('rooms'));
     }
-   public function map(Request $request)
+public function map(Request $request)
 {
-    $startDate = $request->input('start_date');
-    $endDate   = $request->input('end_date');
-     $rooms = Room::with('roomType')
-        ->when($startDate && $endDate, function ($query) use ($startDate, $endDate) {
-            return $query->whereBetween('created_at', [$startDate, $endDate]);
-        })
-        ->get();
-    return view('admin.bookingrooms.rooms.room-map', compact('rooms', 'startDate', 'endDate'));
+    $checkIn   = $request->input('check_in');
+    $checkOut  = $request->input('check_out');
+    $stayType  = $request->input('stay_type', 'overnight');
+    $adults    = (int) $request->input('adults', 0);
+    $children  = (int) $request->input('children', 0);
+    $childAges = $request->input('children_ages', []);
+
+    // Tính số giường cần
+    $requiredBeds = $adults;
+    foreach ($childAges as $age) {
+        $age = (int) $age;
+        if ($age >= 12) {
+            $requiredBeds += 1; 
+        } elseif ($age >= 1) {
+            $requiredBeds += 0.5; 
+        }
+
+    }
+
+    $query = Room::with('roomType');
+
+
+    if ($checkIn) {
+        try {
+            $startDate = Carbon::createFromFormat('d/m/Y', $checkIn)->startOfDay();
+
+            if ($stayType === 'dayuse') {
+
+                $query->whereDate('created_at', $startDate);
+            } elseif ($checkOut) {
+                $endDate = Carbon::createFromFormat('d/m/Y', $checkOut)->endOfDay();
+
+
+                $query->where(function ($q) use ($startDate, $endDate) {
+                    $q->whereBetween('created_at', [$startDate, $endDate])
+                      ->orWhereBetween('updated_at', [$startDate, $endDate]);
+                });
+            }
+        } catch (\Exception $e) {
+
+        }
+    }
+
+
+    if ($requiredBeds > 0) {
+        $query->where('max_people', '>=', ceil($requiredBeds));
+    }
+
+    $rooms = $query->get();
+
+    return view('admin.bookingrooms.rooms.room-map', [
+        'rooms' => $rooms,
+        'startDate' => $checkIn,
+        'endDate' => $checkOut,
+        'adults' => $adults,
+        'children' => $children,
+        'childAges' => $childAges,
+        'stayType' => $stayType
+    ]);
 }
-
-
 private function allocateRooms($rooms, $peopleNeeded)
 {
     $allocatedRooms = [];
