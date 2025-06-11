@@ -7,8 +7,8 @@ use App\Http\Controllers\RoomTypeController;
 use App\Http\Controllers\ServiceController;
 use App\Models\Room;
 use Illuminate\Support\Facades\Auth;
-
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\User\ServiceController as UserServiceController;
 
 
 Route::get('/room', function () {
@@ -33,9 +33,7 @@ Route::get('/product', function () {
 Route::get('/product-detail', function () {
     return view('client.product.detail');
 });
-Route::get('/service', function () {
-    return view('client.service.index');
-});
+
 
 
 
@@ -199,3 +197,10 @@ Route::get('/account/room', function () {
 Auth::routes(['verify' => true]);
 
 Route::get('/', [HomeController::class, 'index']);
+
+
+//Dịch vụ bên User
+Route::get('/services', function () {
+    return view('client.services.index');
+});
+Route::get('/service/detail', [UserServiceController::class, 'detail'])->name('services.detail');
