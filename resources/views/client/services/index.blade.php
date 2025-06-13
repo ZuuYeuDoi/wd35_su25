@@ -5,10 +5,10 @@
     <section class="page-title" style="background-image: url({{ asset('client/images/background/page-title-bg.png') }});">
         <div class="auto-container">
             <div class="title-outer text-center">
-                <h1 class="title">Rooms and Suits</h1>
+                <h1 class="title">Dịch vụ</h1>
                 <ul class="page-breadcrumb">
-                    <li><a href="index.html">Home</a></li>
-                    <li>Rooms and Suits</li>
+                    <li><a href="index.html">Trang chủ</a></li>
+                    <li>Dịch vụ</li>
                 </ul>
             </div>
         </div>
@@ -22,7 +22,7 @@
                 <div class="image-column col-lg-6">
                     <div class="inner-column">
                         <div class="image-box">
-                            <figure class="image overlay-anim wow reveal-right"><img src="{{ asset('client/images/resource/feature2-1.jpg') }}"
+                            <figure class="image overlay-anim wow reveal-right"><img src="{{ asset('client/images/resource/beboingoaitroi.webp') }}"
                                     alt=""></figure>
                         </div>
                     </div>
@@ -31,12 +31,11 @@
                     <div class="inner-column">
                         <div class="content-box">
                             <div class="sec-title">
-                                <span class="sub-title">DISCOVER</span>
-                                <h2>The Restaurant</h2>
-                                <div class="text">With the largest fleet of luxury catamarans, sailing and motor yachts in
-                                    Santorini we guarantee the ultimate sailing experience!</div>
+                                <span class="sub-title">Trải Nghiệm</span>
+                                <h2>Bể Bơi Ngoài Trời</h2>
+                                <div class="text">Thư giãn và tận hưởng không gian mát lành!</div>
                             </div>
-                            <a href="room-details.html" class="theme-btn btn-style-two read-more">READ MORE</a>
+                            <a href="{{ route('services.detail') }}" class="theme-btn btn-style-two read-more">Xem Thêm</a>
                         </div>
                     </div>
                 </div>
@@ -46,19 +45,18 @@
                     <div class="inner-column">
                         <div class="content-box">
                             <div class="sec-title">
-                                <span class="sub-title">EXPERIENCE</span>
-                                <h2>Spa Center</h2>
-                                <div class="text">With the largest fleet of luxury catamarans, sailing and motor yachts in
-                                    Santorini we guarantee the ultimate sailing experience!</div>
+                                <span class="sub-title">Trải Nghiệm</span>
+                                <h2>Chăm Sóc Cơ Thể</h2>
+                                <div class="text">Phục hồi cơ thể với liệu trình trị liệu chuyên nghiệp!</div>
                             </div>
-                            <a href="room-details.html" class="theme-btn btn-style-two read-more">READ MORE</a>
+                            <a href="{{ route('services.detail') }}" class="theme-btn btn-style-two read-more">Xem Thêm</a>
                         </div>
                     </div>
                 </div>
                 <div class="image-column col-lg-6">
                     <div class="inner-column">
                         <div class="image-box">
-                            <figure class="image overlay-anim wow reveal-left"><img src="{{ asset('client/images/resource/feature2-2.jpg') }}"
+                            <figure class="image overlay-anim wow reveal-left"><img src="{{ asset('client/images/resource/spacaocap.jpg') }}"
                                     alt=""></figure>
                         </div>
                     </div>
@@ -77,12 +75,11 @@
                     <div class="inner-column">
                         <div class="content-box">
                             <div class="sec-title">
-                                <span class="sub-title">MODERN</span>
-                                <h2>Fitness Center</h2>
-                                <div class="text">With the largest fleet of luxury catamarans, sailing and motor yachts in
-                                    Santorini we guarantee the ultimate sailing experience!</div>
+                                <span class="sub-title">Trải Nghiệm</span>
+                                <h2>Phòng GYM</h2>
+                                <div class="text">Tập luyện cùng trang thiết bị hiện đại!</div>
                             </div>
-                            <a href="room-details.html" class="theme-btn btn-style-two read-more">READ MORE</a>
+                            <a href="{{ route('services.detail') }}" class="theme-btn btn-style-two read-more">Xem Thêm</a>
                         </div>
                     </div>
                 </div>
