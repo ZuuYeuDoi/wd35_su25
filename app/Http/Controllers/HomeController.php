@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Amenitie;
+use App\Models\Room;
 use Illuminate\Http\Request;
 
 class HomeController extends Controller
@@ -23,6 +25,45 @@ class HomeController extends Controller
      */
     public function index()
     {
-        return view('home');
+        //lấy danh sách phòng
+        $rooms = Room::with(['images_room', 'roomType'])
+            ->where('status', 1)
+            ->orderBy('created_at', 'desc')
+            ->take(6)
+            ->get();
+
+        // Gom tất cả ID tiện ích từ các phòng
+        $amenityIds = $rooms->pluck('amenities') // lấy danh sách các mảng JSON
+            ->filter()                          // bỏ null
+            ->flatten()                         // gộp thành mảng 1 chiều
+            ->unique()                          // bỏ trùng
+            ->toArray();                        // ép thành mảng thuần PHP
+
+        // Lấy toàn bộ tiện ích liên quan
+        $allAmenities = Amenitie::whereIn('id', $amenityIds)->get()->keyBy('id');
+
+        return view('home', compact('rooms', 'allAmenities'));
+    }
+
+    public function indexRoom()
+    {
+        //lấy danh sách phòng
+        $rooms = Room::with(['images_room', 'roomType'])
+            ->where('status', 1)
+            ->orderBy('created_at', 'desc')
+            ->take(6)
+            ->get();
+
+        // Gom tất cả ID tiện ích từ các phòng
+        $amenityIds = $rooms->pluck('amenities') // lấy danh sách các mảng JSON
+            ->filter()                          // bỏ null
+            ->flatten()                         // gộp thành mảng 1 chiều
+            ->unique()                          // bỏ trùng
+            ->toArray();                        // ép thành mảng thuần PHP
+
+        // Lấy toàn bộ tiện ích liên quan
+        $allAmenities = Amenitie::whereIn('id', $amenityIds)->get()->keyBy('id');
+
+        return view('client.room.index', compact('rooms', 'allAmenities'));
     }
 }

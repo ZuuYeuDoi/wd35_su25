@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AmenitieController;
+use App\Http\Controllers\Controller;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\RoomController;
 use App\Http\Controllers\RoomTypeController;
@@ -11,9 +12,14 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\User\ServiceController as UserServiceController;
 
 
-Route::get('/room', function () {
-    return view('client.room.index');
+Route::prefix('/')->group(function () {
+    Route::controller(HomeController::class)->group(function () {
+        Route::get('', 'index')->name('room.index');
+        Route::get('room', 'indexRoom')->name('room.indexRoom');
+    });
 });
+
+
 Route::get('/cart', function () {
     return view('client.cart.index');
 });
@@ -97,7 +103,6 @@ Route::prefix('admin')->group(function () {
     Route::get('/amenities/trash', [AmenitieController::class, 'trash'])->name('amenitie.trash');
     Route::put('/amenities/{id}/restore', [AmenitieController::class, 'restore'])->name('amenitie.restore');
     Route::delete('/amenities/{id}/force-delete', [AmenitieController::class, 'forceDelete'])->name('amenitie.forceDelete');
-
 });
 
 
@@ -195,8 +200,6 @@ Route::get('/account/room', function () {
 });
 
 Auth::routes(['verify' => true]);
-
-Route::get('/', [HomeController::class, 'index']);
 
 
 //Dịch vụ bên User

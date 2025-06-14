@@ -1,5 +1,12 @@
 @extends('client.index')
-
+@push('css')
+    <style>
+        ul.bx-links {
+            color: #fff;
+            font-size: 13px;
+        }
+    </style>
+@endpush
 @section('content')
     <!-- Start main-content -->
     <section class="page-title" style="background-image: url({{ asset('client/images/background/page-title-bg.png') }});">
@@ -20,120 +27,53 @@
         <div class="auto-container">
             <div class="row">
                 <!-- room-block -->
-                <div class="room-block col-lg-6 col-md-6">
-                    <div class="inner-box wow fadeIn">
-                        <div class="image-box">
-                            <figure class="image-2 overlay-anim"><img src="{{ asset('client/images/resource/room-1.jpg') }}"
-                                    alt="">
-                            </figure>
-                        </div>
-                        <div class="content-box">
-                            <h6 class="title"><a href="room-details.html">Junior Suite</a></h6>
-                            <span class="price">150$ / NIGHT</span>
-                        </div>
-                        <div class="box-caption">
-                            <a href="room-details.html" class="book-btn">book now</a>
-                            <ul class="bx-links">
-                                <li><a href="room-details.html"><i class="fa fa-wifi"></i></a></li>
-                                <li><a href="room-details.html"><i class="fa fa-bed"></i></a></li>
-                                <li><a href="room-details.html"><i class="fa fa-bath"></i></a></li>
-                                <li><a href="room-details.html"><i class="fa fa-shower"></i></a></li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-                <!-- room-block -->
-                <div class="room-block col-lg-6 col-md-6">
-                    <div class="inner-box wow fadeIn" data-wow-delay="200ms">
-                        <div class="image-box">
-                            <figure class="image-2 overlay-anim"><img src="{{ asset('client/images/resource/room-2.jpg') }}"
-                                    alt="">
-                            </figure>
-                        </div>
-                        <div class="content-box">
-                            <h6 class="title"><a href="room-details.html">Family Room</a></h6>
-                            <span class="price">200$ / NIGHT</span>
-                        </div>
-                        <div class="box-caption">
-                            <a href="room-details.html" class="book-btn">book now</a>
-                            <ul class="bx-links">
-                                <li><a href="room-details.html"><i class="fa fa-wifi"></i></a></li>
-                                <li><a href="room-details.html"><i class="fa fa-bed"></i></a></li>
-                                <li><a href="room-details.html"><i class="fa fa-bath"></i></a></li>
-                                <li><a href="room-details.html"><i class="fa fa-shower"></i></a></li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-                <!-- room-block -->
-                <div class="room-block col-lg-3 col-md-6">
-                    <div class="inner-box wow fadeIn" data-wow-delay="300ms">
-                        <div class="image-box">
-                            <figure class="image-2 overlay-anim"><img src="{{ asset('client/images/resource/room-3.jpg') }}"
-                                    alt="">
-                            </figure>
-                        </div>
-                        <div class="content-box">
-                            <h6 class="title"><a href="room-details.html">Double Room</a></h6>
-                            <span class="price">250$ / NIGHT</span>
-                        </div>
-                        <div class="box-caption">
-                            <a href="room-details.html" class="book-btn">book now</a>
-                            <ul class="bx-links">
-                                <li><a href="room-details.html"><i class="fa fa-wifi"></i></a></li>
-                                <li><a href="room-details.html"><i class="fa fa-bed"></i></a></li>
-                                <li><a href="room-details.html"><i class="fa fa-bath"></i></a></li>
-                                <li><a href="room-details.html"><i class="fa fa-shower"></i></a></li>
-                            </ul>
+                @foreach ($rooms as $item)
+                    <div class="room-block col-lg-6 col-md-6">
+                        <div class="inner-box wow fadeIn">
+                            <div class="image-box">
+                                @php
+                                    $image = $item->images_room->first();
+                                @endphp
+                                <figure class="image-2 overlay-anim"><img src="{{ asset('storage/' . $image->image_path) }}"
+                                        alt="">
+                                </figure>
+                            </div>
+                            @php
+                                if ($item->max_people == 1) {
+                                    $bed = '1 giường đơn';
+                                } elseif ($item->max_people == 2) {
+                                    $bed = '2 giường đơn';
+                                } elseif ($item->max_people == 3) {
+                                    $bed = '1 giường đôi';
+                                } elseif ($item->max_people == 4) {
+                                    $bed = '1 giường đôi + 1 giường  đơn';
+                                }
+                            @endphp
+                            <div class="content-box">
+                                <h6 class="title"><a href="room-details.html">{{ $item->title }}</a></h6>
+                                <span class="price">{{ $item->roomType->name }} -</span>
+                                <span class="price">{{ number_format($item->price, 0, ',', '.') }} VND / đêm -</span>
+                                <span class="price"><i class="fal fa-bed me-2"></i> {{ $bed }}</span>
+                            </div>
+                            <div class="box-caption">
+                                <a href="room-details.html" class="book-btn">Đặt phòng</a>
+                                <ul class="bx-links">
+                                    @if (!empty($item->amenities) && is_array($item->amenities))
+                                        @foreach ($item->amenities as $amenityId)
+                                            @if ($allAmenities->has($amenityId))
+                                                <li>
+                                                    {{ $allAmenities[$amenityId]->name }}
+                                                </li>
+                                            @endif
+                                        @endforeach
+                                    @else
+                                        <li><em>Không có tiện ích</em></li>
+                                    @endif
+                                </ul>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <!-- room-block -->
-                <div class="room-block col-lg-6 col-md-6">
-                    <div class="inner-box large-style wow fadeIn" data-wow-delay="400ms">
-                        <div class="image-box">
-                            <figure class="image-2 overlay-anim"><img src="{{ asset('client/images/resource/room-4.jpg') }}"
-                                    alt="">
-                            </figure>
-                        </div>
-                        <div class="content-box">
-                            <h6 class="title"><a href="room-details.html">Double Room</a></h6>
-                            <span class="price">250$ / NIGHT</span>
-                        </div>
-                        <div class="box-caption">
-                            <a href="room-details.html" class="book-btn">book now</a>
-                            <ul class="bx-links">
-                                <li><a href="room-details.html"><i class="fa fa-wifi"></i></a></li>
-                                <li><a href="room-details.html"><i class="fa fa-bed"></i></a></li>
-                                <li><a href="room-details.html"><i class="fa fa-bath"></i></a></li>
-                                <li><a href="room-details.html"><i class="fa fa-shower"></i></a></li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-                <!-- room-block -->
-                <div class="room-block col-lg-3 col-md-6">
-                    <div class="inner-box wow fadeIn" data-wow-delay="500ms">
-                        <div class="image-box">
-                            <figure class="image-2 overlay-anim"><img
-                                    src="i{{ asset('client/mages/resource/room-5.jpg') }}" alt="">
-                            </figure>
-                        </div>
-                        <div class="content-box">
-                            <h6 class="title"><a href="room-details.html">Deluxe Room</a></h6>
-                            <span class="price">300$ / NIGHT</span>
-                        </div>
-                        <div class="box-caption">
-                            <a href="room-details.html" class="book-btn">book now</a>
-                            <ul class="bx-links">
-                                <li><a href="room-details.html"><i class="fa fa-wifi"></i></a></li>
-                                <li><a href="room-details.html"><i class="fa fa-bed"></i></a></li>
-                                <li><a href="room-details.html"><i class="fa fa-bath"></i></a></li>
-                                <li><a href="room-details.html"><i class="fa fa-shower"></i></a></li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
+                @endforeach
             </div>
         </div>
     </section>
