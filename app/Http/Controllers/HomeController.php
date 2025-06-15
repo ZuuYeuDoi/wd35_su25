@@ -66,4 +66,23 @@ class HomeController extends Controller
 
         return view('client.room.index', compact('rooms', 'allAmenities'));
     }
+    public function show($id)
+    {
+        $room = Room::with(['images_room', 'roomType'])->findOrFail($id);
+
+        // Lấy danh sách tiện ích của phòng
+        $amenityIds = collect($room->amenities)->filter()->unique()->toArray();
+        $allAmenities = Amenitie::whereIn('id', $amenityIds)->get();
+
+        // Lấy các phòng cùng loại (trừ phòng hiện tại)
+        $relatedRooms = Room::with('images_room')
+            ->where('room_type_id', $room->room_type_id)
+            ->where('id', '!=', $room->id)
+            ->where('status', 1)
+            ->take(3)
+            ->get();
+
+        return view('client.room.detail', compact('room', 'allAmenities', 'relatedRooms'));
+    }
+
 }

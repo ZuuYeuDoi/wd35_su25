@@ -209,10 +209,12 @@
                             @endphp
                             <div class="inner-box d-flex flex-column h-100 w-100">
                                 <div class="image-box">
-                                    <figure class="image mb-0">
-                                        <img src="{{ asset('storage/' . $image->image_path) }}" alt="Room Image"
-                                            class="img-fluid w-100">
+                                     <a href="{{ route('room.detail', ['id' => $item->id]) }}">
+                                    <figure class="image-2 overlay-anim">
+                                        <img src="{{ asset('storage/' . $image->image_path) }}" alt="">
                                     </figure>
+                                </a>
+
                                 </div>
                                 <div class="content-box p-3">
                                     <h4 class="title">{{ $item->title }}</h4>

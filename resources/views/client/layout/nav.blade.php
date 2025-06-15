@@ -5,7 +5,7 @@
             </li>
             <li class="dropdown"><a href="#">Phòng</a>
                 <ul>
-                    <li><a href="page-rooms.html">Danh Sách Phòng</a></li>
+                    <li><a href="{{ route('room.indexRoom') }}">Danh Sách Phòng</a></li>
                     <li><a href="page-rooms-suite.html">Đặt Phòng</a></li>
                 </ul>
             </li>

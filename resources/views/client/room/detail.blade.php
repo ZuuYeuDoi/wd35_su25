@@ -1,234 +1,95 @@
 @extends('client.index')
 
 @section('content')
-    <section class="page-title" style="background-image: url({{ asset('client/images/background/page-title-bg.png') }});">
-        <div class="auto-container">
-            <div class="title-outer text-center">
-                <h1 class="title">Chi tiết phòng</h1>
-                <ul class="page-breadcrumb">
-                    <li><a href="index.html">Trang chủ</a></li>
-                    <li>Chi tết phòng</li>
-                </ul>
-            </div>
+<section class="page-title" style="background-image: url({{ asset('client/images/background/page-title-bg.png') }});">
+    <div class="auto-container">
+        <div class="title-outer text-center">
+            <h1 class="title">{{ $room->title }}</h1>
+            <ul class="page-breadcrumb">
+                <li><a href="{{ route('home') }}">Trang chủ</a></li>
+                <li>Chi tiết phòng</li>
+            </ul>
         </div>
-    </section>
-    <section class="blog-details pt-120 pb-120">
-        <div class="container">
-            <div class="row">
-                <div class="col-xl-8 col-lg-7 product-details rd-page">
-                    <div class="bxslider">
-                        <div class="slider-content">
-                            <figure class="image-box"><a href="{{ asset('client/images/resource/room-1.jpg') }}"
-                                    class="lightbox-image" data-fancybox="gallery"><img
-                                        src="{{ asset('client/images/resource/room-1.jpg') }}" alt=""></a>
+    </div>
+</section>
+
+<section class="blog-details pt-120 pb-120">
+    <div class="container">
+        <div class="row">
+            <!-- LEFT: Thông tin chi tiết -->
+            <div class="col-xl-8 col-lg-7 product-details rd-page">
+                <!-- Hình ảnh -->
+                <div class="bxslider">
+                    @if ($room->images_room->isNotEmpty())
+                        <div class="image-container">
+                            <figure class="image-box">
+                                <a href="{{ asset('storage/' . $room->images_room->first()->image_path) }}" class="lightbox-image" data-fancybox="gallery">
+                                    <img src="{{ asset('storage/' . $room->images_room->first()->image_path) }}" alt="">
+                                </a>
                             </figure>
-                            <div class="slider-pager">
-                                <ul class="thumb-box">
-                                    <li class="mb-0"><a class="active" data-slide-index="0" href="#">
-                                            <figure><img src="{{ asset('client/images/resource/room-1.jpg') }}"
-                                                    alt="">
-                                            </figure>
-                                        </a></li>
-                                    <li class="mb-0"><a data-slide-index="1" href="#">
-                                            <figure><img src="{{ asset('client/images/resource/room-2.jpg') }}"
-                                                    alt="">
-                                            </figure>
-                                        </a></li>
-                                    <li class="mb-0"><a data-slide-index="2" href="#">
-                                            <figure><img src="{{ asset('client/images/resource/room-4.jpg') }}"
-                                                    alt="">
-                                            </figure>
-                                        </a></li>
-                                    <li class="mb-0"><a data-slide-index="3" href="#">
-                                            <figure><img src="{{ asset('client/images/resource/room-2.jpg') }}"
-                                                    alt="">
-                                            </figure>
-                                        </a></li>
-                                </ul>
-                            </div>
                         </div>
-                        <div class="slider-content">
-                            <figure class="image-box"><a href="{{ asset('client/images/resource/room-2.jpg') }}"
-                                    class="lightbox-image" data-fancybox="gallery"><img
-                                        src="{{ asset('client/images/resource/room-2.jpg') }}" alt=""></a>
-                            </figure>
-                            <div class="slider-pager">
-                                <ul class="thumb-box">
-                                    <li class="mb-0"><a class="active" data-slide-index="0" href="#">
-                                            <figure><img src="{{ asset('client/images/resource/room-1.jpg') }}"
-                                                    alt="">
-                                            </figure>
-                                        </a></li>
-                                    <li class="mb-0"><a data-slide-index="1" href="#">
-                                            <figure><img src="{{ asset('client/images/resource/room-2.jpg') }}"
-                                                    alt="">
-                                            </figure>
-                                        </a></li>
-                                    <li class="mb-0"><a data-slide-index="2" href="#">
-                                            <figure><img src="{{ asset('client/images/resource/room-4.jpg') }}"
-                                                    alt="">
-                                            </figure>
-                                        </a></li>
-                                    <li class="mb-0"><a data-slide-index="3" href="#">
-                                            <figure><img src="{{ asset('client/images/resource/room-2.jpg') }}"
-                                                    alt="">
-                                            </figure>
-                                        </a></li>
-                                </ul>
-                            </div>
-                        </div>
-                        <div class="slider-content">
-                            <figure class="image-box"><a href="{{ asset('client/images/resource/room-4.jpg') }}"
-                                    class="lightbox-image" data-fancybox="gallery"><img
-                                        src="{{ asset('client/images/resource/room-4.jpg') }}" alt=""></a>
-                            </figure>
-                            <div class="slider-pager">
-                                <ul class="thumb-box">
-                                    <li class="mb-0"><a class="active" data-slide-index="0" href="#">
-                                            <figure><img src="{{ asset('client/images/resource/room-1.jpg') }}"
-                                                    alt="">
-                                            </figure>
-                                        </a></li>
-                                    <li class="mb-0"><a data-slide-index="1" href="#">
-                                            <figure><img src="{{ asset('client/images/resource/room-2.jpg') }}"
-                                                    alt="">
-                                            </figure>
-                                        </a></li>
-                                    <li class="mb-0"><a data-slide-index="2" href="#">
-                                            <figure><img src="{{ asset('client/images/resource/room-4.jpg') }}"
-                                                    alt="">
-                                            </figure>
-                                        </a></li>
-                                    <li class="mb-0"><a data-slide-index="3" href="#">
-                                            <figure><img src="{{ asset('client/images/resource/room-2.jpg') }}"
-                                                    alt="">
-                                            </figure>
-                                        </a></li>
-                                </ul>
-                            </div>
-                        </div>
-                        <div class="slider-content">
-                            <figure class="image-box"><a href="{{ asset('client/images/resource/room-2.jpg') }}"
-                                    class="lightbox-image" data-fancybox="gallery"><img
-                                        src="{{ asset('client/images/resource/room-2.jpg') }}" alt=""></a>
-                            </figure>
-                            <div class="slider-pager">
-                                <ul class="thumb-box">
-                                    <li class="mb-0"><a class="active" data-slide-index="0" href="#">
-                                            <figure><img src="{{ asset('client/images/resource/room-1.jpg') }}"
-                                                    alt="">
-                                            </figure>
-                                        </a></li>
-                                    <li class="mb-0"><a data-slide-index="1" href="#">
-                                            <figure><img src="{{ asset('client/images/resource/room-2.jpg') }}"
-                                                    alt="">
-                                            </figure>
-                                        </a></li>
-                                    <li class="mb-0"><a data-slide-index="2" href="#">
-                                            <figure><img src="{{ asset('client/images/resource/room-4.jpg') }}"
-                                                    alt="">
-                                            </figure>
-                                        </a></li>
-                                    <li class="mb-0"><a data-slide-index="3" href="#">
-                                            <figure><img src="{{ asset('client/images/resource/room-2.jpg') }}"
-                                                    alt="">
-                                            </figure>
-                                        </a></li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="room-details__left">
-                        <div class="wrapper">
-                            <h3>Mô tả phòng</h3>
-                            <p class="text">Mauris non dignissim purus, ac commodo diam. Donec sit amet lacinia nulla.
-                                Aliquam quis purus in justo pulvinar tempor. Aliquam tellus nulla, sollicitudin at euismod
-                                nec, feugiat at nisi. Quisque vitae odio nec lacus interdum tempus. Phasellus a rhoncus
-                                erat. Vivamus vel eros vitae est aliquet pellentesque vitae et nunc. Sed vitae leo vitae
-                                nisl pellentesque semper.</p>
-                            <div class="row justify-content-center">
-                                <div class="col-xl-12">
-                                    <div class="room-details__content-right mb-40 mt-20">
-                                        <div class="room-details__details-box">
-                                            <div class="row">
-                                                <div class="col-6 col-md-3">
-                                                    <p class="text mb-0">Kích Thước phòng</p>
-                                                    <h6>600Sq</h6>
-                                                </div>
-                                                <div class="col-6 col-md-3">
-                                                    <p class="text mb-0">Loại Phòng</p>
-                                                    <h6>2 giường đơn</h6>
-                                                </div>
-                                                <div class="col-6 col-md-3">
-                                                    <p class="text mb-0">Sô lượng</p>
-                                                    <h6>3 người</h6>
-                                                </div>
-                                                <div class="col-6 col-md-3">
-                                                    <p class="text mb-0">View</p>
-                                                    <h6>Cảnh biển</h6>
-                                                </div>
-                                                <div class="col-6 col-md-3">
-                                                    <p class="text mb-0">Số phòng</p>
-                                                    <h6>302</h6>
-                                                </div>
+                    @endif
+                </div>
+
+                <!-- Mô tả và thông tin -->
+                <div class="room-details__left">
+                    <div class="wrapper">
+                        <h3>Mô tả phòng</h3>
+                        <p class="text">{{ $room->description ?? 'Không có mô tả' }}</p>
+
+                        <div class="row justify-content-center mt-4">
+                            <div class="col-xl-12">
+                                <div class="room-details__content-right mb-40">
+                                    <div class="room-details__details-box">
+                                        <div class="row">
+                                            <div class="col-6 col-md-3">
+                                                <p class="text mb-0">Tên phòng</p>
+                                                <h6>{{ $room->title }}</h6>
+                                            </div>
+                                            <div class="col-6 col-md-3">
+                                                <p class="text mb-0">Loại phòng</p>
+                                                <h6>{{ $room->roomType->name }}</h6>
+                                            </div>
+                                            <div class="col-6 col-md-3">
+                                                <p class="text mb-0">Giá</p>
+                                                <h6>{{ number_format($room->price, 0, ',', '.') }} VND</h6>
+                                            </div>
+                                            <div class="col-6 col-md-3">
+                                                <p class="text mb-0">Số người</p>
+                                                <h6>{{ $room->max_people }}</h6>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="mt-40">
-                            <h4>Tiện nghi phòng</h4>
-                            <div class="row room-facility-list mb-40">
-                                <div class="col-sm-6 col-xl-4">
-                                    <div class="list-one d-flex align-items-center me-sm-4 mb-3">
-                                        <div class="icon text-theme-color1 mr-10 flex-shrink-0"><i
-                                                class="far fa-air-conditioner"></i></div>
-                                        <h6 class="title m-0">Máy lạnh</h6>
-                                    </div>
-                                </div>
-                                <div class="col-sm-6 col-xl-4">
-                                    <div class="list-one d-flex align-items-center me-sm-4 mb-3">
-                                        <div class="icon text-theme-color1 mr-10 flex-shrink-0"><i
-                                                class="fas fa-swimming-pool"></i></div>
-                                        <h6 class="title m-0">Bể bơi</h6>
-                                    </div>
-                                </div>
-                                <div class="col-sm-6 col-xl-4">
-                                    <div class="list-one d-flex align-items-center me-sm-4 mb-3">
-                                        <div class="icon text-theme-color1 mr-10 flex-shrink-0"><i
-                                                class="fas fa-dumbbell"></i></div>
-                                        <h6 class="title m-0">Phòng tập thể dục</h6>
-                                    </div>
-                                </div>
-                                <div class="col-sm-6 col-xl-4">
-                                    <div class="list-one d-flex align-items-center me-sm-4 mb-3">
-                                        <div class="icon text-theme-color1 mr-10 flex-shrink-0"><i
-                                                class="fas fa-parking-circle"></i></div>
-                                        <h6 class="title m-0">Bãi đậu xe</h6>
-                                    </div>
-                                </div>
-                                <div class="col-sm-6 col-xl-4">
-                                    <div class="list-one d-flex align-items-center me-sm-4 mb-3">
-                                        <div class="icon text-theme-color1 mr-10 flex-shrink-0"><i
-                                                class="fas fa-shield-check"></i></div>
-                                        <h6 class="title m-0">Bảo vệ</h6>
-                                    </div>
-                                </div>
-                                <div class="col-sm-6 col-xl-4">
-                                    <div class="list-one d-flex align-items-center me-sm-4">
-                                        <div class="icon text-theme-color1 mr-10 flex-shrink-0"><i
-                                                class="fas fa-child"></i></div>
-                                        <h6 class="title m-0">Sân chơi</h6>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="d-sm-flex align-items-sm-center justify-content-sm-between pt-40 pb-40 border-top">
+                    </div>
+
+                    <!-- Tiện nghi -->
+                    <div class="mt-40">
+    <h4>Tiện nghi phòng</h4>
+    <div class="row room-facility-list mb-40">
+        @forelse ($allAmenities as $amenity)
+            <div class="col-sm-6 col-xl-4">
+                <div class="list-one d-flex align-items-center me-sm-4 mb-3">
+                    <div class="me-3">
+                        <img src="{{ asset('storage/' . $amenity->image) }}" alt="{{ $amenity->name }}"
+                             style="width: 40px; height: 40px; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); object-fit: cover;">
+                    </div>
+                    <h6 class="title m-0">{{ $amenity->name }}</h6>
+                </div>
+            </div>
+        @empty
+            <p><em>Không có tiện ích</em></p>
+        @endforelse
+    </div>
+</div>
+
+                    <div class="d-sm-flex align-items-sm-center justify-content-sm-between pt-40 pb-40 border-top">
                             <h6 class="my-sm-0">Bình Luận</h6>
 
                         </div>
-                        <div class="p-4 p-lg-5 bg-light">
+                    <div class="p-4 p-lg-5 bg-light">
                             <h4 class="mt-0">Gửi câu hỏi của bạn cho chúng tôi</h4>
                             <form id="contact_form" name="contact_form" class=""
                                 action="https://html.kodesolution.com/2025/hoteler-html/includes/sendmail.php"
@@ -263,9 +124,9 @@
                                 </div>
                             </form>
                         </div>
-                    </div>
                 </div>
-                <div class="col-xl-4 col-lg-5">
+            </div>
+            <div class="col-xl-4 col-lg-5">
                     <div class="sidebar">
                         <div class="sidebar__post mb-30">
                             <form id="contact_form2" name="contact_form" class=""
@@ -310,45 +171,35 @@
                         <div class="sidebar__single sidebar__post">
                             <h3 class="sidebar__title">Phòng liên quan</h3>
                             <ul class="sidebar__post-list list-unstyled">
-                                <li>
-                                    <div class="sidebar__post-image"> <img
-                                            src="{{ asset('client/images/resource/news-info-1.jpg') }}" alt="">
-                                    </div>
-                                    <div class="sidebar__post-content">
-                                        <h3> <span class="sidebar__post-content-meta"><i
-                                                    class="fas fa-door-open"></i>Economy Room</span> <a
-                                                href="#">$175/Night</a>
-                                        </h3>
-                                    </div>
-                                </li>
-                                <li>
-                                    <div class="sidebar__post-image"> <img
-                                            src="{{ asset('client/images/resource/news-info-2.jpg') }}" alt="">
-                                    </div>
-                                    <div class="sidebar__post-content">
-                                        <h3> <span class="sidebar__post-content-meta"><i
-                                                    class="fas fa-door-open"></i>Deluxe Room</span> <a
-                                                href="#">$250</a> </h3>
-                                    </div>
-                                </li>
-                                <li>
-                                    <div class="sidebar__post-image"> <img
-                                            src="{{ asset('client/images/resource/news-info-1.jpg') }}" alt="">
-                                    </div>
-                                    <div class="sidebar__post-content">
-                                        <h3> <span class="sidebar__post-content-meta"><i
-                                                    class="fas fa-door-open"></i>Super Deluxe Room</span> <a
-                                                href="#">$320</a> </h3>
-                                    </div>
-                                </li>
+                                @forelse ($relatedRooms as $related)
+                                    <li>
+                                        <div class="sidebar__post-image">
+                                            <img src="{{ asset('storage/' . ($related->images_room->first()->image_path ?? 'default.jpg')) }}" alt="">
+                                        </div>
+                                        <div class="sidebar__post-content">
+                                            <h3>
+                                                <span class="sidebar__post-content-meta">
+                                                    <i class="fas fa-door-open"></i> {{ $related->roomType->name }}
+                                                </span>
+                                                <a href="{{ route('room.detail', $related->id) }}">
+                                                    {{ number_format($related->price, 0, ',', '.') }} VND
+                                                </a>
+                                            </h3>
+                                        </div>
+                                    </li>
+                                @empty
+                                    <li><em>Không có phòng cùng loại</em></li>
+                                @endforelse
                             </ul>
                         </div>
+
                     </div>
                 </div>
-            </div>
         </div>
-    </section>
+    </div>
+</section>
 @endsection
+
 
 @push('js')
     <script data-cfasync="false" src="../../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>

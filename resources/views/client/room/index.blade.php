@@ -34,9 +34,12 @@
                                 @php
                                     $image = $item->images_room->first();
                                 @endphp
-                                <figure class="image-2 overlay-anim"><img src="{{ asset('storage/' . $image->image_path) }}"
-                                        alt="">
-                                </figure>
+                                <a href="{{ route('room.detail', ['id' => $item->id]) }}">
+                                    <figure class="image-2 overlay-anim">
+                                        <img src="{{ asset('storage/' . $image->image_path) }}" alt="">
+                                    </figure>
+                                </a>
+
                             </div>
                             @php
                                 if ($item->max_people == 1) {
@@ -56,7 +59,7 @@
                                 <span class="price"><i class="fal fa-bed me-2"></i> {{ $bed }}</span>
                             </div>
                             <div class="box-caption">
-                                <a href="room-details.html" class="book-btn">Đặt phòng</a>
+                                <a href="{{ route('room.detail', ['id' => $item->id]) }}" class="book-btn">Đặt phòng</a>
                                 <ul class="bx-links">
                                     @if (!empty($item->amenities) && is_array($item->amenities))
                                         @foreach ($item->amenities as $amenityId)
