@@ -15,7 +15,9 @@ use App\Http\Controllers\User\ServiceController as UserServiceController;
 Route::prefix('/')->group(function () {
     Route::controller(HomeController::class)->group(function () {
         Route::get('', 'index')->name('room.index');
+        Route::get('/', 'index')->name('home');
         Route::get('room', 'indexRoom')->name('room.indexRoom');
+        Route::get('room/{id}', 'show')->name('room.detail');
     });
 });
 
