@@ -200,7 +200,5 @@ Route::get('/', [HomeController::class, 'index']);
 
 
 //Dịch vụ bên User
-Route::get('/services', function () {
-    return view('client.services.index');
-});
+Route::get('/services', [UserServiceController::class, 'index'])->name('services.list');
 Route::get('/service/detail', [UserServiceController::class, 'detail'])->name('services.detail');

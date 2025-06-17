@@ -8,19 +8,25 @@ use Illuminate\Http\Request;
 
 class ServiceController extends Controller
 {
-   public function detail(Request $request)
-{
-    $services = Service::where('status', 1)->get();
-
-    // Xác định dịch vụ được chọn (nếu có)
-    $selectedService = null;
-    if ($request->has('id')) {
-        $selectedService = Service::find($request->id);
-    } else {
-        // Nếu không có id, lấy lấy dịch vụ đầu tiên
-        $selectedService = $services->first();
+    public function index()
+    {
+        $services = Service::where('status', 1)->get();
+        return view('client.services.index', compact('services'));
     }
 
-    return view('client.services.detail', compact('services', 'selectedService'));
-}
+    public function detail(Request $request)
+    {
+        $services = Service::where('status', 1)->get();
+
+        // Xác định dịch vụ được chọn (nếu có)
+        $selectedService = null;
+        if ($request->has('id')) {
+            $selectedService = Service::find($request->id);
+        } else {
+            // Nếu không có id, lấy lấy dịch vụ đầu tiên
+            $selectedService = $services->first();
+        }
+
+        return view('client.services.detail', compact('services', 'selectedService'));
+    }
 }
