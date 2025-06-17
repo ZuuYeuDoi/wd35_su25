@@ -8,7 +8,7 @@
                 <h1 class="title">Chi Tiết Dịch Vụ</h1>
                 <ul class="page-breadcrumb">
                     <li><a href="/">Trang chủ</a></li>
-                    <li><a href="/sevices">Dịch vụ</a></li>
+                    <li><a href="{{ route('services.list') }}">Dịch vụ</a></li>
                     <li>Chi tiết dịch vụ</li>
                 </ul>
             </div>
