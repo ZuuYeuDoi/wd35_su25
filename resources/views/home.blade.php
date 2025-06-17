@@ -16,6 +16,14 @@
             background-color: #fff;
             margin-bottom: 0px !important;
         }
+        .room-service-block-one .image-2 img {
+            width: 100%;
+            height: 240px;
+            object-fit: cover;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+            display: block;
+        }
     </style>
 @endpush
 
@@ -194,69 +202,70 @@
 
     <!-- Room-section two -->
     <section class="room-service-section pt-120 pb-60">
-        <div class="auto-container">
-            <div class="sec-title text-center">
-                <span class="sub-title">DỊCH VỤ KHÁCH HÀNG</span>
-                <h2>Đặt phòng và <br />thư giãn trong sự sang trọng</h2>
-            </div>
-            <div class="row">
-                <!-- News Block -->
-                <div class="row align-items-stretch">
-                    @foreach ($rooms as $item)
-                        <div class="room-service-block-one col-lg-4 col-sm-6 d-flex">
-                            @php
-                                $image = $item->images_room->first();
-                            @endphp
-                            <div class="inner-box d-flex flex-column h-100 w-100">
-                                <div class="image-box">
-                                     <a href="{{ route('room.detail', ['id' => $item->id]) }}">
+    <div class="auto-container">
+        <div class="sec-title text-center">
+            <span class="sub-title">DỊCH VỤ KHÁCH HÀNG</span>
+            <h2>Đặt phòng và <br />thư giãn trong sự sang trọng</h2>
+        </div>
+        <div class="row">
+            <div class="row align-items-stretch">
+                @foreach ($rooms as $item)
+                    <div class="room-service-block-one col-lg-4 col-sm-6 d-flex">
+                        @php
+                            $image = $item->images_room->first();
+                            $bed = match ($item->max_people) {
+                                1 => '1 giường đơn',
+                                2 => '2 giường đơn',
+                                3 => '1 giường đôi',
+                                4 => '1 giường đôi + 1 giường đơn',
+                                default => 'Không rõ',
+                            };
+                        @endphp
+                        <div class="inner-box d-flex flex-column h-100 w-100">
+                            <div class="image-box">
+                                <a href="{{ route('room.detail', ['id' => $item->id]) }}">
                                     <figure class="image-2 overlay-anim">
-                                        <img src="{{ asset('storage/' . $image->image_path) }}" alt="">
+                                        @if ($image)
+                                            <img src="{{ asset('storage/' . $image->image_path) }}" alt="">
+                                        @else
+                                            <img src="{{ asset('client/images/no-image.png') }}" alt="No image">
+                                        @endif
                                     </figure>
                                 </a>
-
+                            </div>
+                            <div class="content-box p-3">
+                                <h4 class="title">{{ $item->title }}</h4>
+                                <div class="price">
+                                    <i class="fas fa-wallet me-2"></i>
+                                    {{ number_format($item->price, 0, ',', '.') }} VND / đêm
                                 </div>
-                                <div class="content-box p-3">
-                                    <h4 class="title">{{ $item->title }}</h4>
-                                    <div class="price"><i class="fas fa-wallet" style="margin-right: 15px;"></i>{{ number_format($item->price, 0, ',', '.') }} VND / đêm</div>
-                                    <div class="price mt-2">
-                                        @php
-                                            if ($item->max_people == 1) {
-                                                $bed = '1 giường đơn';
-                                            } elseif ($item->max_people == 2) {
-                                                $bed = '2 giường đơn';
-                                            } elseif ($item->max_people == 3) {
-                                                $bed = '1 giường đôi';
-                                            } elseif ($item->max_people == 4) {
-                                                $bed = '1 giường đôi + 1 giường  đơn';
-                                            }
-                                        @endphp
-                                        <i class="fal fa-bed me-2"></i> {{$bed}}
-                                    </div>
-                                    <hr>
-                                    <ul class="facilities-list mt-2">
-                                        @if (!empty($item->amenities) && is_array($item->amenities))
-                                            @foreach ($item->amenities as $amenityId)
-                                                @if ($allAmenities->has($amenityId))
-                                                    <li>
-                                                        <i class="fal fa-check me-2"></i>
-                                                        {{ $allAmenities[$amenityId]->name }}
-                                                    </li>
-                                                @endif
-                                            @endforeach
-                                        @else
-                                            <li><em>Không có tiện ích</em></li>
-                                        @endif
-                                    </ul>
+                                <div class="price mt-2">
+                                    <i class="fal fa-bed me-2"></i> {{ $bed }}
                                 </div>
+                                <hr>
+                                <ul class="facilities-list mt-2">
+                                    @if (!empty($item->amenities) && is_array($item->amenities))
+                                        @foreach ($item->amenities as $amenityId)
+                                            @if ($allAmenities->has($amenityId))
+                                                <li>
+                                                    <i class="fal fa-check me-2"></i>
+                                                    {{ $allAmenities[$amenityId]->name }}
+                                                </li>
+                                            @endif
+                                        @endforeach
+                                    @else
+                                        <li><em>Không có tiện ích</em></li>
+                                    @endif
+                                </ul>
                             </div>
                         </div>
-                    @endforeach
-                </div>
-
+                    </div>
+                @endforeach
             </div>
         </div>
-    </section>
+    </div>
+</section>
+
     <!-- End Room section -->
 
     <!-- Đánh giá -->
