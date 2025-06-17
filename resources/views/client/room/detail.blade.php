@@ -24,7 +24,10 @@
                         <div class="image-container">
                             <figure class="image-box">
                                 <a href="{{ asset('storage/' . $room->images_room->first()->image_path) }}" class="lightbox-image" data-fancybox="gallery">
-                                    <img src="{{ asset('storage/' . $room->images_room->first()->image_path) }}" alt="">
+                                    <img src="{{ asset('storage/' . $room->images_room->first()->image_path) }}"
+     alt=""
+     style="width: 800px; height: 600px; object-fit: cover; border-radius: 8px;">
+
                                 </a>
                             </figure>
                         </div>
@@ -67,24 +70,23 @@
 
                     <!-- Tiện nghi -->
                     <div class="mt-40">
-    <h4>Tiện nghi phòng</h4>
-    <div class="row room-facility-list mb-40">
-        @forelse ($allAmenities as $amenity)
-            <div class="col-sm-6 col-xl-4">
-                <div class="list-one d-flex align-items-center me-sm-4 mb-3">
-                    <div class="me-3">
-                        <img src="{{ asset('storage/' . $amenity->image) }}" alt="{{ $amenity->name }}"
-                             style="width: 40px; height: 40px; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); object-fit: cover;">
+                        <h4>Tiện nghi phòng</h4>
+                        <div class="row room-facility-list mb-40">
+                            @forelse ($allAmenities as $amenity)
+                                <div class="col-sm-6 col-xl-4">
+                                    <div class="list-one d-flex align-items-center me-sm-4 mb-3">
+                                        <div class="me-3">
+                                            <img src="{{ asset('storage/' . $amenity->image) }}" alt="{{ $amenity->name }}"
+                                                style="width: 40px; height: 40px; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); object-fit: cover;">
+                                        </div>
+                                        <h6 class="title m-0">{{ $amenity->name }}</h6>
+                                    </div>
+                                </div>
+                            @empty
+                                <p><em>Không có tiện ích</em></p>
+                            @endforelse
+                        </div>
                     </div>
-                    <h6 class="title m-0">{{ $amenity->name }}</h6>
-                </div>
-            </div>
-        @empty
-            <p><em>Không có tiện ích</em></p>
-        @endforelse
-    </div>
-</div>
-
                     <div class="d-sm-flex align-items-sm-center justify-content-sm-between pt-40 pb-40 border-top">
                             <h6 class="my-sm-0">Bình Luận</h6>
 
@@ -147,19 +149,6 @@
                                                 placeholder="Departure Date">
                                         </div>
                                     </div>
-                                    <div class="col-sm-12">
-                                        <div class="mb-3">
-                                            <label class="form-label">Số người</label>
-                                            <select class="form-select form-control bg-white">
-                                                <option selected disabled value="">Select</option>
-                                                <option>1</option>
-                                                <option>2</option>
-                                                <option>3</option>
-                                                <option>4</option>
-                                                <option>More</option>
-                                            </select>
-                                        </div>
-                                    </div>
                                 </div>
                                 <div class="mb-3">
                                     <input name="form_botcheck" class="form-control" type="hidden" value="">
@@ -174,7 +163,9 @@
                                 @forelse ($relatedRooms as $related)
                                     <li>
                                         <div class="sidebar__post-image">
-                                            <img src="{{ asset('storage/' . ($related->images_room->first()->image_path ?? 'default.jpg')) }}" alt="">
+                                            <img src="{{ asset('storage/' . ($related->images_room->first()->image_path ?? 'default.jpg')) }}"
+                                                alt=""
+                                                style="width: 100px; height: 80px; object-fit: cover; border-radius: 6px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
                                         </div>
                                         <div class="sidebar__post-content">
                                             <h3>
