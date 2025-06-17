@@ -1,3 +1,18 @@
+<!-- Your custom script -->
+ @push('css')
+     <style>
+     .search-popup .dropdown-menu {
+    max-height: 300px;
+    overflow-y: auto;
+    z-index: 1100;
+}
+.search-popup {
+    overflow: auto;
+}
+
+     </style>
+ @endpush
+ 
  <header class="main-header header-style-five">
            
             <div class="header-lower">
@@ -81,13 +96,78 @@
                     <span class="search-back-drop"></span>
                     <button class="close-search"><span class="fa fa-times"></span></button>
                     <div class="search-inner">
-                        <form method="post" action="https://html.kodesolution.com/2025/hoteler-html/index.html">
-                            <div class="form-group">
-                                <input type="search" name="search-field" value="" placeholder="Search..."
-                                    required="">
-                                <button type="submit"><i class="fa fa-search"></i></button>
+
+                    @php
+                        $childAges = old('child_ages', $childAges ?? []);
+                    @endphp
+
+                    <div class="bg-white shadow rounded px-4 py-3 mb-4">
+                        <form action="{{ route('room.indexRoom') }}" method="GET">
+                            <div class="row g-2 align-items-center">
+                                <!-- Kiểu lưu trú -->
+                                <div class="col-auto">
+                                    <div class="btn-group" role="group">
+                                        <input type="radio" class="btn-check" name="stay_type" id="overnight" value="overnight" autocomplete="off" {{ old('stay_type', 'overnight') === 'overnight' ? 'checked' : '' }}>
+                                        <label class="btn btn-outline-primary" for="overnight">Chỗ ở Qua Đêm</label>
+
+                                        <input type="radio" class="btn-check" name="stay_type" id="dayuse" value="dayuse" autocomplete="off" {{ old('stay_type') === 'dayuse' ? 'checked' : '' }}>
+                                        <label class="btn btn-outline-primary" for="dayuse">Chỗ ở Trong Ngày</label>
+                                    </div>
+                                </div>
+
+                                <!-- Ngày nhận/trả -->
+                                <div class="col-md-auto">
+                                    <input type="text" name="check_in" id="check_in" class="form-control" placeholder="Ngày nhận phòng" value="{{ old('check_in', $checkIn ?? '') }}">
+                                </div>
+                                <div class="col-md-auto" id="checkout_container">
+                                    <input type="text" name="check_out" id="check_out" class="form-control" placeholder="Ngày trả phòng" value="{{ old('check_out', $checkOut ?? '') }}">
+                                </div>
+
+                                <!-- Dropdown chọn khách -->
+                                <div class="col-md-auto position-relative">
+                                    <div class="dropdown" style="max-height: 300px;">
+                                        <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside">
+                                            <span id="guestSummary">Tổng số khách</span>
+                                        </button>
+                                        <div class="dropdown-menu p-3" style="min-width: 270px;">
+                                            <div class="mb-2">
+                                                <label>Phòng</label>
+                                                <div class="input-group">
+                                                    <button class="btn btn-light" type="button" onclick="adjustGuest('rooms', -1)">-</button>
+                                                    <input type="number" name="rooms" id="rooms" value="{{ old('rooms', 1) }}" min="1" class="form-control text-center" readonly>
+                                                    <button class="btn btn-light" type="button" onclick="adjustGuest('rooms', 1)">+</button>
+                                                </div>
+                                            </div>
+                                            <div class="mb-2">
+                                                <label>Người lớn</label>
+                                                <div class="input-group">
+                                                    <button class="btn btn-light" type="button" onclick="adjustGuest('adults', -1)">-</button>
+                                                    <input type="number" name="adults" id="adults" value="{{ old('adults', 2) }}" min="1" class="form-control text-center" readonly>
+                                                    <button class="btn btn-light" type="button" onclick="adjustGuest('adults', 1)">+</button>
+                                                </div>
+                                            </div>
+                                            <div class="mb-2">
+                                                <label>Trẻ em</label>
+                                                <div class="input-group">
+                                                    <button class="btn btn-light" type="button" onclick="adjustGuest('children', -1, true)">-</button>
+                                                    <input type="number" name="children" id="children" value="{{ old('children', 0) }}" min="0" class="form-control text-center" readonly>
+                                                    <button class="btn btn-light" type="button" onclick="adjustGuest('children', 1, true)">+</button>
+                                                </div>
+                                                <small class="form-text text-muted mt-1">Nhập độ tuổi trẻ để xác định giá</small>
+                                                <div id="children-ages"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Nút tìm kiếm -->
+                                <div class="col-md-auto">
+                                    <button class="btn btn-primary" type="submit">Tìm kiếm</button>
+                                </div>
                             </div>
                         </form>
+                    </div>
+
                     </div>
                 </div>
                 <!-- End Header Search -->
@@ -119,3 +199,90 @@
                 </div><!-- End Sticky Menu -->
             </div>
         </header>
+
+<script>
+    function adjustGuest(field, delta, isChild = false) {
+        const input = document.getElementById(field);
+        let value = parseInt(input.value);
+        value += delta;
+        if (value < parseInt(input.min || 0)) value = parseInt(input.min || 0);
+        input.value = value;
+        updateGuestSummary();
+        if (isChild) updateChildAgeInputs(value);
+    }
+
+    function updateGuestSummary() {
+        const adults = document.getElementById('adults').value;
+        const children = document.getElementById('children').value;
+        document.getElementById('guestSummary').innerText = `${adults} người lớn, ${children} trẻ em`;
+    }
+
+    function updateChildAgeInputs(count) {
+        const container = document.getElementById('children-ages');
+        container.innerHTML = '';
+
+        const savedAges = @json($childAges);
+
+        if (count === 0) {
+            container.innerHTML = '<div class="text-muted">Không có trẻ em</div>';
+            return;
+        }
+
+        for (let i = 1; i <= count; i++) {
+            const label = document.createElement('label');
+            label.textContent = `Tuổi của Trẻ ${i}`;
+            label.classList.add('mt-2');
+
+            const select = document.createElement('select');
+            select.name = 'child_ages[]';
+            select.classList.add('form-select', 'mt-1');
+
+            for (let age = 0; age <= 17; age++) {
+                const option = document.createElement('option');
+                option.value = age;
+                option.textContent = `${age} tuổi`;
+                if (savedAges[i - 1] !== undefined && parseInt(savedAges[i - 1]) === age) {
+                    option.selected = true;
+                }
+                select.appendChild(option);
+            }
+
+            container.appendChild(label);
+            container.appendChild(select);
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        updateGuestSummary();
+        updateChildAgeInputs(parseInt(document.getElementById('children').value));
+
+        document.getElementById('overnight').addEventListener('change', function () {
+            document.getElementById('checkout_container').style.display = 'block';
+        });
+        document.getElementById('dayuse').addEventListener('change', function () {
+            document.getElementById('checkout_container').style.display = 'none';
+        });
+
+        flatpickr.localize(flatpickr.l10ns.vn);
+
+        const checkIn = flatpickr("#check_in", {
+            dateFormat: "d/m/Y",
+            minDate: "today",
+            onChange: function (selectedDates) {
+                if (selectedDates.length) {
+                    checkOut.set('minDate', new Date(selectedDates[0].getTime() + 86400000));
+                }
+            }
+        });
+
+        const checkOut = flatpickr("#check_out", {
+            dateFormat: "d/m/Y",
+            minDate: new Date().fp_incr(1)
+        });
+
+        // Ẩn check_out nếu là "dayuse"
+        if (document.getElementById('dayuse').checked) {
+            document.getElementById('checkout_container').style.display = 'none';
+        }
+    });
+</script>

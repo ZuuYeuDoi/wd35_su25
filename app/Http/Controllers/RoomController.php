@@ -83,31 +83,6 @@ public function map(Request $request)
         'stayType' => $stayType
     ]);
 }
-private function allocateRooms($rooms, $peopleNeeded)
-{
-    $allocatedRooms = [];
-    $remainingPeople = $peopleNeeded;
-
-    // Sắp xếp phòng giảm dần theo sức chứa
-    $sortedRooms = $rooms->sortByDesc('max_people');
-
-    foreach ($sortedRooms as $room) {
-        if ($remainingPeople <= 0) break;
-
-        $useThisRoom = min($room->max_people, $remainingPeople);
-        $allocatedRooms[] = [
-            'room' => $room,
-            'used_slots' => $useThisRoom
-        ];
-
-        $remainingPeople -= $useThisRoom;
-    }
-
-    return [
-        'allocated' => $allocatedRooms,
-        'enough' => $remainingPeople <= 0
-    ];
-}
 
 
     /**

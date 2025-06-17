@@ -82,7 +82,7 @@
                                             @if($room->image_room)
                                                 <img src="{{ asset('storage/' . $room->image_room) }}" alt="{{ $room->title }}" width="80">
                                             @endif
-                                        </td>
+                                        </td> 
                                         <td>{{ number_format($room->price) }} VNĐ</td>
                                         <td>{{$room->max_people}}</td>
                                         <td>

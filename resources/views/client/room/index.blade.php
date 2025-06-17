@@ -76,6 +76,14 @@
         </div>
     </section>
     <!-- end main-content -->
+    @if(count($rooms))
+    @foreach($rooms as $room)
+        {{-- Hiển thị thông tin phòng --}}
+    @endforeach
+@else
+    <p>Không tìm thấy phòng phù hợp với yêu cầu của bạn.</p>
+@endif
+
 
     <!-- rooms-section -->
     <section class="rooms-section pb-100">
