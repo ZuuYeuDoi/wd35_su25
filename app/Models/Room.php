@@ -23,7 +23,7 @@ class Room extends Model
     ];
 
     protected $casts = [
-    'amenities' => 'array',
+        'amenities' => 'array',
     ];
 
     public function roomType()
@@ -34,5 +34,10 @@ class Room extends Model
     public function images_room()
     {
         return $this->hasMany(RoomImage::class);
+    }
+
+    public function bookings()
+    {
+        return $this->hasMany(Booking::class);
     }
 }

@@ -1,9 +1,9 @@
 @extends('layouts.admin')
-@section('title1', 'Hóa Đơn')
+@section('title1', 'Chi tiết Đơn đặt')
 @section('content')
     <section role="main" class="content-body">
         <header class="page-header">
-            <h2 class="font-weight-bold text-6">Hóa đơn</h2>
+            <h2 class="font-weight-bold text-6">Chi tiết Đơn đặt</h2>
         </header>
         <form class="order-details action-buttons-fixed" method="post">
             <div class="row">
@@ -175,58 +175,17 @@
                 </div>
             </div>
 
-            <!-- Ghi chú -->
-            <div class="row">
-                <div class="col">
-                    <div class="card card-modern">
-                        <div class="card-header">
-                            <h2 class="card-title">Ghi chú hóa đơn</h2>
-                        </div>
-                        <div class="card-body">
-                            <div class="ecommerce-timeline mb-3">
-                                <div class="ecommerce-timeline-items-wrapper">
-                                    <div class="ecommerce-timeline-item">
-                                        <small>Được thêm ngày 26/06/2020 lúc 4:01 chiều bởi admin - <a href="#"
-                                                class="text-color-danger">Xóa ghi chú</a></small>
-                                        <p>Khách hàng yêu cầu phòng có cửa sổ hướng ra phố.</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="form-row">
-                                <div class="form-group col pb-1 mb-3">
-                                    <label>Thêm ghi chú</label>
-                                    <textarea class="form-control form-control-modern" name="orderAddNote" rows="6"></textarea>
-                                </div>
-                            </div>
-                            <div class="form-row">
-                                <div class="form-group col">
-                                    <a href="#"
-                                        class="cancel-button btn btn-light btn-px-4 py-3 border font-weight-semibold text-color-dark text-3">Thêm
-                                        ghi chú</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
             <!-- Nút hành động -->
             <div class="row action-buttons">
                 <div class="col-12 col-md-auto">
                     <button type="submit"
-                        class="submit-button btn btn-primary btn-px-4 py-3 d-flex align-items-center font-weight-semibold line-height-1">
+                        class="submit-button btn btn-success btn-px-4 py-3 d-flex align-items-center font-weight-semibold line-height-1">
                         <i class="bx bx-save text-4 me-2"></i> Lưu hóa đơn
                     </button>
                 </div>
                 <div class="col-12 col-md-auto px-md-0 mt-3 mt-md-0">
-                    <a href="/admin/bookingrooms/order"
-                        class="cancel-button btn btn-light btn-px-4 py-3 border font-weight-semibold text-color-dark text-3">Hủy</a>
-                </div>
-                <div class="col-12 col-md-auto ms-md-auto mt-3 mt-md-0 ms-auto">
-                    <a href="/admin/bookingrooms/order"
-                        class="delete-button btn btn-danger btn-px-4 py-3 d-flex align-items-center font-weight-semibold line-height-1">
-                        <i class="bx bx-trash text-4 me-2"></i> Xóa hóa đơn
-                    </a>
+                    <a href="{{ route('room_order.index') }}"
+                        class="cancel-button btn btn-light btn-px-4 py-3 border font-weight-semibold text-color-dark text-3">Quay lại</a>
                 </div>
             </div>
         </form>

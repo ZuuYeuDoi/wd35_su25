@@ -54,7 +54,7 @@
                                        </a>
                                    </li>
                                    <li>
-                                       <a class="nav-link" href="#">
+                                       <a class="nav-link" href="/admin/room-order">
                                            Đơn đặt
                                        </a>
                                    </li>
