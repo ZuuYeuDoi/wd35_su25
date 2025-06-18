@@ -1,15 +1,15 @@
 <?php
 
-use App\Http\Controllers\AmenitieController;
-use App\Http\Controllers\Controller;
-use App\Http\Controllers\HomeController;
-use App\Http\Controllers\RoomController;
-use App\Http\Controllers\RoomTypeController;
-use App\Http\Controllers\ServiceController;
-use App\Models\Room;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+
+use App\Http\Controllers\Admin\RoomController;
+use App\Http\Controllers\Admin\RoomTypeController;
+use App\Http\Controllers\Admin\ServiceController;
+use App\Http\Controllers\Admin\AmenitieController;
+use App\Http\Controllers\User\HomeController;
 use App\Http\Controllers\User\ServiceController as UserServiceController;
+
 
 
 Route::prefix('/')->group(function () {

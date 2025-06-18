@@ -1,15 +1,17 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
-use App\Models\Amenitie;
-use App\Models\Room;
-use App\Models\RoomImage;
-use App\Models\RoomType;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Log;
+
 use Carbon\Carbon;
+use App\Models\Room;
+use App\Models\Amenitie;
+use App\Models\RoomType;
+use App\Models\RoomImage;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Storage;
 
 class RoomController extends Controller
 {

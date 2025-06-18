@@ -1,12 +1,14 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
+
+use Carbon\Carbon;
 use App\Models\Amenitie;
 use App\Models\RoomType;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
-use Carbon\Carbon;
 
 class RoomTypeController extends Controller
 {
