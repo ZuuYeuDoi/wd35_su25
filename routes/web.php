@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AmenitieController;
+use App\Http\Controllers\Admin\BookingRoomController;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\RoomController;
@@ -53,6 +54,7 @@ Route::get('/admin/info', function () {
 });
 
 Route::prefix('admin')->group(function () {
+
     Route::controller(RoomController::class)->group(function () {
         Route::get('rooms', 'index')->name('room.index');
         Route::get('rooms/map', 'map')->name('room.map');
@@ -67,8 +69,8 @@ Route::prefix('admin')->group(function () {
         Route::patch('rooms/restore/{id}', 'restore')->name('room.restore');
         Route::delete('rooms/forceDelete/{id}', 'forceDelete')->name('room.forceDelete');
     });
-    // quan ly loai phong
 
+    // quan ly loai phong
     Route::controller(RoomTypeController::class)->group(function () {
         Route::get('room_types', 'index')->name('room_types.index');
         Route::get('room_types/add', 'create')->name('room_types.create');
@@ -105,31 +107,17 @@ Route::prefix('admin')->group(function () {
     Route::get('/amenities/trash', [AmenitieController::class, 'trash'])->name('amenitie.trash');
     Route::put('/amenities/{id}/restore', [AmenitieController::class, 'restore'])->name('amenitie.restore');
     Route::delete('/amenities/{id}/force-delete', [AmenitieController::class, 'forceDelete'])->name('amenitie.forceDelete');
-});
 
+    // Quản lý Booking phòng
+     Route::controller(BookingRoomController::class)->group(function () {
+        Route::get('room_order', 'index')->name('room_order.index');
+        Route::get('room_order/show/{id}', 'show')->name('room_order.show');
+        Route::get('room_order/edit/{id}', 'edit')->name('room_order.edit');
+        Route::put('room_order/update/{id}', 'update')->name('room_order.update');
+        
+    });
 
-//booking phong
-Route::get('/admin/bookingrooms/rooms/servicer', function () {
-    return view('admin.bookingrooms.rooms.servicerooms');
 });
-Route::get('/admin/bookingrooms/rooms/servicer/add', function () {
-    return view('admin.bookingrooms.rooms.addservicerooms');
-});
-Route::get('/admin/bookingrooms/category/add', function () {
-    return view('admin.bookingrooms.category.addcategory');
-});
-Route::get('/admin/bookingrooms/category', function () {
-    return view('admin.bookingrooms.category.listcategory');
-});
-
-Route::get('/admin/bookingrooms/order', function () {
-    return view('admin.bookingrooms.order.order');
-});
-
-Route::get('/admin/bookingrooms/order/detail', function () {
-    return view('admin.bookingrooms.order.orderdetail');
-});
-
 
 //booking su kien
 Route::get('/admin/holiday/order/detail', function () {
