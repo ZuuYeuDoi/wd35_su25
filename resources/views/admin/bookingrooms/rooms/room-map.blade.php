@@ -14,23 +14,12 @@
 <div class="bg-white shadow rounded px-4 py-3 mb-4">
     <form action="{{ route('room.map') }}" method="GET">
         <div class="row g-2 align-items-center">
-            <div class="col-auto">
-                <div class="btn-group" role="group">
-                    <input type="radio" class="btn-check" name="stay_type" id="overnight" value="overnight"
-                        autocomplete="off" {{ request('stay_type', 'overnight') === 'overnight' ? 'checked' : '' }}>
-                    <label class="btn btn-outline-primary" for="overnight">Chỗ ở Qua Đêm</label>
-
-                    <input type="radio" class="btn-check" name="stay_type" id="dayuse" value="dayuse"
-                        autocomplete="off" {{ request('stay_type') === 'dayuse' ? 'checked' : '' }}>
-                    <label class="btn btn-outline-primary" for="dayuse">Chỗ ở Trong Ngày</label>
-                </div>
-            </div>
 
             <div class="col-md-auto">
                 <input type="text" name="check_in" id="check_in" class="form-control"
                     placeholder="Ngày nhận phòng" value="{{ old('check_in', $startDate ?? '') }}">
             </div>
-            <div class="col-md-auto" id="checkout_container">
+            <div class="col-md-auto">
                 <input type="text" name="check_out" id="check_out" class="form-control"
                     placeholder="Ngày trả phòng" value="{{ old('check_out', $endDate ?? '') }}">
             </div>
@@ -72,6 +61,13 @@
                     </div>
                 </div>
             </div>
+            <div class="col-md-auto">
+                <select name="status" class="form-select">
+                    <option value="">-- Trạng thái phòng --</option>
+                    <option value="1" {{ request('status') === '1' ? 'selected' : '' }}>Hoạt động</option>
+                    <option value="0" {{ request('status') === '0' ? 'selected' : '' }}>Không hoạt động</option>
+                </select>
+            </div>
 
             <div class="col-md-auto">
                 <button class="btn btn-primary" type="submit">Tìm kiếm</button>
@@ -93,7 +89,9 @@
                     <div class="card-body text-center p-3">
                         <h6 class="card-title fw-bold text-truncate">{{ $room->title }}</h6>
                         <div class="small mb-2">{{ $room->roomType->name ?? 'Chưa xác định' }}</div>
-                        <div class="mb-2"><i class="fas fa-user fa-sm"></i></div>
+                        <div class="mb-2">
+                            <i class="fas fa-user fa-sm me-1"></i> {{ $room->max_people }} người
+                        </div>
                         <span class="badge rounded-pill bg-light text-success px-3 py-1 fw-semibold">
                             {{ $room->status == 1 ? 'Hoạt động' : 'Không hoạt động' }}
                         </span>
@@ -156,13 +154,6 @@
     document.addEventListener('DOMContentLoaded', function () {
         updateGuestSummary();
         updateChildAgeInputs(parseInt(document.getElementById('children').value));
-
-        document.getElementById('overnight').addEventListener('change', function () {
-            document.getElementById('checkout_container').style.display = 'block';
-        });
-        document.getElementById('dayuse').addEventListener('change', function () {
-            document.getElementById('checkout_container').style.display = 'none';
-        });
 
         flatpickr.localize(flatpickr.l10ns.vn);
 

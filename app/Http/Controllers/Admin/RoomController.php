@@ -32,6 +32,14 @@ public function map(Request $request)
     $children  = (int) $request->input('children', 0);
     $childAges = $request->input('children_ages', []);
 
+    $status = $request->input('status');
+
+    $query = Room::with('roomType');
+
+    if ($status !== null && $status !== '') {
+        $query->where('status', $status); 
+    }
+
     // Tính số giường cần
     $requiredBeds = $adults;
     foreach ($childAges as $age) {
@@ -43,9 +51,6 @@ public function map(Request $request)
         }
 
     }
-
-    $query = Room::with('roomType');
-
 
     if ($checkIn) {
         try {
