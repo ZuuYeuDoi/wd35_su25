@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Room;
 
 class RoomType extends Model
 {
@@ -19,7 +20,11 @@ class RoomType extends Model
     ];
 
     protected $casts = [
-    'amenities' => 'array',
+        'amenities' => 'array',
     ];
 
+    public function rooms()
+    {
+        return $this->hasMany(Room::class);
+    }
 }

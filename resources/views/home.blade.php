@@ -16,6 +16,7 @@
             background-color: #fff;
             margin-bottom: 0px !important;
         }
+
         .room-service-block-one .image-2 img {
             width: 100%;
             height: 240px;
@@ -55,40 +56,40 @@
 
     <!-- Form Section -->
     <!-- <div class="checkout-form-section-two">
-                                                        <div class="container">
-                                                            <div class="checkout-form">
-                                                                <div class="checkout-field">
-                                                                    <h4>Check-In</h4>
-                                                                    <div class="chk-field">
-                                                                        <input class="date-pick" type="text" placeholder="31 Dec 2025" />
-                                                                        <i class="fas fa-angle-down"></i>
+                                                                    <div class="container">
+                                                                        <div class="checkout-form">
+                                                                            <div class="checkout-field">
+                                                                                <h4>Check-In</h4>
+                                                                                <div class="chk-field">
+                                                                                    <input class="date-pick" type="text" placeholder="31 Dec 2025" />
+                                                                                    <i class="fas fa-angle-down"></i>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="checkout-field">
+                                                                                <h4>Check-Out</h4>
+                                                                                <div class="chk-field">
+                                                                                    <input class="date-pick" type="text" placeholder="31 Dec 2025" />
+                                                                                    <i class="fas fa-angle-down"></i>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="checkout-field select-field br-0">
+                                                                                <h4>Quests</h4>
+                                                                                <div class="chk-field">
+                                                                                    <i class="fas fa-angle-down"></i>
+                                                                                    <select>
+                                                                                        <option>2 </option>
+                                                                                        <option>1 </option>
+                                                                                        <option>2 </option>
+                                                                                        <option>3 </option>
+                                                                                    </select>
+                                                                                </div>
+                                                                            </div>
+                                                                            <a href="page-contact.html" class="theme-btn btn-style-one">
+                                                                                <span class="btn-title">CHECK <br />AVAILABILITY</span>
+                                                                            </a>
+                                                                        </div>
                                                                     </div>
-                                                                </div>
-                                                                <div class="checkout-field">
-                                                                    <h4>Check-Out</h4>
-                                                                    <div class="chk-field">
-                                                                        <input class="date-pick" type="text" placeholder="31 Dec 2025" />
-                                                                        <i class="fas fa-angle-down"></i>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="checkout-field select-field br-0">
-                                                                    <h4>Quests</h4>
-                                                                    <div class="chk-field">
-                                                                        <i class="fas fa-angle-down"></i>
-                                                                        <select>
-                                                                            <option>2 </option>
-                                                                            <option>1 </option>
-                                                                            <option>2 </option>
-                                                                            <option>3 </option>
-                                                                        </select>
-                                                                    </div>
-                                                                </div>
-                                                                <a href="page-contact.html" class="theme-btn btn-style-one">
-                                                                    <span class="btn-title">CHECK <br />AVAILABILITY</span>
-                                                                </a>
-                                                            </div>
-                                                        </div>
-                                                    </div> -->
+                                                                </div> -->
     <!-- End Form Section -->
 
     <!-- Service Section three -->
@@ -202,69 +203,77 @@
 
     <!-- Room-section two -->
     <section class="room-service-section pt-120 pb-60">
-    <div class="auto-container">
-        <div class="sec-title text-center">
-            <span class="sub-title">DỊCH VỤ KHÁCH HÀNG</span>
-            <h2>Đặt phòng và <br />thư giãn trong sự sang trọng</h2>
-        </div>
-        <div class="row">
-            <div class="row align-items-stretch">
-                @foreach ($rooms as $item)
-                    <div class="room-service-block-one col-lg-4 col-sm-6 d-flex">
-                        @php
-                            $image = $item->images_room->first();
-                            $bed = match ($item->max_people) {
-                                1 => '1 giường đơn',
-                                2 => '2 giường đơn',
-                                3 => '1 giường đôi',
-                                4 => '1 giường đôi + 1 giường đơn',
-                                default => 'Không rõ',
-                            };
-                        @endphp
-                        <div class="inner-box d-flex flex-column h-100 w-100">
-                            <div class="image-box">
-                                <a href="{{ route('room.detail', ['id' => $item->id]) }}">
-                                    <figure class="image-2 overlay-anim">
-                                        @if ($image)
-                                            <img src="{{ asset('storage/' . $image->image_path) }}" alt="">
-                                        @else
-                                            <img src="{{ asset('client/images/no-image.png') }}" alt="No image">
-                                        @endif
-                                    </figure>
-                                </a>
-                            </div>
-                            <div class="content-box p-3">
-                                <h4 class="title">{{ $item->title }}</h4>
-                                <div class="price">
-                                    <i class="fas fa-wallet me-2"></i>
-                                    {{ number_format($item->price, 0, ',', '.') }} VND / đêm
-                                </div>
-                                <div class="price mt-2">
-                                    <i class="fal fa-bed me-2"></i> {{ $bed }}
-                                </div>
-                                <hr>
-                                <ul class="facilities-list mt-2">
-                                    @if (!empty($item->amenities) && is_array($item->amenities))
-                                        @foreach ($item->amenities as $amenityId)
-                                            @if ($allAmenities->has($amenityId))
-                                                <li>
-                                                    <i class="fal fa-check me-2"></i>
-                                                    {{ $allAmenities[$amenityId]->name }}
-                                                </li>
-                                            @endif
-                                        @endforeach
-                                    @else
-                                        <li><em>Không có tiện ích</em></li>
-                                    @endif
-                                </ul>
+        <div class="auto-container">
+            <div class="sec-title text-center">
+                <span class="sub-title">DỊCH VỤ KHÁCH HÀNG</span>
+                <h2>Đặt phòng và <br />thư giãn trong sự sang trọng</h2>
+            </div>
+            <div class="row">
+                @foreach ($roomTypes as $roomType)
+                    @if ($roomType->rooms->isNotEmpty())
+                        <div class="room-type-section mb-5">
+                            <h3 class="text-center mb-4">{{ $roomType->name }}</h3>
+                            <div class="row align-items-stretch">
+                                @foreach ($roomType->rooms as $item)
+                                    <div class="room-service-block-one col-lg-4 col-sm-6 d-flex">
+                                        @php
+                                            $image = $item->images_room->first();
+                                            $bed = match ($item->max_people) {
+                                                1 => '1 giường đơn',
+                                                2 => '2 giường đơn',
+                                                3 => '1 giường đôi',
+                                                4 => '1 giường đôi + 1 giường đơn',
+                                                default => 'Không rõ',
+                                            };
+                                        @endphp
+                                        <div class="inner-box d-flex flex-column h-100 w-100">
+                                            <div class="image-box">
+                                                <a href="{{ route('room.detail', ['id' => $item->id]) }}">
+                                                    <figure class="image-2 overlay-anim">
+                                                        @if ($image)
+                                                            <img src="{{ asset('storage/' . $image->image_path) }}"
+                                                                alt="">
+                                                        @else
+                                                            <img src="{{ asset('client/images/no-image.png') }}"
+                                                                alt="No image">
+                                                        @endif
+                                                    </figure>
+                                                </a>
+                                            </div>
+                                            <div class="content-box p-3">
+                                                <h4 class="title">{{ $item->title }}</h4>
+                                                <div class="price">
+                                                    <i class="fas fa-wallet me-2"></i>
+                                                    {{ number_format($item->price, 0, ',', '.') }} VND / đêm
+                                                </div>
+                                                <div class="price mt-2">
+                                                    <i class="fal fa-bed me-2"></i> {{ $bed }}
+                                                </div>
+                                                <hr>
+                                                <ul class="facilities-list mt-2">
+                                                    @if (!empty($item->amenities) && is_array($item->amenities))
+                                                        @foreach ($item->amenities as $amenityId)
+                                                            @if ($allAmenities->has($amenityId))
+                                                                <li>
+                                                                    <i class="fal fa-check me-2"></i>
+                                                                    {{ $allAmenities[$amenityId]->name }}
+                                                                </li>
+                                                            @endif
+                                                        @endforeach
+                                                    @else
+                                                        <li><em>Không có tiện ích</em></li>
+                                                    @endif
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endforeach
                             </div>
                         </div>
-                    </div>
+                    @endif
                 @endforeach
             </div>
-        </div>
-    </div>
-</section>
+    </section>
 
     <!-- End Room section -->
 
