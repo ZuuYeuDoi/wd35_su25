@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\RoomController;
 use App\Http\Controllers\Admin\RoomTypeController;
 use App\Http\Controllers\Admin\ServiceController;
 use App\Http\Controllers\Admin\AmenitieController;
+use App\Http\Controllers\User\BookingController;
 use App\Http\Controllers\User\HomeController;
 use App\Http\Controllers\User\ServiceController as UserServiceController;
 
@@ -19,6 +20,9 @@ Route::prefix('/')->group(function () {
         Route::get('room', 'indexRoom')->name('room.indexRoom');
         Route::get('room/{id}', 'show')->name('room.detail');
     });
+    Route::controller(BookingController::class)->group(function () {
+        Route::post('/booking', 'index')->name('booking.index');
+    });
 });
 
 
@@ -29,9 +33,6 @@ Route::get('/room-detail', function () {
     return view('client.room.detail');
 });
 
-Route::get('checkout', function () {
-    return view('client.checkout.index');
-});
 
 
 Route::get('/product', function () {
