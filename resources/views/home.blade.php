@@ -1,5 +1,32 @@
 @extends('client.index')
 
+@push('css')
+    <style>
+        ul.facilities-list {
+            display: grid;
+            grid-template-columns: auto auto;
+            margin-top: 15px;
+        }
+
+        .room-service-block-one .inner-box {
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            background-color: #fff;
+            margin-bottom: 0px !important;
+        }
+        .room-service-block-one .image-2 img {
+            width: 100%;
+            height: 240px;
+            object-fit: cover;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+            display: block;
+        }
+    </style>
+@endpush
+
 @section('content')
     <!-- Banner Section -->
     <section class="banner-section-seven">
@@ -28,40 +55,40 @@
 
     <!-- Form Section -->
     <!-- <div class="checkout-form-section-two">
-        <div class="container">
-            <div class="checkout-form">
-                <div class="checkout-field">
-                    <h4>Check-In</h4>
-                    <div class="chk-field">
-                        <input class="date-pick" type="text" placeholder="31 Dec 2025" />
-                        <i class="fas fa-angle-down"></i>
-                    </div>
-                </div>
-                <div class="checkout-field">
-                    <h4>Check-Out</h4>
-                    <div class="chk-field">
-                        <input class="date-pick" type="text" placeholder="31 Dec 2025" />
-                        <i class="fas fa-angle-down"></i>
-                    </div>
-                </div>
-                <div class="checkout-field select-field br-0">
-                    <h4>Quests</h4>
-                    <div class="chk-field">
-                        <i class="fas fa-angle-down"></i>
-                        <select>
-                            <option>2 </option>
-                            <option>1 </option>
-                            <option>2 </option>
-                            <option>3 </option>
-                        </select>
-                    </div>
-                </div>
-                <a href="page-contact.html" class="theme-btn btn-style-one">
-                    <span class="btn-title">CHECK <br />AVAILABILITY</span>
-                </a>
-            </div>
-        </div>
-    </div> -->
+                                                        <div class="container">
+                                                            <div class="checkout-form">
+                                                                <div class="checkout-field">
+                                                                    <h4>Check-In</h4>
+                                                                    <div class="chk-field">
+                                                                        <input class="date-pick" type="text" placeholder="31 Dec 2025" />
+                                                                        <i class="fas fa-angle-down"></i>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="checkout-field">
+                                                                    <h4>Check-Out</h4>
+                                                                    <div class="chk-field">
+                                                                        <input class="date-pick" type="text" placeholder="31 Dec 2025" />
+                                                                        <i class="fas fa-angle-down"></i>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="checkout-field select-field br-0">
+                                                                    <h4>Quests</h4>
+                                                                    <div class="chk-field">
+                                                                        <i class="fas fa-angle-down"></i>
+                                                                        <select>
+                                                                            <option>2 </option>
+                                                                            <option>1 </option>
+                                                                            <option>2 </option>
+                                                                            <option>3 </option>
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
+                                                                <a href="page-contact.html" class="theme-btn btn-style-one">
+                                                                    <span class="btn-title">CHECK <br />AVAILABILITY</span>
+                                                                </a>
+                                                            </div>
+                                                        </div>
+                                                    </div> -->
     <!-- End Form Section -->
 
     <!-- Service Section three -->
@@ -127,7 +154,7 @@
                             <h2>Chúng tôi cung cấp các dịch<br />vụ và các sự kiện</h2>
                             <div class="text">Cimora chúng tôi có quang cảnh tuyệt đẹp, bờ biển,
                                 đồ ăn tuyệt vời và nhiều lần được bình chọn là thành phố hạnh phúc nhất,
-                                 khỏe mạnh nhất và phù hợp nhất tại Việt Nam.</div>
+                                khỏe mạnh nhất và phù hợp nhất tại Việt Nam.</div>
                         </div>
                         <div class="outer-box">
                             <div class="info-block">
@@ -144,12 +171,16 @@
                             </div>
                         </div>
                         <ul class="list-style-two">
-                            <li><i class="icon fa fa-circle-check"></i> Không gian nghỉ dưỡng tiện nghi, hiện đại bậc nhất.</li>
-                            <li><i class="icon fa fa-circle-check"></i>Dịch vụ chu đáo, tận tâm như ở chính ngôi nhà của bạn.</li>
-                            <li><i class="icon fa fa-circle-check"></i>Trải nghiệm thư giãn tuyệt vời trong từng khoảnh khắc.</li>
+                            <li><i class="icon fa fa-circle-check"></i> Không gian nghỉ dưỡng tiện nghi, hiện đại bậc nhất.
+                            </li>
+                            <li><i class="icon fa fa-circle-check"></i>Dịch vụ chu đáo, tận tâm như ở chính ngôi nhà của
+                                bạn.</li>
+                            <li><i class="icon fa fa-circle-check"></i>Trải nghiệm thư giãn tuyệt vời trong từng khoảnh
+                                khắc.</li>
                         </ul>
                         <div class="btn-box">
-                            <a href="page-about.html" class="theme-btn btn-style-one"><span class="btn-title">Xem chi tiết
+                            <a href="page-about.html" class="theme-btn btn-style-one"><span class="btn-title">Xem chi
+                                    tiết
                                 </span></a>
                         </div>
                     </div>
@@ -171,93 +202,70 @@
 
     <!-- Room-section two -->
     <section class="room-service-section pt-120 pb-60">
-        <div class="auto-container">
-            <div class="sec-title text-center">
-                <span class="sub-title">DỊCH VỤ KHÁCH HÀNG</span>
-                <h2>Đặt phòng và <br />thư giãn trong sự sang trọng</h2>
-            </div>
-            <div class="row">
-                <!-- News Block -->
-                <div class="room-service-block-one col-lg-4 col-sm-6 wow fadeInUp">
-                    <div class="inner-box">
-                        <div class="image-box">
-                            <figure class="image mb-0"><a href="room-details.html"><img
-                                        src="{{ asset('client/images/resource/room-service1-1.jpg') }}"
-                                        alt=""></a></figure>
-                        </div>
-                        <div class="content-box">
-                            <div class="inner-box">
-                                <h4 class="title"><a href="room-details.html">Phòng giường đôi</a></h4>
-                                <div class="price">$150/ Đêm</div>
+    <div class="auto-container">
+        <div class="sec-title text-center">
+            <span class="sub-title">DỊCH VỤ KHÁCH HÀNG</span>
+            <h2>Đặt phòng và <br />thư giãn trong sự sang trọng</h2>
+        </div>
+        <div class="row">
+            <div class="row align-items-stretch">
+                @foreach ($rooms as $item)
+                    <div class="room-service-block-one col-lg-4 col-sm-6 d-flex">
+                        @php
+                            $image = $item->images_room->first();
+                            $bed = match ($item->max_people) {
+                                1 => '1 giường đơn',
+                                2 => '2 giường đơn',
+                                3 => '1 giường đôi',
+                                4 => '1 giường đôi + 1 giường đơn',
+                                default => 'Không rõ',
+                            };
+                        @endphp
+                        <div class="inner-box d-flex flex-column h-100 w-100">
+                            <div class="image-box">
+                                <a href="{{ route('room.detail', ['id' => $item->id]) }}">
+                                    <figure class="image-2 overlay-anim">
+                                        @if ($image)
+                                            <img src="{{ asset('storage/' . $image->image_path) }}" alt="">
+                                        @else
+                                            <img src="{{ asset('client/images/no-image.png') }}" alt="No image">
+                                        @endif
+                                    </figure>
+                                </a>
                             </div>
-                            <div class="facilities-box align-items-center d-flex justify-content-between">
-                                <ul class="facilities-list">
-                                    <li><i class="fal fa-circle-user me-2"></i> 1-2 Người</li>
-                                    <li><i class="fal fa-bed me-2"></i> Giường cỡ lớn</li>
-                                </ul>
-                                <ul class="facilities-list">
-                                    <li><i class="fal fa-bath me-2"></i> Bồn tắm</li>
-                                    <li><i class="fal fa-wifi me-2"></i> Free Wifi</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- News Block -->
-                <div class="room-service-block-one col-lg-4 col-sm-6 wow fadeInUp" data-wow-delay="300ms">
-                    <div class="inner-box">
-                        <div class="image-box">
-                            <figure class="image mb-0"><a href="room-details.html"><img
-                                        src="{{ asset('client/images/resource/room-service1-2.jpg') }}"
-                                        alt=""></a></figure>
-                        </div>
-                        <div class="content-box">
-                            <div class="inner-box">
-                                <h4 class="title"><a href="room-details.html">Phòng gia đình</a></h4>
-                                <div class="price">$250/ Night</div>
-                            </div>
-                            <div class="facilities-box align-items-center d-flex justify-content-between">
-                                <ul class="facilities-list">
-                                    <li><i class="fal fa-circle-user me-2"></i> 1-2 Người</li>
-                                    <li><i class="fal fa-bed me-2"></i> Giường cỡ lớn</li>
-                                </ul>
-                                <ul class="facilities-list">
-                                    <li><i class="fal fa-bath me-2"></i> Bồn tắm</li>
-                                    <li><i class="fal fa-wifi me-2"></i> Free Wifi</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- News Block -->
-                <div class="room-service-block-one col-lg-4 col-sm-6 wow fadeInUp" data-wow-delay="600ms">
-                    <div class="inner-box">
-                        <div class="image-box">
-                            <figure class="image mb-0"><a href="room-details.html"><img
-                                        src="{{ asset('client/images/resource/room-service1-3.jpg') }}"
-                                        alt=""></a></figure>
-                        </div>
-                        <div class="content-box">
-                            <div class="inner-box">
-                                <h4 class="title"><a href="room-details.html">Phòng vip</a></h4>
-                                <div class="price">$550/ Night</div>
-                            </div>
-                            <div class="facilities-box align-items-center d-flex justify-content-between">
-                                <ul class="facilities-list">
-                                    <li><i class="fal fa-circle-user me-2"></i> 1-2 Người</li>
-                                    <li><i class="fal fa-bed me-2"></i> Giường cỡ lớn</li>
-                                </ul>
-                                <ul class="facilities-list">
-                                    <li><i class="fal fa-bath me-2"></i> Bồn tắm</li>
-                                    <li><i class="fal fa-wifi me-2"></i> Free Wifi</li>
+                            <div class="content-box p-3">
+                                <h4 class="title">{{ $item->title }}</h4>
+                                <div class="price">
+                                    <i class="fas fa-wallet me-2"></i>
+                                    {{ number_format($item->price, 0, ',', '.') }} VND / đêm
+                                </div>
+                                <div class="price mt-2">
+                                    <i class="fal fa-bed me-2"></i> {{ $bed }}
+                                </div>
+                                <hr>
+                                <ul class="facilities-list mt-2">
+                                    @if (!empty($item->amenities) && is_array($item->amenities))
+                                        @foreach ($item->amenities as $amenityId)
+                                            @if ($allAmenities->has($amenityId))
+                                                <li>
+                                                    <i class="fal fa-check me-2"></i>
+                                                    {{ $allAmenities[$amenityId]->name }}
+                                                </li>
+                                            @endif
+                                        @endforeach
+                                    @else
+                                        <li><em>Không có tiện ích</em></li>
+                                    @endif
                                 </ul>
                             </div>
                         </div>
                     </div>
-                </div>
+                @endforeach
             </div>
         </div>
-    </section>
+    </div>
+</section>
+
     <!-- End Room section -->
 
     <!-- Đánh giá -->
@@ -278,8 +286,9 @@
                                             src="{{ asset('client/images/icons/testi-shape1.png') }}" alt="">
                                     </div>
                                     <div class="text">Nghỉ tại Hoteler là một trải nghiệm khó quên.
-                                            Nhân viên đã nỗ lực hết mình để đảm bảo sự thoải mái và hài lòng của chúng tôi. Phòng
-                                            sạch sẽ, với tầm nhìn ngoạn mục </div>
+                                        Nhân viên đã nỗ lực hết mình để đảm bảo sự thoải mái và hài lòng của chúng tôi.
+                                        Phòng
+                                        sạch sẽ, với tầm nhìn ngoạn mục </div>
                                     <div class="info-box">
                                         <h5 class="name">Jenny Wilson</h5>
                                         <span class="designation">Business Owner</span>
@@ -293,8 +302,9 @@
                                             src="{{ asset('client/images/icons/testi-shape1.png') }}" alt="">
                                     </div>
                                     <div class="text">Nghỉ tại Hoteler là một trải nghiệm khó quên.
-                                            Nhân viên đã nỗ lực hết mình để đảm bảo sự thoải mái và hài lòng của chúng tôi. Phòng
-                                            sạch sẽ, với tầm nhìn ngoạn mục  </div>
+                                        Nhân viên đã nỗ lực hết mình để đảm bảo sự thoải mái và hài lòng của chúng tôi.
+                                        Phòng
+                                        sạch sẽ, với tầm nhìn ngoạn mục </div>
                                     <div class="info-box">
                                         <h5 class="name">Marvin McKinney</h5>
                                         <span class="designation">President of Sales</span>
@@ -308,8 +318,9 @@
                                             src="{{ asset('client/images/icons/testi-shape1.png') }}" alt="">
                                     </div>
                                     <div class="text">Nghỉ tại Hoteler là một trải nghiệm khó quên.
-                                            Nhân viên đã nỗ lực hết mình để đảm bảo sự thoải mái và hài lòng của chúng tôi. Phòng
-                                            sạch sẽ, với tầm nhìn ngoạn mục  </div>
+                                        Nhân viên đã nỗ lực hết mình để đảm bảo sự thoải mái và hài lòng của chúng tôi.
+                                        Phòng
+                                        sạch sẽ, với tầm nhìn ngoạn mục </div>
                                     <div class="info-box">
                                         <h5 class="name">Jenny Wilson</h5>
                                         <span class="designation">Business Owner</span>
@@ -529,5 +540,4 @@
         </div>
     </section>
     <!-- End Contact Section -->
-
 @endsection

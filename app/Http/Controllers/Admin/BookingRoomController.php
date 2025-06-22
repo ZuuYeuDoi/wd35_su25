@@ -65,26 +65,17 @@ class BookingRoomController extends Controller
     }
 
     // Cập nhật thông tin booking
-    public function update(Request $request, $id)
-    {
-        $booking = Booking::findOrFail($id);
+public function update(Request $request, $id)
+{
+    $request->validate([
+        'status' => 'required|in:0,1,2,3'
+    ]);
 
-        $request->validate([
-            'room_id' => 'required|exists:rooms,id',
-            'customer_name' => 'required|string|max:255',
-            'check_in_date' => 'required|date',
-            'check_out_date' => 'required|date|after_or_equal:check_in_date',
-            'status' => 'required|in:confirmed,checked_in,checked_out,cancelled'
-        ]);
+    $booking = Booking::findOrFail($id);
+    $booking->status = $request->status;
+    $booking->save();
 
-        $booking->update([
-            'room_id' => $request->room_id,
-            'customer_name' => $request->customer_name,
-            'check_in_date' => $request->check_in_date,
-            'check_out_date' => $request->check_out_date,
-            'status' => $request->status,
-        ]);
+    return redirect()->route('room_order.index')->with('success', 'Cập nhật trạng thái thành công!');
+}
 
-        return redirect()->route('room_order.index')->with('success', 'Cập nhật booking thành công!');
-    }
 }

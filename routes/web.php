@@ -13,9 +13,16 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\User\ServiceController as UserServiceController;
 
 
-Route::get('/room', function () {
-    return view('client.room.index');
+Route::prefix('/')->group(function () {
+    Route::controller(HomeController::class)->group(function () {
+        Route::get('', 'index')->name('room.index');
+        Route::get('/', 'index')->name('home');
+        Route::get('room', 'indexRoom')->name('room.indexRoom');
+        Route::get('room/{id}', 'show')->name('room.detail');
+    });
 });
+
+
 Route::get('/cart', function () {
     return view('client.cart.index');
 });
@@ -107,6 +114,7 @@ Route::prefix('admin')->group(function () {
         Route::get('room_order/show/{id}', 'show')->name('room_order.show');
         Route::get('room_order/edit/{id}', 'edit')->name('room_order.edit');
         Route::put('room_order/update/{id}', 'update')->name('room_order.update');
+        
     });
 
 });
@@ -182,8 +190,6 @@ Route::get('/account/room', function () {
 });
 
 Auth::routes(['verify' => true]);
-
-Route::get('/', [HomeController::class, 'index']);
 
 
 //Dịch vụ bên User
