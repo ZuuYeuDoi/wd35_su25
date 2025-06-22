@@ -107,3 +107,17 @@
         </div>
     </section>
 @endsection
+
+@section('script')
+    <script src="https://cdn.ckeditor.com/4.22.1/standard/ckeditor.js"></script>
+
+    <script>
+        CKEDITOR.replace('description', {
+            filebrowserUploadUrl: "{{ route('services.upload', ['_token' => csrf_token()]) }}",
+            filebrowserUploadMethod: 'form',
+            extraPlugins: 'uploadimage',
+            uploadUrl: "{{ route('services.upload', ['_token' => csrf_token()]) }}"
+        });
+    </script>
+
+@endsection

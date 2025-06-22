@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AmenitieController;
 use App\Http\Controllers\Admin\BookingRoomController;
+use App\Http\Controllers\CKEditorController;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\RoomController;
@@ -95,6 +96,8 @@ Route::prefix('admin')->group(function () {
         Route::get('/trash', [ServiceController::class, 'trash'])->name('services.trash');
         Route::post('/{id}/restore', [ServiceController::class, 'restore'])->name('services.restore');
         Route::delete('/{id}/force-delete', [ServiceController::class, 'forceDelete'])->name('services.forceDelete');
+
+        Route::post('/upload', [ServiceController::class, 'uploadImage'])->name('services.upload');
     });
 
     // quan ly tien ich
@@ -114,7 +117,7 @@ Route::prefix('admin')->group(function () {
         Route::get('room_order/show/{id}', 'show')->name('room_order.show');
         Route::get('room_order/edit/{id}', 'edit')->name('room_order.edit');
         Route::put('room_order/update/{id}', 'update')->name('room_order.update');
-        
+
     });
 
 });
