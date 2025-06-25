@@ -68,7 +68,7 @@ class BookingRoomController extends Controller
 public function update(Request $request, $id)
 {
     $request->validate([
-        'status' => 'required|in:0,1,2,3'
+        'status' => 'required|in:1,2,3,4,5'
     ]);
 
     $booking = Booking::findOrFail($id);
