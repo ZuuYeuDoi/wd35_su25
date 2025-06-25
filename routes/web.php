@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
+use App\Http\Controllers\Payment\PaymentController;
 use App\Http\Controllers\User\HomeController;
 use App\Http\Controllers\Admin\RoomController;
 use App\Http\Controllers\User\BookingController;
@@ -121,6 +122,11 @@ Route::prefix('admin')->group(function () {
     });
 
 });
+
+
+// routes thanh toán
+Route::post('/payment', [PaymentController::class, 'createPayment'])->name('payment.create');
+Route::get('/payment/return', [PaymentController::class, 'paymentReturn'])->name('payment.return');
 
 //booking su kien
 Route::get('/admin/holiday/order/detail', function () {

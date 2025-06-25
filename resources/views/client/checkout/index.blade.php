@@ -31,7 +31,7 @@
     <section>
         <div class="container pt-70 pb-120">
             <div class="section-content">
-                <form id="checkout-form" action="#">
+                {{-- <form id="checkout-form" action="#"> --}}
                     <div class="row mt-30">
                         <div class="col-md-6">
                             <div class="billing-details">
@@ -52,14 +52,14 @@
                                     </div>
                                     <div class="col-md-12">
                                         <div class="mb-3">
-                                            <label for="checkuot-form-cname">Địa chỉ Email</label>
-                                            <input id="checkuot-form-cname" type="email" class="form-control"
+                                            <label for="checkuot-form-email">Địa chỉ Email</label>
+                                            <input id="checkuot-form-email" type="email" class="form-control"
                                                 name="email" value="{{ $user->email ?? null }}"
                                                 placeholder="Địa chỉ Email">
                                         </div>
                                         <div class="mb-3">
-                                            <label for="checkuot-form-email">Số CCCD</label>
-                                            <input id="checkuot-form-email" type="email" class="form-control"
+                                            <label for="checkuot-form-cc">Số CCCD</label>
+                                            <input id="checkuot-form-cc" type="cc" class="form-control"
                                                 name="cccd" value="{{ $user->cccd ?? null }}" placeholder="CCCD">
                                         </div>
                                     </div>
@@ -129,8 +129,9 @@
                                     </div>
                                     <div class="col-6 col-sm-4 mb-3">
                                         <div class="text-muted">Giá phòng (1 đêm)</div>
-                                        <div><strong id="room-price">{{ number_format($room->price, 0, ',', '.') }}
-                                                VND</strong></div>
+                                        <div>
+                                            <strong id="room-price">{{ number_format($room->price, 0, ',', '.') }}    VND</strong>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -138,7 +139,8 @@
                         <div class="col-md-12 mt-30">
                             <h4>Tổng Thanh Toán:</h4>
                             <div class="p-3 border rounded" style="background-color: #f8f9fa; font-size: 1.25rem;">
-                                <strong id="total-price">{{ number_format($totalPrice, 0, ',', '.') }} VND</strong>
+                                {{-- <strong id="total-price">{{ number_format($totalPrice, 0, ',', '.') }} VND</strong> --}}
+                                <strong id="total-price" value = "0">VND</strong>
                             </div>
                         </div>
 
@@ -151,6 +153,14 @@
                                             <div class="icon-outer"><i class="lnr-icon-chevron-down"></i></div>
                                             Thanh toán qua cổng thanh toán điện tử
                                         </div>
+                                        <!-- resources/views/checkout.blade.php -->
+                                        <form action="{{ route('payment.create') }}" method="post">
+                                            @csrf
+                                            <input type="hidden" name="booking_id" value="{{ $booking->id }}">
+                                            <input type="hidden" name="amount" value="{{ $booking->total_price }}">
+                                            <button type="submit" class="btn btn-success">Thanh toán với VNPAY</button>
+                                        </form>
+
                                         <div class="acc-content">
                                             <div class="payment-info">
                                                 <p class="mb-0">Make your payment directly into our bank account. Please
@@ -176,7 +186,7 @@
                             </div>
                         </div>
                     </div>
-                </form>
+                {{-- </form> --}}
             </div>
         </div>
     </section>
