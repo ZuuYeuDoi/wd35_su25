@@ -40,7 +40,6 @@ public function map(Request $request)
         $query->where('status', $status); 
     }
 
-    // Tính số giường cần
     $requiredBeds = $adults;
     foreach ($childAges as $age) {
         $age = (int) $age;
@@ -49,7 +48,6 @@ public function map(Request $request)
         } elseif ($age >= 1) {
             $requiredBeds += 0.5; 
         }
-
     }
 
     if ($checkIn) {

@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Admin;
 use App\Models\Service;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 
 class ServiceController extends Controller
@@ -151,10 +152,10 @@ class ServiceController extends Controller
             // Xử lý upload ảnh mới nếu có
             if ($request->hasFile('image')) {
                 // Xóa ảnh cũ nếu tồn tại
-                if ($service->image) {
+                if ($service->image && Storage::disk('public')->exists($service->image)) {
                     Storage::disk('public')->delete($service->image);
                 }
-                $data['image'] = $request->file('image')->store('services/images', 'public');
+                $data['image'] = $request->file('image')->store('services', 'public');
             }
 
             $service->update($data);
@@ -194,13 +195,62 @@ class ServiceController extends Controller
     {
         $service = Service::onlyTrashed()->findOrFail($id);
 
-        // Xóa ảnh nếu có
+        // Xóa ảnh chính nếu có
         if ($service->image && Storage::disk('public')->exists($service->image)) {
             Storage::disk('public')->delete($service->image);
         }
 
+        // Xóa ảnh chèn trong mô tả (CKEditor)
+        $this->deleteDescriptionImages($service->description);
+
         $service->forceDelete();
 
         return redirect()->route('services.trash')->with('success', 'Xóa vĩnh viễn dịch vụ thành công!');
+    }
+
+    public function uploadImage(Request $request)
+    {
+        if ($request->hasFile('upload')) {
+            $file = $request->file('upload');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $file->storeAs('services/descriptions', $filename, 'public');
+
+            $url = asset('storage/services/descriptions/' . $filename);
+
+            // NẾU có CKEditorFuncNum → là nút "Chèn Ảnh"
+            if ($request->has('CKEditorFuncNum')) {
+                $CKEditorFuncNum = $request->input('CKEditorFuncNum');
+                return response("<script>window.parent.CKEDITOR.tools.callFunction($CKEditorFuncNum, '$url', 'Tải ảnh thành công');</script>")
+                    ->header('Content-Type', 'text/html');
+            }
+
+            // Ngược lại → là kéo thả ảnh (CKEditor 4 Drag & Drop)
+            return response()->json([
+                'uploaded' => 1,
+                'fileName' => $filename,
+                'url' => $url
+            ]);
+        }
+
+        // nếu không có file
+        return response()->json([
+            'uploaded' => 0,
+            'error' => ['message' => 'Không nhận được file ảnh']
+        ]);
+    }
+
+    private function deleteDescriptionImages($html)
+    {
+        preg_match_all('/<img[^>]+src="([^">]+)"/', $html, $matches);
+
+        foreach ($matches[1] as $imgUrl) {
+            // Chuyển asset URL thành path tương đối trong public
+            $relativePath = str_replace(asset('storage') . '/', '', $imgUrl);
+            $fullPath = public_path('storage/' . $relativePath);
+
+            if (File::exists($fullPath)) {
+                File::delete($fullPath);
+            }
+        }
     }
 }

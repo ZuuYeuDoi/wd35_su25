@@ -54,7 +54,7 @@
                                        </a>
                                    </li>
                                    <li>
-                                       <a class="nav-link" href="#">
+                                       <a class="nav-link" href="{{ route('room_order.index') }}">
                                            Đơn đặt
                                        </a>
                                    </li>

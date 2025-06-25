@@ -62,7 +62,7 @@
                             <img src="{{ asset('storage/' . $selectedService->image) }}" alt="{{ $selectedService->name }}"
                                  style="width: 100%; max-width: 800px; max-height: 400px; object-fit: cover; display: block;"/>
                             <h3 class="mt-4"> {{ $selectedService->name }}</h3>
-                            <p>{{ $selectedService->description }}</p>
+                            <p>{!! $selectedService->description !!}</p>
                         @else
                             <p>Vui lòng chọn một dịch vụ từ danh sách bên trái!</p>
                         @endif
