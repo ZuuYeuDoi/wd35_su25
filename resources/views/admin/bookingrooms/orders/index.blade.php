@@ -74,10 +74,12 @@
                                         $checkOut = \Carbon\Carbon::parse($booking->check_out_date);
                                         $stayType = $checkIn->isSameDay($checkOut) ? 'Trong ngày' : 'Qua đêm';
                                         $statusText = match ((int) $booking->status) {
-                                            0 => 'Chưa xác nhận',
-                                            1 => 'Đã xác nhận',
-                                            2 => 'Hoàn tất',
-                                            3 => 'Đã huỷ',
+                                            1 => 'Đã thanh toán cọc',
+                                            2 => 'Hoàn tất checkin',
+                                            3 => 'Hoàn tất thanh toán',
+                                            4 => 'Hoàn tất check out',
+                                            5 => 'Đã Hủy',
+                                            default=>'1'
                                         };
                                     @endphp
                                     <tr>

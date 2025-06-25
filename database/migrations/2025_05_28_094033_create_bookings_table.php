@@ -20,7 +20,7 @@ return new class extends Migration
             $table->dateTime('check_in_date');
             $table->dateTime('check_out_date');
             $table->bigInteger('deposit')->nullable();
-            $table->tinyInteger('status')->default(0);
+            $table->tinyInteger('status')->default(1);
             $table->timestamps();
 
         });
