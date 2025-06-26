@@ -142,7 +142,7 @@
                                 </div>
                             </div>
                             <h3>Mô tả phòng</h3>
-                            <p class="text">{{ $room->description ?? 'Không có mô tả' }}</p>
+                            <div class="text">{!! $room->description ?? 'Không có mô tả' !!}</div>
                         </div>
 
                         <!-- Tiện nghi -->
