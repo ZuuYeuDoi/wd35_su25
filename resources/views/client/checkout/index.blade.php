@@ -10,6 +10,32 @@
         .checkout-title h3 {
             margin: 0px !important;
         }
+        .payment-options {
+            display: flex;
+            gap: 20px;
+            margin-top: 20px;
+            justify-content: center;
+        }
+        .payment-option {
+            border: 2px solid transparent;
+            border-radius: 10px;
+            padding: 10px;
+            cursor: pointer;
+            transition: 0.3s;
+            width: 150px;
+            text-align: center;
+        }
+        .payment-option img {
+            width: 100%;
+            height: auto;
+            max-height: 60px;
+            object-fit: contain;
+        }
+        .payment-option.active {
+            border-color: #28a745;
+            background-color: #e6f4ea;
+        }
+    </style>
     </style>
 @endpush
 
@@ -148,38 +174,25 @@
                         <div class="col-md-12 mt-60">
                             <div class="payment-method">
                                 <h3>Chọn phương thức thanh toán</h3>
-                                <ul class="accordion-box">
-                                    <li class="accordion block">
-                                        <div class="acc-btn">
-                                            <div class="icon-outer"><i class="lnr-icon-chevron-down"></i></div>
-                                            Thanh toán qua cổng thanh toán điện tử
-                                        </div>
-                                            <input type="hidden" name="booking_id" value="{{ $booking->id }}">
-                                            <input type="hidden" name="amount" value="{{ $booking->total_price }}"> 
-                                            <button type="submit" class="btn btn-success">Thanh toán với VNPAY</button>
+                                <div class="payment-options">
+                                    <div class="payment-option active" data-method="vnpay">
+                                        <img src="{{ asset('client/images/payments/vnpay.png') }}" alt="VNPAY">
+                                    </div>
+                                    <div class="payment-option" data-method="momo">
+                                        <img src="{{ asset('client/images/payments/momo.png') }}" alt="MoMo">
+                                    </div>
+                                    <div class="payment-option" data-method="visa">
+                                        <img src="{{ asset('client/images/payments/visa.png') }}" alt="Visa">
+                                    </div>
+                                </div>
 
-                                        <div class="acc-content">
-                                            <div class="payment-info">
-                                                <p class="mb-0">Make your payment directly into our bank account. Please
-                                                    use your Order ID as the payment reference. Your order won’t be shipped
-                                                    until the funds have cleared in our account.</p>
-                                            </div>
-                                        </div>
-                                    </li>
-                                    <li class="accordion block">
-                                        <div class="acc-btn">
-                                            <div class="icon-outer"><i class="lnr-icon-chevron-down"></i></div>
-                                            Thanh toán khi đến nơi
-                                        </div>
-                                        <div class="acc-content">
-                                            <div class="payment-info">
-                                                <p class="mb-0">Make your payment directly into our bank account. Please
-                                                    use your Order ID as the payment reference. Your order won’t be shipped
-                                                    until the funds have cleared in our account.</p>
-                                            </div>
-                                        </div>
-                                    </li>
-                                </ul>
+                                <input type="hidden" name="booking_id" value="{{ $booking->id }}">
+                                <input type="hidden" name="amount" value="{{ $booking->total_price }}">
+                                <input type="hidden" name="method" id="selected-method" value="vnpay">
+
+                                <div class="text-center mt-4">
+                                    <button type="submit" class="btn btn-success">Thanh toán</button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -189,3 +202,26 @@
     </section>
     <!--checkout Start-->
 @endsection
+@push('js')
+<script>
+    const options = document.querySelectorAll('.payment-option');
+    const selectedInput = document.getElementById('selected-method');
+    const form = document.getElementById('payment-form');
+
+    options.forEach(opt => {
+        opt.addEventListener('click', function() {
+            options.forEach(o => o.classList.remove('active'));
+            this.classList.add('active');
+            selectedInput.value = this.dataset.method;
+        });
+    });
+
+    form.addEventListener('submit', function(e) {
+        const method = selectedInput.value;
+        if (method !== 'vnpay') {
+            e.preventDefault();
+            alert('Cổng thanh toán ' + method.toUpperCase() + ' đang được phát triển.');
+        }
+    });
+</script>
+@endpush
