@@ -77,7 +77,6 @@ class BookingController extends Controller
         'email' => $data['email'],
         'phone' => $data['phone'],
         'cccd' => $data['cccd'],
-        'address' => '', // Có thể thêm input address vào form
     ]);
 
     // Tính số đêm
@@ -94,7 +93,7 @@ class BookingController extends Controller
     $booking = Booking::create([
         'booking_code' => $this->generateBookingCode(),
         'room_id' => $room->id,
-        'user_id' => Auth::check() ? Auth::id() : 1,
+        'user_id'  => Auth::check() ? Auth::id() : null,
         'guest_id' => Auth::check() ? null : $guest->id,
         'check_in_date' => $data['checkin_date'],
         'check_out_date' => $data['checkout_date'],
