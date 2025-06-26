@@ -164,7 +164,7 @@
                                         </div>
 
                                         <div class="form-check">
-                                            <input class="form-check-input" type="radio" name="max_people" id="double" value="3" {{ old('max_people') == '3' ? 'checked' : '' }}>
+                                            <input class="form-check-input" type="radio" name="max_people" id="double" value="3" {{ old('max_people') == '2' ? 'checked' : '' }}>
                                             <label class="form-check-label" for="double">Double Bedroom</label>
                                         </div>
 
