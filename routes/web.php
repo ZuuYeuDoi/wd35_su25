@@ -24,6 +24,7 @@ Route::prefix('/')->group(function () {
     });
     Route::controller(BookingController::class)->group(function () {
         Route::post('/booking', 'index')->name('booking.index');
+        Route::post('/booking/store', 'store')->name('booking.store');
     });
 });
 
@@ -55,6 +56,7 @@ Route::get('/admin/info', function () {
     return view('admin.infoHotel');
 });
 
+
 Route::prefix('admin')->group(function () {
 
     Route::controller(RoomController::class)->group(function () {
@@ -66,6 +68,7 @@ Route::prefix('admin')->group(function () {
         Route::get('rooms/edit/{id}', 'edit')->name('room.edit');
         Route::put('rooms/update/{id}', 'update')->name('room.update');
         Route::delete('rooms/delete/{id}', 'destroy')->name('room.destroy');
+        Route::delete('rooms/image/delete/{id}', 'deleteImage')->name('room.image.delete');
 
         Route::get('rooms/trash', 'trash')->name('room.trash');
         Route::patch('rooms/restore/{id}', 'restore')->name('room.restore');
@@ -121,10 +124,11 @@ Route::prefix('admin')->group(function () {
 
     });
 
+
 });
 
 
-// routes thanh toán
+// routes thanh toán và booking
 Route::post('/payment', [PaymentController::class, 'createPayment'])->name('payment.create');
 Route::get('/payment/return', [PaymentController::class, 'paymentReturn'])->name('payment.return');
 

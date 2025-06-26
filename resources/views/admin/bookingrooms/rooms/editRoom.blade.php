@@ -78,6 +78,7 @@
     </style>
 @endpush
 
+
 @section('content')
     <section role="main" class="content-body">
         <header class="page-header">
@@ -167,10 +168,13 @@
                                     <div class="form-group mb-4  image-room">
                                         <div class="thumbnail-room">
                                             @foreach ($room->images_room as $value)
-                                                <div class="img-thumbnail">
-                                                    <img src="{{ asset('storage/' . $value->image_path) }}"
-                                                        alt="Room Image" class="">
+                                                <div class="img-thumbnail position-relative">
+                                                    <img src="{{ asset('storage/' . $value->image_path) }}" alt="Room Image">
+                                                    <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0 delete-image" 
+                                                        data-id="{{ $value->id }}" style="border-radius:50%; padding:2px 6px;">&times;</button>
                                                 </div>
+                                                <div id="preview_album" class="d-flex flex-wrap mt-2" style="gap:10px;"></div>
+
                                             @endforeach
                                         </div>
                                         <div class="">
@@ -232,3 +236,49 @@
         </div>
     </section>
 @endsection
+<script>
+
+document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.delete-image').forEach(btn => {
+        btn.addEventListener('click', function () {
+            if (!confirm('Bạn chắc chắn muốn xoá ảnh này?')) return;
+
+           fetch(`/admin/rooms/image/delete/${this.dataset.id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                        'Accept': 'application/json'
+                    }
+                })
+
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    this.closest('.img-thumbnail').remove();
+                } else {
+                    alert('Xoá thất bại');
+                }
+            })
+            .catch(() => alert('Có lỗi xảy ra'));
+        });
+    });
+});
+
+
+document.getElementById('image_room').addEventListener('change', function () {
+    const preview = document.getElementById('preview_album');
+    preview.innerHTML = '';
+    Array.from(this.files).forEach(file => {
+        const reader = new FileReader();
+        reader.onload = e => {
+            const img = document.createElement('img');
+            img.src = e.target.result;
+            img.style.width = '100px';
+            img.style.height = '100px';
+            img.classList.add('img-thumbnail');
+            preview.appendChild(img);
+        };
+        reader.readAsDataURL(file);
+    });
+});
+</script>

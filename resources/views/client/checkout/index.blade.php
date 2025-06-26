@@ -31,7 +31,8 @@
     <section>
         <div class="container pt-70 pb-120">
             <div class="section-content">
-                {{-- <form id="checkout-form" action="#"> --}}
+                <form action="{{ route('booking.store') }}" method="post">
+                    @csrf
                     <div class="row mt-30">
                         <div class="col-md-6">
                             <div class="billing-details">
@@ -65,13 +66,13 @@
                                     </div>
                                     <div class="mb-3 col-md-6">
                                         <label for="checkuot-form-checkin">Ngày Nhận phòng</label>
-                                        <input id="checkuot-form-checkin" type="date" class="form-control" readonly
+                                        <input id="checkuot-form-checkin" type="date" class="form-control" readonly name="checkin_date"
                                             value="{{ $data['checkin_date'] }}">
                                     </div>
 
                                     <div class="mb-3 col-md-6">
                                         <label for="checkuot-form-checkout">Ngày Trả phòng</label>
-                                        <input id="checkuot-form-checkout" type="date" class="form-control" readonly
+                                        <input id="checkuot-form-checkout" type="date" class="form-control" readonly name="checkout_date"
                                             value="{{ $data['checkout_date'] }}">
                                     </div>
                                 </div>
@@ -114,6 +115,7 @@
                                         <div class="text-muted">Loại phòng</div>
                                         <div><strong>{{ $room->roomType->name }}</strong></div>
                                     </div>
+                                     <input type="hidden" name="room_id" value="{{ $room->id }}">
                                     <div class="col-6 col-sm-4 mb-3">
                                         <div class="text-muted">Loại giường</div>
                                         @php
@@ -139,8 +141,7 @@
                         <div class="col-md-12 mt-30">
                             <h4>Tổng Thanh Toán:</h4>
                             <div class="p-3 border rounded" style="background-color: #f8f9fa; font-size: 1.25rem;">
-                                {{-- <strong id="total-price">{{ number_format($totalPrice, 0, ',', '.') }} VND</strong> --}}
-                                <strong id="total-price" value = "0">VND</strong>
+                                <strong id="total-price">{{ number_format($totalPrice, 0, ',', '.') }} VND</strong>
                             </div>
                         </div>
 
@@ -153,13 +154,9 @@
                                             <div class="icon-outer"><i class="lnr-icon-chevron-down"></i></div>
                                             Thanh toán qua cổng thanh toán điện tử
                                         </div>
-                                        <!-- resources/views/checkout.blade.php -->
-                                        <form action="{{ route('payment.create') }}" method="post">
-                                            @csrf
                                             <input type="hidden" name="booking_id" value="{{ $booking->id }}">
-                                            <input type="hidden" name="amount" value="{{ $booking->total_price }}">
+                                            <input type="hidden" name="amount" value="{{ $booking->total_price }}"> 
                                             <button type="submit" class="btn btn-success">Thanh toán với VNPAY</button>
-                                        </form>
 
                                         <div class="acc-content">
                                             <div class="payment-info">
@@ -186,7 +183,7 @@
                             </div>
                         </div>
                     </div>
-                {{-- </form> --}}
+                </form>
             </div>
         </div>
     </section>

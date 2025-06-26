@@ -253,22 +253,17 @@ public function map(Request $request)
 
             // Xử lý upload ảnh phòng mới nếu có
             if ($request->hasFile('image_room')) {
-                // Xóa ảnh cũ
-                foreach ($room->images_room as $oldImage) {
-                    Storage::disk('public')->delete($oldImage->image_path);
-                    $oldImage->delete();
-                }
+            $lastOrder = RoomImage::where('room_id', $room->id)->max('order') ?? 0;
 
-                // Upload ảnh mới
-                foreach ($request->file('image_room') as $key => $file) {
-                    $path = $file->store('rooms/image_room', 'public');
-                    RoomImage::create([
-                        'room_id' => $room->id,
-                        'image_path' => $path,
-                        'order' => $key + 1,
-                    ]);
-                }
+            foreach ($request->file('image_room') as $index => $file) {
+                $path = $file->store('rooms/image_room', 'public');
+                RoomImage::create([
+                    'room_id' => $room->id,
+                    'image_path' => $path,
+                    'order' => $lastOrder + $index + 1,
+                ]);
             }
+        }
 
             $room->update($data);
 
@@ -277,6 +272,19 @@ public function map(Request $request)
             return redirect()->back()->with('error', 'Sửa thất bại');
         }
     }
+
+    public function deleteImage($id)
+{
+    try {
+        $image = RoomImage::findOrFail($id);
+        Storage::disk('public')->delete($image->image_path);
+        $image->delete();
+
+        return response()->json(['success' => true]);
+    } catch (\Exception $e) {
+        return response()->json(['success' => false], 500);
+    }
+}
 
     /**
      * Remove the specified resource from storage.

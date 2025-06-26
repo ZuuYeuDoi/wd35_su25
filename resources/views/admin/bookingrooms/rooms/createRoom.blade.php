@@ -180,7 +180,7 @@
                                 </div>
 
                                 <div class="col-md-6">
-                                    <div class="form-group mb-4">
+                                    {{-- <div class="form-group mb-4">
                                         <label for="image_room" class="form-label">Hình ảnh phòng <span
                                                 class="text-danger">*</span></label>
                                         <input type="file" name="image_room[]" id="image_room"
@@ -188,7 +188,20 @@
                                         @error('image_room')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
+                                    </div> --}}
+
+                                    {{-- album ảnh --}}
+                                    <div class="form-group mb-4">
+                                        <label for="image_room" class="form-label">Album ảnh phòng <span class="text-danger">*</span></label>
+                                        <input type="file" name="image_room[]" id="image_room"
+                                            class="form-control @error('image_room') is-invalid @enderror" multiple accept="image/*">
+                                        @error('image_room')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+
+                                        <div id="preview_album" class="mt-2 d-flex flex-wrap" style="gap:10px;"></div>
                                     </div>
+
 
                                     <div class="form-group mb-4">
                                         <label for="description" class="form-label">Mô tả <span
@@ -256,4 +269,26 @@
 @endsection
 <script>
     const roomTypesData = @json($roomTypes);
+    document.addEventListener('DOMContentLoaded', function () {
+    const input = document.getElementById('image_room');
+    const preview = document.getElementById('preview_album');
+
+    input.addEventListener('change', function () {
+        preview.innerHTML = '';
+        Array.from(this.files).forEach(file => {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                img.classList.add('img-thumbnail');
+                img.style.width = '100px';
+                img.style.height = '100px';
+                img.style.objectFit = 'cover';
+                preview.appendChild(img);
+            };
+            reader.readAsDataURL(file);
+        });
+    });
+});
 </script>
+
