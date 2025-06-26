@@ -16,13 +16,16 @@ class PaymentController extends Controller
 {
     public function createPayment(Request $request)
     {
-        session(['cost_id' => $request->booking_id]);
+        // session(['cost_id' => $request->booking_id]);
+
+
         session(['url_prev' => url()->previous()]);
         $vnp_TmnCode = "O0VNLD6K"; 
         $vnp_HashSecret = "E5B82HAN2P1L7HEXOAAN2Q4D20TVIRYJ"; 
         $vnp_Url = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
         $vnp_Returnurl = "http://localhost:8000/payment/return";
-        $vnp_TxnRef = date("YmdHis"); 
+        // $vnp_TxnRef = date("YmdHis"); 
+        $vnp_TxnRef = $request->booking_id . '-' . date("YmdHis");
         $vnp_OrderInfo = "Thanh toán hóa đơn phí dich vụ";
         $vnp_OrderType = 'billpayment';
         $vnp_Amount = $request->input('amount') * 100;
@@ -72,26 +75,36 @@ class PaymentController extends Controller
     }
 
      public function paymentReturn(Request $request)
-    {
-        if ($request->vnp_ResponseCode === "00") {
-            $bookingId = session('cost_id'); // Hoặc lấy từ request nếu truyền qua URL
+{
+    if ($request->vnp_ResponseCode === "00") {
+        // Lấy booking_id từ vnp_TxnRef
+        $txnRef = $request->input('vnp_TxnRef');
+        $parts = explode('-', $txnRef);
+        $bookingId = $parts[0] ?? null;
 
-            // Tạo payment
-           Payment::create([
-                'booking_id' => $bookingId,
-                'pay_date' => now(),
-                'total_price' => $request->vnp_Amount / 100,
-                'payment_status' => 1,
-                'payment_method' => 'VNPAY',
-                'vnp_bankcode' => $request->vnp_BankCode ?? null,
-            ]);
-
-            // Cập nhật trạng thái booking
-           Booking::where('id', $bookingId)->update(['status' => 1]);
-
-            return view('client.payments.success');
+        if (!$bookingId) {
+            // Không lấy được booking_id → thất bại
+            return view('client.payments.failed');
         }
 
-        return view('client.payments.failed');
+        // Tạo payment
+        Payment::create([
+            'booking_id' => $bookingId,
+            'pay_date' => now(),
+            'total_price' => $request->vnp_Amount / 100, // VNP trả về số nhân 100
+            'payment_status' => 1, // Thành công
+            'payment_method' => 'VNPAY',
+            'vnp_bankcode' => $request->vnp_BankCode ?? null,
+        ]);
+
+        // Cập nhật trạng thái booking
+        Booking::where('id', $bookingId)->update(['status' => 1]);
+
+        return view('client.payments.success');
     }
+
+    // Thanh toán thất bại
+    return view('client.payments.failed');
+}
+
 }
