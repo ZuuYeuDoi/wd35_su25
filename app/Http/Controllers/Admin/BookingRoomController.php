@@ -75,6 +75,8 @@ public function update(Request $request, $id)
     $booking->status = $request->status;
     $booking->save();
 
+    // dd($booking);
+
     return redirect()->route('room_order.index')->with('success', 'Cập nhật trạng thái thành công!');
 }
 
