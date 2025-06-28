@@ -5,11 +5,11 @@
 <section role="main" class="content-body">
     <header class="page-header d-flex justify-content-between align-items-center mb-4">
         <h2 class="font-weight-bold text-6 mb-0">Chi tiết dịch vụ #{{ $service->id }}</h2>
-        <a href="{{ route('services.index') }}" class="btn btn-secondary btn-sm">Quay lại danh sách</a>
     </header>
 
     <div class="card card-modern shadow-sm">
         <div class="card-body">
+            <a href="{{ route('services.index') }}" class="btn btn-secondary btn-sm">Quay lại danh sách</a>
             <div class="row">
                 <!-- Ảnh dịch vụ -->
                 <div class="col-md-5 text-center border-end">
@@ -52,7 +52,7 @@
                             </tr>
                             <tr>
                                 <th>Mô tả</th>
-                                <td style="white-space: pre-line;">{{ $service->description ?? 'Chưa có mô tả' }}</td>
+                                <td style="white-space: pre-line;">{!! $service->description ?? 'Chưa có mô tả' !!}</td>
                             </tr>
                         </tbody>
                     </table>

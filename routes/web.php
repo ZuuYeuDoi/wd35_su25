@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\BillController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -116,15 +117,19 @@ Route::prefix('admin')->group(function () {
     Route::delete('/amenities/{id}/force-delete', [AmenitieController::class, 'forceDelete'])->name('amenitie.forceDelete');
 
     // Quản lý Booking phòng
-     Route::controller(BookingRoomController::class)->group(function () {
+    Route::controller(BookingRoomController::class)->group(function () {
         Route::get('room_order', 'index')->name('room_order.index');
-        Route::get('room_order/show/{id}', 'show')->name('room_order.show');
-        Route::get('room_order/edit/{id}', 'edit')->name('room_order.edit');
-        Route::put('room_order/update/{id}', 'update')->name('room_order.update');
+        Route::get('room_order/{id}/show', 'show')->name('room_order.show');
+        // Route::get('room_order/edit/{id}', 'edit')->name('room_order.edit');
+        // Route::put('room_order/update/{id}', 'update')->name('room_order.update');
 
     });
 
-
+    // Quản lý Bill
+    Route::controller(BillController::class)->group(function () {
+        Route::get('/{id}/temporary', [BillController::class, 'temporary'])->name('bills.temporary');
+        Route::get('/{id}/final', [BillController::class, 'final'])->name('bills.final');
+    });
 });
 
 

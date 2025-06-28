@@ -12,7 +12,7 @@ class BookingRoomController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Booking::with(['user', 'room'])->latest();
+        $query = Booking::with(['user', 'room.roomType'])->latest();
 
         // Nếu có nhập cả hai ngày
         if ($request->filled('check_in_date') || $request->filled('check_out_date')) {
@@ -57,27 +57,24 @@ class BookingRoomController extends Controller
     }
 
     // Hiển thị form chỉnh sửa booking
-    public function edit($id)
-    {
-        $booking = Booking::findOrFail($id);
-        $rooms = Room::all();
-        return view('admin.bookingrooms.orders.edit', compact('booking', 'rooms'));
-    }
+    // public function edit($id)
+    // {
+    //     $booking = Booking::findOrFail($id);
+    //     $rooms = Room::all();
+    //     return view('admin.bookingrooms.orders.edit', compact('booking', 'rooms'));
+    // }
 
     // Cập nhật thông tin booking
-public function update(Request $request, $id)
-{
-    $request->validate([
-        'status' => 'required|in:1,2,3,4,5'
-    ]);
+    // public function update(Request $request, $id)
+    // {
+    //     $request->validate([
+    //         'status' => 'required|in:1,2,3,4,5'
+    //     ]);
 
-    $booking = Booking::findOrFail($id);
-    $booking->status = $request->status;
-    $booking->save();
-
-    // dd($booking);
-
-    return redirect()->route('room_order.index')->with('success', 'Cập nhật trạng thái thành công!');
-}
-
+    //     $booking = Booking::findOrFail($id);
+    //     $booking->status = $request->status;
+    //     $booking->save();
+    //     // dd($booking);
+    //     return redirect()->route('room_order.index')->with('success', 'Cập nhật trạng thái thành công!');
+    // }
 }

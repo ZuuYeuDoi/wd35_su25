@@ -3,16 +3,10 @@
 @section('title1', 'Chi tiết Đơn đặt')
 
 @section('content')
-<section role="main" class="content-body">
-    <header class="page-header">
-        <h2 class="font-weight-bold text-6">Chi tiết Đơn đặt</h2>
-    </header>
-
-    <form action="{{ route('room_order.update', $booking->id) }}" method="POST"
-        class="order-details action-buttons-fixed">
-        @csrf
-        @method('PUT')
-
+    <section role="main" class="content-body">
+        <header class="page-header">
+            <h2 class="font-weight-bold text-6">Chi tiết Đơn đặt</h2>
+        </header>
         <div class="row">
             <!-- Thông tin chung -->
             <div class="col-xl-4 mb-4 mb-xl-0">
@@ -25,21 +19,26 @@
                         <div class="form-row">
                             <div class="form-group col mb-3">
                                 <label>Trạng thái</label>
-                                <select class="form-control" name="status" required>
-                                    <option value="1" {{ $booking->status == 1 ? 'selected hidden' : 'hidden' }}>
+                                <select class="form-control" name="status" disabled>
+                                    <option value="1" {{ $booking->status == 1 ? 'selected' : '' }}>
                                         Đã thanh toán cọc
                                     </option>
-                                    <option value="2" {{ $booking->status == 2 ? 'selected' : '' }}>Hoàn tất checkin
+                                    <option value="2" {{ $booking->status == 2 ? 'selected' : '' }}>
+                                        Hoàn tất checkin
                                     </option>
-                                    <option value="3" {{ $booking->status == 3 ? 'selected' : '' }} hidden >Hoàn tất thanh toán
+                                    <option value="3" {{ $booking->status == 3 ? 'selected' : '' }}>
+                                        Hoàn tất thanh toán
                                     </option>
-                                    <option value="4" {{ $booking->status == 4 ? 'selected' : '' }}>Hoàn tất check out
+                                    <option value="4" {{ $booking->status == 4 ? 'selected' : '' }}>
+                                        Hoàn tất check out
                                     </option>
-                                    <option value="5" {{ $booking->status == 5 ? 'selected' : '' }}>Huỷ
+                                    <option value="5" {{ $booking->status == 5 ? 'selected' : '' }}>
+                                        Huỷ
                                     </option>
                                 </select>
                             </div>
                         </div>
+
 
                         <!-- Ngày tạo -->
                         <div class="form-row">
@@ -69,14 +68,11 @@
                         </div>
 
                         <!-- Khách hàng -->
-                        @php
-                        $custommer = $booking->user ?? $booking->guest;
-                        @endphp
                         <div class="form-row">
                             <div class="form-group col mb-3">
                                 <label>Khách hàng</label>
                                 <input type="text" class="form-control form-control-modern"
-                                    value="{{ $custommer->name }}" readonly>
+                                    value="{{ $booking->user->name }}" readonly>
                             </div>
                         </div>
                     </div>
@@ -95,31 +91,34 @@
                             <div class="col-xl-6 mb-4">
                                 <h3 class="text-color-dark font-weight-bold text-4 line-height-1 mt-0 mb-3">KHÁCH HÀNG
                                 </h3>
+                                <strong class="d-block text-color-dark">Họ và tên:</strong>
+                                <li>{{ $booking->user->name ?? '---' }}</li>
+
                                 <strong class="d-block text-color-dark">Email:</strong>
-                                <li>{{ $custommer->email ?? '---' }}</li>
+                                <li>{{ $booking->user->email ?? '---' }}</li>
 
                                 <strong class="d-block text-color-dark mt-3">Điện thoại:</strong>
-                                <li>{{ $custommer->phone ?? '---' }}</li>
-                                <strong class="d-block text-color-dark mt-3">CCCD:</strong>
-                                <li>{{ $custommer->cccd ?? '---' }}</li>
+                                <li>{{ $booking->user->phone ?? '---' }}</li>
+
                             </div>
 
                             <!-- Nhận phòng -->
                             <div class="col-xl-6">
-                                <h3 class="font-weight-bold text-color-dark text-4 line-height-1 mt-0 mb-3">THỜI GIAN
+                                <h3 class="font-weight-bold text-color-dark text-4 line-height-1 mt-0 mb-3">THỜI GIAN DỰ
+                                    KIẾN
                                 </h3>
                                 <ul class="list list-unstyled list-item-bottom-space-0">
-                                    <li>Ngày nhận:
+                                    <li>Ngày nhận dự kiến:
                                         {{ \Carbon\Carbon::parse($booking->check_in_date)->format('d-m-Y') }} lúc 14h
                                     </li>
-                                    <li>Ngày trả:
+                                    <li>Ngày trả dự kiến:
                                         {{ \Carbon\Carbon::parse($booking->check_out_date)->format('d-m-Y') }} lúc 12h
                                     </li>
 
                                 </ul>
                                 <ul class="list list-unstyled list-item-bottom-space-0">
                                     <li>
-                                        Tiền đặt cọc: {{ number_format($booking->deposit) }}đ
+                                        Tiền đã đặt cọc: {{ number_format($booking->deposit) }}đ
                                     </li>
                                 </ul>
                             </div>
@@ -143,29 +142,19 @@
                                     <tr>
                                         <th>ID</th>
                                         <th>Tên phòng</th>
+                                        <th>Loại phòng</th>
                                         <th class="text-end">Giá</th>
-                                        <th class="text-end">Tổng</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr>
-
                                         <td>{{ $booking->room->id }}</td>
                                         <td>{{ $booking->room->title }}</td>
-                                        <td class="text-end">{{ number_format($booking->room->price) }}đ</td>
+                                        <td>{{ $booking->room->roomType->name }}</td>
                                         <td class="text-end">{{ number_format($booking->room->price) }}đ</td>
                                     </tr>
                                 </tbody>
                             </table>
-                        </div>
-
-                        <!-- Tổng tiền -->
-                        <div class="row justify-content-end mt-4">
-                            <div class="col-auto me-5">
-                                <h3 class="font-weight-bold text-color-dark text-4 mb-3">Tổng cộng</h3>
-                                <strong
-                                    class="text-color-dark text-5">{{ number_format($booking->room->price) }}đ</strong>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -174,10 +163,10 @@
 
         <!-- Nút -->
         <div class="row action-buttons mt-4">
-            <div class="col-12 col-md-auto">
-                <button type="submit" class="btn btn-success px-4 py-3">
-                    <i class="bx bx-save text-4 me-2"></i> Cập nhật trạng thái
-                </button>
+            <div class="col-12 col-md-auto mt-3 mt-md-0">
+                <a href="{{ route('bills.temporary', $booking->id) }}" class="btn btn-success px-4 py-3">
+                    Nhận phòng
+                </a>
             </div>
             <div class="col-12 col-md-auto mt-3 mt-md-0">
                 <a href="{{ route('room_order.index') }}" class="btn btn-secondary px-4 py-3">
@@ -185,6 +174,5 @@
                 </a>
             </div>
         </div>
-    </form>
-</section>
+    </section>
 @endsection
