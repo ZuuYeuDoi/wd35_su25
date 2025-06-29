@@ -17,6 +17,7 @@ class ServiceController extends Controller
     public function index()
     {
         $services = Service::latest()->paginate(10);
+
         return view('admin.services.index', compact('services'));
     }
 
@@ -25,7 +26,8 @@ class ServiceController extends Controller
      */
     public function create()
     {
-        return view('admin.services.create');
+        $type = Service::TYPE;
+        return view('admin.services.create', compact('type'));
     }
 
     /**
@@ -40,6 +42,8 @@ class ServiceController extends Controller
             'unit' => 'required|string|max:50',
             'image' => 'required|image|mimes:jpg,jpeg,png|max:2048',
             'status' => 'required|boolean',
+            'type' => 'required',
+            'quantity' => 'nullable|integer|min:0',
         ], [
             'name.required' => 'Tên sản phẩm là bắt buộc.',
             'name.string' => 'Tên sản phẩm phải là chuỗi.',
@@ -62,6 +66,11 @@ class ServiceController extends Controller
 
             'status.required' => 'Trạng thái là bắt buộc.',
             'status.boolean' => 'Trạng thái không hợp lệ.',
+
+            'type.required' => 'Loại dịch vụ là bắt buộc',
+
+            'quantity.numeric' => 'Số lượng phải là một số',
+            'quantity.min' => 'Số lượng không được nhỏ hơn 0',
         ]);
 
         try {
@@ -101,9 +110,10 @@ class ServiceController extends Controller
     public function edit(string $id)
     {
         try {
+            $type = Service::TYPE;
             $service = Service::findOrFail($id);
 
-            return view('admin.services.edit', compact('service'));
+            return view('admin.services.edit', compact('service', 'type'));
         } catch (\Throwable $th) {
             return view('errors.404');  // Nếu không tìm thấy hoặc lỗi thì trả về trang lỗi 404
         }
@@ -147,6 +157,8 @@ class ServiceController extends Controller
                 'unit' => $request->unit,
                 'description' => $request->description,
                 'status' => $request->status,
+                'type' => $request->type,
+                'quantity' => $request->quantity,
             ];
 
             // Xử lý upload ảnh mới nếu có

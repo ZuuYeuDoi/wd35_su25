@@ -49,6 +49,36 @@
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
                                     </div>
+                                    <div class="form-group mb-4">
+                                        <label for="type" class="form-label">Loại dịch vụ <span
+                                                class="text-danger">*</span></label>
+                                        <select name="type" id="type"
+                                            class="form-select @error('type') is-invalid @enderror"
+                                            onchange="toggleQuantityInput()">
+                                            <option value="">Chọn loại dịch vụ</option>
+                                            @foreach ($type as $key => $value)
+                                                <option value="{{ $key }}"
+                                                    {{ old('type', $service->type ?? '') == $key ? 'selected' : '' }}>
+                                                    {{ $value }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                        @error('type')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+
+                                    <div id="quantity-group" class="form-group mb-4" style="display: none;">
+                                        <label for="quantity" class="form-label">Số lượng <span
+                                                class="text-danger">*</span></label>
+                                        <input type="number" name="quantity" id="quantity"
+                                            class="form-control @error('quantity') is-invalid @enderror"
+                                            value="{{ old('quantity', $service->quantity ?? '') }}">
+                                        @error('quantity')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+
                                 </div>
 
                                 <!-- Cột phải -->
@@ -117,6 +147,23 @@
             filebrowserUploadMethod: 'form',
             extraPlugins: 'uploadimage',
             uploadUrl: "{{ route('services.upload', ['_token' => csrf_token()]) }}"
+        });
+    </script>
+    <script>
+        function toggleQuantityInput() {
+            var type = document.getElementById('type').value;
+            var quantityGroup = document.getElementById('quantity-group');
+
+            if (type == '2') {
+                quantityGroup.style.display = 'block';
+            } else {
+                quantityGroup.style.display = 'none';
+            }
+        }
+
+        // Gọi khi load trang nếu có giá trị cũ
+        document.addEventListener('DOMContentLoaded', function() {
+            toggleQuantityInput();
         });
     </script>
 

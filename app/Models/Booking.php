@@ -36,4 +36,9 @@ class Booking extends Model
     {
         return $this->belongsTo(Guest::class, 'guest_id');
     }
+
+    public function cart()
+    {
+        return $this->hasOne(Cart::class, 'booking_id');
+    }
 }
