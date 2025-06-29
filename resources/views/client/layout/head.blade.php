@@ -1,4 +1,3 @@
-
 <head>
     <meta charset="utf-8">
     <title>Hoteler - Hotel Booking HTML Template</title>
@@ -12,6 +11,8 @@
 
     <link rel="shortcut icon" href="{{ asset('client/images/favicon.png') }}" type="image/x-icon">
     <link rel="icon" href="{{ asset('client/images/favicon.png') }}" type="image/x-icon">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
     @stack('css')
     <!-- Responsive -->
