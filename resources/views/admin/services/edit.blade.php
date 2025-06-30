@@ -51,6 +51,33 @@
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
                                     </div>
+                                    <div class="form-group mb-4">
+                                        <label for="unit" class="form-label">Loại dịch vụ <span
+                                                class="text-danger">*</span></label>
+                                        <select name="type" id="type"
+                                            class="form-select @error('type') is-invalid @enderror">
+                                            <option value="">Chọn loại dịch vụ</option>
+                                            @foreach ($type as $key => $value)
+                                                <option value="{{ $key }}"
+                                                    {{ $key == $service->type ? 'selected' : '' }}>{{ $value }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                        @error('type')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                    <div id="quantity-group" class="form-group mb-4" style="display: none;">
+                                        <label for="quantity" class="form-label">Số lượng <span
+                                                class="text-danger">*</span></label>
+                                        <input type="number" name="quantity" id="quantity"
+                                            class="form-control @error('quantity') is-invalid @enderror"
+                                            value="{{ old('quantity', $service->quantity ?? '') }}">
+                                        @error('quantity')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+
                                 </div>
 
                                 <!-- Cột phải -->
@@ -126,6 +153,23 @@
             filebrowserUploadMethod: 'form',
             extraPlugins: 'uploadimage',
             uploadUrl: "{{ route('services.upload', ['_token' => csrf_token()]) }}"
+        });
+    </script>
+    <script>
+        function toggleQuantityInput() {
+            const type = document.getElementById('type').value;
+            const quantityGroup = document.getElementById('quantity-group');
+
+            if (type === '2') {
+                quantityGroup.style.display = 'block';
+            } else {
+                quantityGroup.style.display = 'none';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            toggleQuantityInput(); // hiển thị đúng khi load trang edit
+            document.getElementById('type').addEventListener('change', toggleQuantityInput);
         });
     </script>
 

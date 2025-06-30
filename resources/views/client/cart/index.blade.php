@@ -1,167 +1,196 @@
 @extends('client.index')
 
+@push('css')
+    <style>
+        .quantity-box {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .qty-btn {
+            width: 48px;
+            height: 48px;
+            font-size: 28px;
+            background: #fff;
+            border: 1px solid #eee;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .qty-btn:hover {
+            background: #f1f1f1;
+        }
+
+        .qty-input {
+            width: 60px;
+            height: 48px;
+            text-align: center;
+            font-size: 24px;
+            background: #f7f8fa;
+            border-radius: 12px;
+            border: none;
+        }
+
+        .remove-btn {
+            background: none;
+            border: none;
+            color: #dc3545;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 50%;
+            transition: all 0.2s ease;
+        }
+    </style>
+@endpush
+
 @section('content')
     <section class="page-title" style="background-image: url({{ asset('client/images/background/page-title-bg.png') }});">
         <div class="auto-container">
             <div class="title-outer text-center">
-                <h1 class="title">Cart</h1>
+                <h1 class="title">Giỏ hàng</h1>
                 <ul class="page-breadcrumb">
-                    <li><a href="index.html">Home</a></li>
-                    <li>Cart</li>
+                    <li><a href="{{ route('home') }}">Trang chủ</a></li>
+                    <li>Giỏ hàng</li>
                 </ul>
             </div>
         </div>
     </section>
-    <!-- end main-content -->
 
-    <!--cart Start-->
     <section>
         <div class="container pt-120 pb-100">
             <div class="section-content">
                 <div class="row">
                     <div class="col-md-12">
-                        <div class="table-responsive">
-                            <table class="table table-striped table-bordered tbl-shopping-cart">
-                                <thead>
-                                    <tr>
-                                        <th></th>
-                                        <th>Ảnh</th>
-                                        <th>Tên Món</th>
-                                        <th>Giá</th>
-                                        <th>Số lượng</th>
-                                        <th>Tổng</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr class="cart_item">
-                                        <td class="product-remove"><a title="Remove this item" class="remove"
-                                                href="#">×</a></td>
-                                        <td class="product-thumbnail"><a href="#"><img alt="product"
-                                                    src="{{ asset('client/images/resource/products/1.jpg') }}"></a></td>
-                                        <td class="product-name"><a href="shop-product-details.html">Winter Black Jacket</a>
-                                            <ul class="variation">
-                                                <li class="variation-size">Size: <span>Medium</span></li>
-                                            </ul>
-                                        </td>
-                                        <td class="product-price"><span class="amount">$36.00</span></td>
-                                        <td class="product-quantity">
-                                            <div class="product-details__quantity">
-                                                <div class="quantity-box">
-                                                    <button type="button" class="sub"><i
-                                                            class="fa fa-minus"></i></button>
-                                                    <input type="number" id="1" value="1" />
-                                                    <button type="button" class="add"><i
-                                                            class="fa fa-plus"></i></button>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td class="product-subtotal"><span class="amount">$36.00</span></td>
-                                    </tr>
-                                    <tr class="cart_item">
-                                        <td class="product-remove"><a title="Remove this item" class="remove"
-                                                href="#">×</a></td>
-                                        <td class="product-thumbnail"><a href="#"><img alt="product"
-                                                    src="{{ asset('client/images/resource/products/2.jpg') }}"></a></td>
-                                        <td class="product-name"><a href="shop-product-details.html">Swan Crop V-Neck
-                                                Tee</a>
-                                            <ul class="variation">
-                                                <li class="variation-size">Size: <span>Small</span></li>
-                                            </ul>
-                                        </td>
-                                        <td class="product-price"><span class="amount">$115.00</span></td>
-                                        <td class="product-quantity">
-                                            <div class="product-details__quantity">
-                                                <div class="quantity-box">
-                                                    <button type="button" class="sub"><i
-                                                            class="fa fa-minus"></i></button>
-                                                    <input type="number" id="1" value="1" />
-                                                    <button type="button" class="add"><i
-                                                            class="fa fa-plus"></i></button>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td class="product-subtotal"><span class="amount">$115.00</span></td>
-                                    </tr>
-                                    <tr class="cart_item">
-                                        <td class="product-remove"><a title="Remove this item" class="remove"
-                                                href="#">×</a></td>
-                                        <td class="product-thumbnail"><a href="#"><img alt="product"
-                                                    src="{{ asset('client/images/resource/products/3.jpg') }}"></a></td>
-                                        <td class="product-name"><a href="shop-product-details.html">Blue Solid Casual
-                                                Shirt</a>
-                                            <ul class="variation">
-                                                <li class="variation-size">Size: <span>Large</span></li>
-                                            </ul>
-                                        </td>
-                                        <td class="product-price"><span class="amount">$68.00</span></td>
-                                        <td class="product-quantity">
-                                            <div class="product-details__quantity">
-                                                <div class="quantity-box">
-                                                    <button type="button" class="sub"><i
-                                                            class="fa fa-minus"></i></button>
-                                                    <input type="number" id="1" value="1" />
-                                                    <button type="button" class="add"><i
-                                                            class="fa fa-plus"></i></button>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td class="product-subtotal"><span class="amount">$68.00</span></td>
-                                    </tr>
-                                    <tr class="cart_item">
-                                        <td colspan="3">
-                                            
-                                        </td>
-                                        <td colspan="2">&nbsp;</td>
-                                        <td><button type="button" class="theme-btn btn-style-one"><span
-                                                    class="btn-title">Thêm Món</span></button></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                    <div class="col-md-12 mt-30">
-                        <div class="row">
-                            <div class="col-md-5">
-                                <h4>Thông tin phòng</h4>
-                                <form class="form" action="#">
-
-                                    <div class="mb-10">
-                                        <input type="text" class="form-control" placeholder="Số Phòng"
-                                            value="">
-                                    </div>
-                                    <div class="mb-30">
-                                        <button type="button" class="theme-btn btn-style-one"><span
-                                                class="btn-title">Thêm</span></button>
-                                    </div>
-                                </form>
-                            </div>
-                            <div class="col-md-2">
-                            </div>
-                            <div class="col-md-5">
-                                <h4>Tổng thanh toán</h4>
-                                <table class="table table-bordered cart-total">
+                        @if ($cart && $cart->services->count())
+                            <form action="{{ route('cart.update') }}" method="POST" id="cartForm">
+                                @csrf
+                                <table class="table table-striped table-bordered tbl-shopping-cart">
+                                    <thead>
+                                        <tr>
+                                            <th></th>
+                                            <th>Ảnh</th>
+                                            <th>Tên Món</th>
+                                            <th>Giá</th>
+                                            <th>Số lượng</th>
+                                            <th>Tổng</th>
+                                        </tr>
+                                    </thead>
                                     <tbody>
-                                        <tr>
-                                            <td>Cart Subtotal</td>
-                                            <td>$180.00</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Shipping and Handling</td>
-                                            <td>$70.00</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Order Total</td>
-                                            <td>$250.00</td>
-                                        </tr>
+                                        @foreach ($cart->services as $item)
+                                            @php
+                                                $inputId = 'qty-' . $item->id;
+                                                $maxQty = $item->service->quantity;
+                                            @endphp
+                                            <tr>
+                                                <td>
+                                                    <button type="submit"
+                                                        formaction="{{ route('cart.remove', $item->id) }}" formmethod="POST"
+                                                        class="remove-btn" onclick="return confirm('Xóa sản phẩm này?')">
+                                                        @csrf
+                                                        <i class="bi bi-x-circle"></i>
+                                                    </button>
+                                                </td>
+                                                <td>
+                                                    <img src="{{ asset('storage/' . $item->service->image) }}"
+                                                        width="60" alt="Ảnh sản phẩm">
+                                                </td>
+                                                <td>{{ $item->service->name }}</td>
+                                                <td>{{ number_format($item->unit_price, 0, ',', '.') }} đ</td>
+                                                <td>
+                                                    <div class="quantity-box">
+                                                        <button type="button" class="qty-btn btn-minus"
+                                                            data-target="{{ $inputId }}" data-min="1">−</button>
+                                                        <input type="number" id="{{ $inputId }}"
+                                                            name="quantities[{{ $item->id }}]"
+                                                            value="{{ $item->quantity }}" min="1"
+                                                            max="{{ $maxQty }}" class="qty-input"
+                                                            data-max="{{ $maxQty }}" />
+                                                        <button type="button" class="qty-btn btn-plus"
+                                                            data-target="{{ $inputId }}"
+                                                            data-max="{{ $maxQty }}">+</button>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <span class="amount" id="subtotal-{{ $item->id }}">
+                                                        {{ number_format($item->quantity * $item->unit_price, 0, ',', '.') }}
+                                                        đ
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        @endforeach
                                     </tbody>
                                 </table>
-                                <a class="theme-btn btn-style-one" href="shop-checkout.html"><span
-                                        class="btn-title">Tiến hành thanh toán</span> </a>
-                            </div>
-                        </div>
+                                <button type="submit" class="btn btn-warning">Cập nhật</button>
+                            </form>
+                            <form action="{{ route('cart.order') }}" method="POST" class="mt-3">
+                                @csrf
+                                <input type="hidden" name="cart_id" value="{{ $cart->id }}">
+                                @foreach ($cart->services as $item)
+                                    <input type="hidden" name="service_names[{{ $item->id }}]"
+                                        value="{{ $item->service->name }}">
+                                    <input type="hidden" name="service_prices[{{ $item->id }}]"
+                                        value="{{ $item->unit_price }}">
+                                    <input type="hidden" name="quantities[{{ $item->id }}]"
+                                        value="{{ $item->quantity }}">
+                                    <input type="hidden" name="subtotals[{{ $item->id }}]"
+                                        value="{{ $item->quantity * $item->unit_price }}">
+                                @endforeach
+                                <button type="submit" class="btn btn-success">Đặt món</button>
+                            </form>
+                        @else
+                            <p class="text-center">Không có sản phẩm nào trong giỏ hàng.</p>
+                        @endif
                     </div>
                 </div>
             </div>
         </div>
     </section>
 @endsection
+@push('js')
+    <script>
+        document.querySelectorAll('.btn-plus').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const inputId = this.getAttribute('data-target');
+                const input = document.getElementById(inputId);
+                const max = parseInt(input.getAttribute('max'));
+                let value = parseInt(input.value) || 1;
+                if (value < max) {
+                    input.value = value + 1;
+                    input.dispatchEvent(new Event('change'));
+                }
+            });
+        });
+        document.querySelectorAll('.btn-minus').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const inputId = this.getAttribute('data-target');
+                const input = document.getElementById(inputId);
+                let value = parseInt(input.value) || 1;
+                if (value > 1) {
+                    input.value = value - 1;
+                    input.dispatchEvent(new Event('change'));
+                }
+            });
+        });
+        document.querySelectorAll('.qty-input').forEach(input => {
+            input.addEventListener('input', function() {
+                let value = parseInt(this.value) || 1;
+                const min = parseInt(this.getAttribute('min')) || 1;
+                const max = parseInt(this.getAttribute('max'));
+                if (value < min) value = min;
+                if (value > max) value = max;
+                this.value = value;
+                // Cập nhật subtotal nếu muốn realtime
+                const row = this.closest('tr');
+                if (row) {
+                    const price = parseInt(row.querySelector('td:nth-child(4)').innerText.replace(/\D/g,
+                        ''));
+                    row.querySelector('.amount').innerText = (value * price).toLocaleString('vi-VN') + ' đ';
+                }
+            });
+        });
+    </script>
+@endpush

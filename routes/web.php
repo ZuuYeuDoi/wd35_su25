@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\ServiceController;
 use App\Http\Controllers\Admin\AmenitieController;
 use App\Http\Controllers\Admin\RoomTypeController;
 use App\Http\Controllers\Admin\BookingRoomController;
+use App\Http\Controllers\User\CartController;
 use App\Http\Controllers\User\ServiceController as UserServiceController;
 
 
@@ -27,25 +28,30 @@ Route::prefix('/')->group(function () {
         Route::post('/booking', 'index')->name('booking.index');
         Route::post('/booking/store', 'store')->name('booking.store');
     });
+
+    Route::controller(UserServiceController::class)->group(function () {
+        Route::get('/service', 'indexFood')->name('services.indexFood');
+        Route::get('/service-detail/{id}', 'showClient')->name('services.showClient');
+    });
+
+    Route::controller(CartController::class)->group(function () {
+        Route::post('/cart/add', 'addService')->name('cart.add');
+        route::get('/cart', 'index')->name('cart.ídex');
+        Route::post('/cart/remove/{id}', 'remove')->name('cart.remove');
+        Route::post('/cart/update', 'update')->name('cart.update');
+        Route::post('/cart/order', 'order')->name('cart.order');
+    });
 });
 
 
-Route::get('/cart', function () {
-    return view('client.cart.index');
-});
+// Route::get('/cart', function () {
+//     return view('client.cart.index');
+// });
 Route::get('/room-detail', function () {
     return view('client.room.detail');
 });
 
 
-
-Route::get('/product', function () {
-    return view('client.product.index');
-});
-
-Route::get('/product-detail', function () {
-    return view('client.product.detail');
-});
 
 
 
