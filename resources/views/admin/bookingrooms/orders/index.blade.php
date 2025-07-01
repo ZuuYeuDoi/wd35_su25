@@ -59,8 +59,8 @@
                                 <tr>
                                     <th>Mã</th>
                                     <th>Khách hàng</th>
-                                    <th>Ngày nhận phòng</th>
-                                    <th>Ngày trả phòng</th>
+                                    <th>Ngày nhận phòng dự kiến</th>
+                                    <th>Ngày trả phòng dự kiến</th>
                                     <th>Loại ở</th>
                                     <th>Tiền cọc</th>
                                     <th>Trạng thái</th>
@@ -79,12 +79,12 @@
                                             3 => 'Hoàn tất thanh toán',
                                             4 => 'Hoàn tất check out',
                                             5 => 'Đã Hủy',
-                                            default=>'1'
+                                            default=>'Thanh toán Không thành công!'
                                         };
                                     @endphp
                                     <tr>
                                         <td><strong>{{ $booking->id }}</strong></a></td>
-                                        <td>{{ $booking->user->name ?? 'Ẩn' }}</td>
+                                        <td>{{ $booking->user->name ?? '---' }}</td>
                                         <td>{{ $checkIn->format('d/m/Y') }} lúc 14:00</td>
                                         <td>{{ $checkOut->format('d/m/Y') }} lúc 12:00</td>
                                         <td><span class="badge bg-info">{{ $stayType }}</span></td>
