@@ -58,11 +58,6 @@
                                            Đơn đặt
                                        </a>
                                    </li>
-                                   <li>
-                                       <a class="nav-link" href="#">
-                                           Dịch vụ Phòng
-                                       </a>
-                                   </li>
                                </ul>
                            </li>
                            <li class="nav-parent">
