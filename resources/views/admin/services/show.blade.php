@@ -58,7 +58,7 @@
                                 </tr>
                                 <tr>
                                     <th>Mô tả</th>
-                                    <td style="white-space: pre-line;">{{ $service->description ?? 'Chưa có mô tả' }}</td>
+                                    <td style="white-space: pre-line;">{!! $service->description ?? 'Chưa có mô tả' !!}</td>
                                 </tr>
                             </tbody>
                         </table>

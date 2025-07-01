@@ -96,7 +96,7 @@
                     </form>
 
                     <div class="product-details__content mt-4">
-                        <p>{{ $product->description }}</p>
+                        <div>{!! $product->description !!}</div>
                     </div>
                 </div>
             </div>

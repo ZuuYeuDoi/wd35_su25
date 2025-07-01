@@ -33,12 +33,25 @@ class ServiceController extends Controller
     }
 
 
-    public function indexFood()
+    public function indexFood(Request $request)
     {
-        $product = Service::where('type', 2)->get();
+        $query = Service::where('type', 2);
 
-        return view('client.product.index', compact('product'));
+        if ($request->filled('search')) {
+            $query->where('name', 'like', '%' . $request->search . '%');
+        }
+
+        if ($request->filled('min_price') && $request->filled('max_price')) {
+            $query->whereBetween('price', [(int)$request->min_price, (int)$request->max_price]);
+        }
+
+        $product = $query->get();
+
+        $maxPrice = Service::where('type', 2)->max('price') + 10000;
+
+        return view('client.product.index', compact('product', 'maxPrice'));
     }
+
 
     public function showClient($id)
     {
