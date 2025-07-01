@@ -5,7 +5,7 @@
     <section class="page-title" style="background-image: url({{ asset('client/images/background/page-title-bg.png') }});">
         <div class="auto-container">
             <div class="title-outer text-center">
-                <h1 class="title">Dịch vụ</h1>
+                <h1 class="title">Dịch Vụ Chăm Sóc</h1>
                 <ul class="page-breadcrumb">
                     <li><a href="/">Trang chủ</a></li>
                     <li>Dịch vụ</li>

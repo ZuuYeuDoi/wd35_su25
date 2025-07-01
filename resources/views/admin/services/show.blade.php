@@ -20,42 +20,43 @@
                     @endif
                 </div>
 
-                <!-- Thông tin dịch vụ -->
-                <div class="col-md-7">
-                    <table class="table table-borderless mb-0">
-                        <tbody>
-                            <tr>
-                                <th style="width: 35%;">ID</th>
-                                <td>{{ $service->id }}</td>
-                            </tr>
-                            <tr>
-                                <th>Tên dịch vụ</th>
-                                <td>{{ $service->name }}</td>
-                            </tr>
-                            <tr>
-                                <th>Giá</th>
-                                <td class="text-primary fw-bold">{{ number_format($service->price) }} VNĐ</td>
-                            </tr>
-                            <tr>
-                                <th>Đơn vị</th>
-                                <td>{{ $service->unit }}</td>
-                            </tr>
-                            <tr>
-                                <th>Trạng thái</th>
-                                <td>
-                                    @if($service->status == 1)
-                                        <span class="badge bg-success">Hoạt động</span>
-                                    @else
-                                        <span class="badge bg-secondary">Không hoạt động</span>
-                                    @endif
-                                </td>
-                            </tr>
-                            <tr>
-                                <th>Mô tả</th>
-                                <td style="white-space: pre-line;">{!! $service->description ?? 'Chưa có mô tả' !!}</td>
-                            </tr>
-                        </tbody>
-                    </table>
+<!-- Thông tin dịch vụ -->
+<div class="col-md-7">
+    <table class="table table-borderless mb-0">
+        <tbody>
+            <tr>
+                <th style="width: 35%;">ID</th>
+                <td>{{ $service->id }}</td>
+            </tr>
+            <tr>
+                <th>Tên dịch vụ</th>
+                <td>{{ $service->name }}</td>
+            </tr>
+            <tr>
+                <th>Giá</th>
+                <td class="text-primary fw-bold">{{ number_format($service->price) }} VNĐ</td>
+            </tr>
+            <tr>
+                <th>Đơn vị</th>
+                <td>{{ $service->unit }}</td>
+            </tr>
+            <tr>
+                <th>Trạng thái</th>
+                <td>
+                    @if($service->status == 1)
+                        <span class="badge bg-success">Hoạt động</span>
+                    @else
+                        <span class="badge bg-secondary">Không hoạt động</span>
+                    @endif
+                </td>
+            </tr>
+            <tr>
+                <th>Mô tả</th>
+                <td style="white-space: pre-line;">{!! $service->description ?? 'Chưa có mô tả' !!}</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
                 </div>
             </div>
         </div>

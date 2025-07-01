@@ -13,7 +13,7 @@
     <section class="page-title" style="background-image: url({{ asset('client/images/background/page-title-bg.png') }});">
         <div class="auto-container">
             <div class="title-outer text-center">
-                <h1 class="title">Shop</h1>
+                <h1 class="title">Cửa Hàng Đồ Ăn</h1>
                 <ul class="page-breadcrumb">
                     <li><a href="index.html">Home</a></li>
                     <li>Products</li>
@@ -30,89 +30,46 @@
                 <div class="col-lg-3 col-md-12 col-sm-12">
                     <div class="shop-sidebar">
                         <div class="sidebar-search">
-                            <form action="https://html.kodesolution.com/2025/hoteler-html/shop-products.html" method="post"
+                            <form action="{{ route('services.indexFood') }}" method="GET"
                                 class="search-form">
                                 <div class="form-group">
-                                    <input type="search" name="search-field" placeholder="Search..." required="">
-                                    <button><i class="lnr lnr-icon-search"></i></button>
+                                    <input type="search" name="search" placeholder="Tìm Kiếm..." required="" value="{{ request('search') }}" >
+                                    <button type="submit"><i class="lnr lnr-icon-search"></i></button>
                                 </div>
                             </form>
                         </div>
-                        <div class="sidebar-widget category-widget">
-                            <div class="widget-title">
-                                <h5 class="widget-title">Categories</h5>
-                            </div>
-                            <div class="widget-content">
-                                <ul class="category-list clearfix">
-                                    <li><a href="shop-product-details.html">Cloud Solution</a></li>
-                                    <li><a href="shop-product-details.html">Cyber Data</a></li>
-                                    <li><a href="shop-product-details.html">SEO Marketing</a></li>
-                                    <li><a href="shop-product-details.html">UI/UX Design</a></li>
-                                    <li><a href="shop-product-details.html">Web Development</a></li>
-                                    <li><a href="shop-product-details.html">Artifical Intelligence</a></li>
-                                </ul>
-                            </div>
-                        </div>
-                        <div class="sidebar-widget price-filters">
-                            <div class="widget-title">
-                                <h5 class="widget-title">Filter by Price</h5>
-                            </div>
-                            <div class="range-slider clearfix">
-                                <div class="price-range-slider"></div>
-                                <div class="clearfix">
-                                    <p>Price:</p>
-                                    <div class="title"></div>
-                                    <div class="input"><input type="text" class="property-amount" name="field-name"
-                                            readonly></div>
-                                    <input type="submit" value="Filter">
+                        <form action="{{ route('services.indexFood') }}" method="GET">
+                            <div class="sidebar-widget price-filters">
+                                <div class="widget-title">
+                                    <h5 class="widget-title">Lọc Theo Giá</h5>
+                                </div>
+
+                                <div class="range-slider clearfix">
+                                    <div class="price-range-slider" id="price-range-slider"></div>
+
+                                    <div class="clearfix">
+                                        <p>Giá:</p>
+                                        <div class="title" id="price-range-text"></div>
+
+                                        <div class="input">
+                                            <input type="text" class="property-amount" id="price-range-display" readonly>
+                                        </div>
+
+                                        {{-- Input ẩn để gửi min và max về controller --}}
+                                        <input type="hidden" name="min_price" id="min_price" value="{{ request('min_price', 0) }}">
+                                        <input type="hidden" name="max_price" id="max_price" value="{{ request('max_price', 1000000) }}">
+
+                                        <input type="submit" value="Filter">
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        {{-- <div class="sidebar-widget post-widget">
-                            <div class="widget-title">
-                                <h5 class="widget-title">Popular Products</h5>
-                            </div>
-                            <div class="post-inner">
-                                <div class="post">
-                                    <figure class="post-thumb"><a href="shop-details.html"><img
-                                                src="{{ asset('client/images/resource/products/thumb-1.jpg') }}"
-                                                alt=""></a></figure>
-                                    <a href="shop-product-details.html">Best Headset</a>
-                                    <span class="price">$45.00</span>
-                                </div>
-                                <div class="post">
-                                    <figure class="post-thumb"><a href="shop-details.html"><img
-                                                src="{{ asset('client/images/resource/products/thumb-2.jpg') }}"
-                                                alt=""></a></figure>
-                                    <a href="shop-product-details.html">Quality Battery</a>
-                                    <span class="price">$34.00</span>
-                                </div>
-                                <div class="post">
-                                    <figure class="post-thumb"><a href="shop-details.html"><img
-                                                src="{{ asset('client/images/resource/products/thumb-3.jpg') }}"
-                                                alt=""></a></figure>
-                                    <a href="shop-product-details.html">Smart Watch</a>
-                                    <span class="price">$29.00</span>
-                                </div>
-                            </div>
-                        </div> --}}
+                        </form>
                     </div>
                 </div>
                 <div class="col-lg-9 col-md-12 col-sm-12 content-side">
                     <!--MixitUp Galery-->
                     <div class="mixitup-gallery mt-5 mt-lg-0">
                         <!--Filter-->
-                        <div class="filters clearfix">
-                            <ul class="filter-tabs filter-btns clearfix">
-                                <li class="active filter" data-role="button" data-filter="all">All</li>
-                                <li class="filter" data-role="button" data-filter=".dairy">Cyber</li>
-                                <li class="filter" data-role="button" data-filter=".pantry">Digital</li>
-                                <li class="filter" data-role="button" data-filter=".meat">Software</li>
-                                <li class="filter" data-role="button" data-filter=".fruit">Technology</li>
-                                <li class="filter" data-role="button" data-filter=".vagetables">Development</li>
-                            </ul>
-                        </div>
-
                         <div class="filter-list row">
                             <!--Product Block-->
                             @foreach ($product as $item)
@@ -151,4 +108,30 @@
 @push('js')
     <script src="{{ asset('client/js/jquery-ui.js') }}"></script>
     <script src="{{ asset('client/js/script.js') }}"></script>
+    <script>
+    $(function () {
+        const min = 0;
+        const max = {{ $maxPrice }};
+        const minInit = {{ request('min_price', 0) }};
+        const maxInit = {{ request('max_price', $maxPrice) }};
+
+        $("#price-range-slider").slider({
+            range: true,
+            min: min,
+            max: max,
+            step: 500, // cho phép lọc giá lẻ như 23.500đ
+            values: [minInit, maxInit],
+            slide: function (event, ui) {
+                $("#price-range-text").text(ui.values[0].toLocaleString() + " đ - " + ui.values[1].toLocaleString() + " đ");
+                $("#price-range-display").val(ui.values[0].toLocaleString() + " đ - " + ui.values[1].toLocaleString() + " đ");
+                $("#min_price").val(ui.values[0]);
+                $("#max_price").val(ui.values[1]);
+            }
+        });
+
+        // Hiển thị ban đầu
+        $("#price-range-text").text(minInit.toLocaleString() + " đ - " + maxInit.toLocaleString() + " đ");
+        $("#price-range-display").val(minInit.toLocaleString() + " đ - " + maxInit.toLocaleString() + " đ");
+    });
+</script>
 @endpush

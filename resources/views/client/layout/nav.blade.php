@@ -15,7 +15,12 @@
                     <li><a href="page-faq.html">Đặt sự kiện</a></li>
                 </ul>
             </li>
-            <li class=""><a href="/services">Dịch vụ</a>
+            <li class="dropdown"><a href="#">Dịch Vụ</a>
+                <ul>
+                    <li><a href="/services">Dịch Vụ Chăm Sóc</a></li>
+                    <li><a href="/service">Dịch Vụ Ăn Uống</a></li>
+                </ul>
+            </li>
             </li>
             <li><a href="page-contact.html">Liên Hệ</a></li>
             <li class="dropdown">
