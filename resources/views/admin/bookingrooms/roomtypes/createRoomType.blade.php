@@ -1,5 +1,6 @@
 @extends('layouts.admin')
 @section('title1', 'Thêm loại phòng')
+
 @push('css')
     <style>
         .form-group+.form-group {
@@ -86,6 +87,33 @@
                         </div>
 
                         <div class="mb-3">
+    <label class="form-label">Loại giường</label>
+    <div class="d-flex flex-wrap gap-3">
+        @php
+            $bedTypes = [
+                '1 giường đơn',
+                '2 giường đơn',
+                '1 giường đôi',
+                '1 giường đôi + 1 giường đơn',
+            ];
+        @endphp
+
+        @foreach ($bedTypes as $bed)
+            <div class="form-check me-3">
+                <input class="form-check-input" type="radio" name="bed_type"
+                    value="{{ $bed }}" id="bed_type_{{ $loop->index }}"
+                    {{ old('bed_type') === $bed ? 'checked' : '' }}>
+                <label class="form-check-label" for="bed_type_{{ $loop->index }}">{{ $bed }}</label>
+            </div>
+        @endforeach
+    </div>
+    @error('bed_type')
+        <div class="invalid-feedback">{{ $message }}</div>
+    @enderror
+</div>
+
+
+                        <div class="mb-3">
                             <label for="room_type_price" class="form-label">Giá mặc định</label>
                             <input type="number" name="room_type_price" class="form-control" value="{{ old('room_type_price') }}" min="0" required>
                         </div>
@@ -125,6 +153,8 @@
                 <button type="submit" class="btn btn-primary">Thêm mới</button>
                 <a href="{{ route('room_types.index') }}" class="btn btn-secondary">Quay lại</a>
             </form>
+
+            
         </div>
     </div>
 </div>
@@ -172,7 +202,7 @@
         })(window, document, 'script', '../../../../www.google-analytics.com/analytics.js', 'ga');
         ga('create', 'UA-42715764-8', 'auto');
         ga('send', 'pageview');
-    </script>
+
     <!-- Examples -->
     <script src="{{ asset('assets/js/examples/examples.header.menu.js') }}"></script>
     <script src="{{ asset('assets/js/examples/examples.ecommerce.datatables.list.js') }}"></script>

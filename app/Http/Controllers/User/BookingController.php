@@ -4,17 +4,20 @@ namespace App\Http\Controllers\User;
 
 use Carbon\Carbon;
 use App\Models\Room;
-use App\Models\Guest;
-use App\Models\Amenitie;
+use App\Models\Booking;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
-use App\Models\Booking; // thêm nếu chưa có
 
 class BookingController extends Controller
 {
     public function index(Request $request)
     {
+        // Bắt buộc đăng nhập
+        if (!Auth::check()) {
+            return redirect()->route('login')->with('error', 'Vui lòng đăng nhập để tiếp tục đặt phòng.');
+        }
+
         $request->validate([
             'checkin_date' => 'required|date',
             'checkout_date' => 'required|date|after:checkin_date',
@@ -24,21 +27,24 @@ class BookingController extends Controller
             'checkout_date.after' => 'Ngày trả phòng phải sau ngày nhận phòng.',
         ]);
 
-        $user = Auth::check() ? Auth::user() : null;
+        $user = Auth::user();
         $data = $request->only(['checkin_date', 'checkout_date']);
-        $roomId = $request->input('room_id');
-        $room = Room::with('images_room', 'roomType')->findOrFail($roomId);
+        $roomIds = $request->input('room_ids', []);
+        $rooms = Room::with('images_room', 'roomType')->whereIn('id', $roomIds)->get();
 
         $checkin = Carbon::parse($data['checkin_date']);
         $checkout = Carbon::parse($data['checkout_date']);
         $numberOfNights = $checkin->diffInDays($checkout);
 
         $bookingCode = $this->generateBookingCode();
-        $totalPrice = $numberOfNights * $room->price;
+        
+        $totalPrice = $rooms->sum(function ($room) use ($numberOfNights) {
+            return $room->price * $numberOfNights;
+        });
 
-        // 👉 Tạo đối tượng booking tạm (chưa lưu vào DB)
+        // Booking tạm chưa lưu DB
         $booking = new \stdClass();
-        $booking->id = null; // hoặc gán ID tạm thời nếu cần
+        $booking->id = null;
         $booking->total_price = $totalPrice;
 
         return view('client.checkout.index', compact(
@@ -48,9 +54,60 @@ class BookingController extends Controller
             'totalPrice',
             'numberOfNights',
             'bookingCode',
-            'booking' // ✅ thêm vào đây để tránh lỗi
+            'booking'
         ));
     }
+public function store(Request $request)
+{
+    if (!Auth::check()) {
+        return redirect()->route('login')->with('error', 'Vui lòng đăng nhập để tiếp tục.');
+    }
+
+    $data = $request->validate([
+        'checkin_date' => 'required|date',
+        'checkout_date' => 'required|date|after:checkin_date',
+        'room_ids' => 'required|array',
+        'room_ids.*' => 'exists:rooms,id',
+    ]);
+
+    $user = Auth::user();
+    $checkin = Carbon::parse($data['checkin_date']);
+    $checkout = Carbon::parse($data['checkout_date']);
+    $numberOfNights = $checkin->diffInDays($checkout);
+
+    $booking = Booking::create([
+        'booking_code' => $this->generateBookingCode(),
+        'user_id' => $user->id,
+        'check_in_date' => $checkin,
+        'check_out_date' => $checkout,
+        'status' => 0,
+    ]);
+
+    $totalPrice = 0;
+
+    foreach ($data['room_ids'] as $roomId) {
+        $room = Room::findOrFail($roomId);
+        $price = $room->price * $numberOfNights;
+
+        $totalPrice += $price;
+
+        \DB::table('booking_rooms')->insert([
+            'booking_id' => $booking->id,
+            'room_id' => $room->id,
+            'price' => $room->price,
+            'adults' => 1, // Tùy chỉnh
+            'children' => 0, // Tùy chỉnh
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+    }
+
+    return view('client.payments.auto_submit', [
+        'booking_id' => $booking->id,
+        'amount' => $totalPrice,
+    ]);
+}
+
 
     private function generateBookingCode()
     {
@@ -58,56 +115,4 @@ class BookingController extends Controller
         $random = mt_rand(1000, 9999);
         return "BK-{$date}-{$random}";
     }
-
-        public function store(Request $request)
-{
-    $data = $request->validate([
-        'name' => 'required|string|max:255',
-        'email' => 'nullable|email|max:255',
-        'phone' => 'required|string|max:255',
-        'cccd' => 'required|string|max:20',
-        'checkin_date' => 'required|date',
-        'checkout_date' => 'required|date|after:checkin_date',
-        'room_id' => 'required|exists:rooms,id',
-    ]);
-
-    // Tạo guest
-    $guest = Guest::create([
-        'name' => $data['name'],
-        'email' => $data['email'],
-        'phone' => $data['phone'],
-        'cccd' => $data['cccd'],
-    ]);
-
-    // Tính số đêm
-    $checkin = Carbon::parse($data['checkin_date']);
-    $checkout = Carbon::parse($data['checkout_date']);
-    $numberOfNights = $checkin->diffInDays($checkout);
-
-    // Lấy giá phòng
-    $room = Room::findOrFail($data['room_id']);
-    $totalPrice = $numberOfNights * $room->price;
-
-    // dd($room, $totalPrice);
-    // Tạo booking
-    $booking = Booking::create([
-        'booking_code' => $this->generateBookingCode(),
-        'room_id' => $room->id,
-        'user_id'  => Auth::check() ? Auth::id() : null,
-        'guest_id' => Auth::check() ? null : $guest->id,
-        'check_in_date' => $data['checkin_date'],
-        'check_out_date' => $data['checkout_date'],
-        'deposit' => null,
-        'status' => 0,
-    ]);
-
-    // Chuyển sang payment
-    return view('client.payments.auto_submit', [
-    'booking_id' => $booking->id,
-    'amount' => $totalPrice,
-    ]);
 }
-    
-}
-
-

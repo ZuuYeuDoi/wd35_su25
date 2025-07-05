@@ -17,6 +17,7 @@ class RoomType extends Model
         'room_type_price',
         'image',
         'amenities',
+        'bed_type',
     ];
 
     protected $casts = [
@@ -27,4 +28,9 @@ class RoomType extends Model
     {
         return $this->hasMany(Room::class);
     }
+    public function images()
+{
+    return $this->hasMany(RoomImage::class, 'room_type_id');
+}
+
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\User;
 
 use App\Models\Room;
+use App\Models\Booking;
 use App\Models\Amenitie;
 use App\Models\RoomType;
 use Illuminate\Http\Request;
@@ -28,89 +29,141 @@ class HomeController extends Controller
      */
     public function index()
     {
-        $roomTypes = RoomType::with(['rooms' => function ($query) {
-            $query->with('images_room', 'roomType')->where('status', 1)->latest()->take(3);
-        }])->get();
+       // Lấy tất cả RoomType cùng phòng + ảnh
+    $roomTypes = RoomType::with(['rooms.images_room'])->get();
 
-        $allRooms = $roomTypes->pluck('rooms')->flatten();
-        $amenityIds = $allRooms->pluck('amenities')->filter()->flatten()->unique()->toArray();
-        $allAmenities = Amenitie::whereIn('id', $amenityIds)->get()->keyBy('id');
+    // Nhóm theo type (ví dụ: Standard, Deluxe...)
+    $groupedRoomTypes = $roomTypes->groupBy('type');
 
-        return view('home', compact('roomTypes', 'allAmenities'));
-    }
+    // Lấy các ID tiện nghi để load 1 lần
+        $amenityIds = $roomTypes->pluck('amenities')
+            ->filter() // loại bỏ null
+            ->flatMap(function ($item) {
+                // $item có thể là JSON string hoặc array → ép về array
+                return is_array($item) ? $item : json_decode($item, true);
+            })
+            ->unique()
+            ->toArray();
 
-    public function indexRoom(Request $request)
-{
-    $checkIn = $request->input('check_in');
-    $checkOut = $request->input('check_out');
-    $adults = (int) $request->input('adults', 0);
-    $children = (int) $request->input('children', 0);
-    $childAges = $request->input('child_ages', []);
-
-    $isSearching = $checkIn || $checkOut || ($adults > 0 || $children > 0);
-
-    // ✅ Hardcoded số giường tương ứng với mỗi loại phòng
-    $bedConfig = [
-        1 => 1, // room_type_id = 1 => Single
-        2 => 2, // Twin
-        3 => 1, // Double
-        4 => 3, // Triple
-    ];
-
-    $totalBedsNeeded = $adults;
-    $under12 = 0;
-
-    foreach ($childAges as $age) {
-        $age = (int) $age;
-        if ($age >= 12) {
-            $totalBedsNeeded += 1;
-        } else {
-            $under12 += 1;
-        }
-    }
-
-    $totalBedsNeeded += ceil($under12 / 2);
-
-    $roomTypesQuery = RoomType::with(['rooms' => function ($query) use ($isSearching, $bedConfig, $totalBedsNeeded) {
-        $query->with(['images_room', 'roomType'])->where('status', 1);
-
-        if ($isSearching) {
-            $allowedRoomTypeIds = array_keys(array_filter($bedConfig, function ($beds) use ($totalBedsNeeded) {
-                return $beds >= $totalBedsNeeded;
-            }));
-
-            $query->whereIn('room_type_id', $allowedRoomTypeIds)->orderBy('price', 'asc');
-        } else {
-            $query->orderBy('created_at', 'desc');
-        }
-    }]);
-
-    $roomTypes = $roomTypesQuery->get();
-
-    $allRooms = $roomTypes->pluck('rooms')->flatten();
-    $amenityIds = $allRooms->pluck('amenities')->filter()->flatten()->unique()->toArray();
+    // Lấy toàn bộ tiện nghi và keyBy theo ID
     $allAmenities = Amenitie::whereIn('id', $amenityIds)->get()->keyBy('id');
 
-    return view('client.room.index', compact('roomTypes', 'allAmenities', 'checkIn', 'checkOut', 'adults', 'children', 'childAges'));
+        return view('home', compact('groupedRoomTypes', 'allAmenities'));
+    }
+
+
+
+public function indexRoom(Request $request)
+{
+    // Lấy tất cả RoomType cùng phòng + ảnh
+    $roomTypes = RoomType::with(['rooms.images_room'])->get();
+
+    // Nhóm theo type (ví dụ: Standard, Deluxe...)
+    $groupedRoomTypes = $roomTypes->groupBy('type');
+
+    // Lấy các ID tiện nghi để load 1 lần
+        $amenityIds = $roomTypes->pluck('amenities')
+            ->filter() // loại bỏ null
+            ->flatMap(function ($item) {
+                // $item có thể là JSON string hoặc array → ép về array
+                return is_array($item) ? $item : json_decode($item, true);
+            })
+            ->unique()
+            ->toArray();
+
+    // Lấy toàn bộ tiện nghi và keyBy theo ID
+    $allAmenities = Amenitie::whereIn('id', $amenityIds)->get()->keyBy('id');
+
+    return view('client.room.index', compact('groupedRoomTypes', 'allAmenities'));
+}
+
+public function getAvailableRoomsCount($roomTypeId, $checkIn, $checkOut)
+{
+    // Lấy ID các phòng thuộc loại này
+    $rooms = Room::where('room_type_id', $roomTypeId)->pluck('id');
+
+    // Tìm các phòng đã được đặt trong khoảng thời gian đó
+    $bookedRoomIds = Booking::whereIn('room_id', $rooms)
+        ->where(function ($query) use ($checkIn, $checkOut) {
+            $query->whereBetween('check_in_date', [$checkIn, $checkOut])
+                  ->orWhereBetween('check_out_date', [$checkIn, $checkOut])
+                  ->orWhere(function ($query2) use ($checkIn, $checkOut) {
+                      $query2->where('check_in_date', '<', $checkIn)
+                             ->where('check_out_date', '>', $checkOut);
+                  });
+        })
+        ->pluck('room_id');
+
+    // Trả về số lượng phòng còn trống
+    return Room::where('room_type_id', $roomTypeId)
+        ->where('status', 1)
+        ->whereNotIn('id', $bookedRoomIds)
+        ->count();
 }
 
 
-    public function show($id)
-    {
-        $room = Room::with(['images_room', 'roomType'])->findOrFail($id);
+public function showRoomType($id, Request $request)
+{
+    // Load RoomType cùng ảnh
+    $roomType = RoomType::with('images')->findOrFail($id);
 
-        // Lấy danh sách tiện ích của phòng
-        $amenityIds = collect($room->amenities)->filter()->unique()->toArray();
-        $allAmenities = Amenitie::whereIn('id', $amenityIds)->get();
+    // Lấy tiện ích (từ JSON hoặc array)
+    $amenityIds = collect($roomType->amenities)
+        ->filter()
+        ->unique()
+        ->toArray();
 
-        // Lấy các phòng cùng loại (trừ phòng hiện tại)
-        $relatedRooms = Room::with('images_room')
-            ->where('room_type_id', $room->room_type_id)
-            ->where('id', '!=', $room->id)
-            ->where('status', 1)
-            ->take(3)
-            ->get();
+    $allAmenities = Amenitie::whereIn('id', $amenityIds)->get();
 
-        return view('client.room.detail', compact('room', 'allAmenities', 'relatedRooms'));
+    // Ngày check-in/check-out từ request (hoặc mặc định)
+    $checkIn = $request->check_in ?? now()->format('Y-m-d');
+    $checkOut = $request->check_out ?? now()->addDay()->format('Y-m-d');
+
+    // Tính số lượng phòng còn trống
+    $availableRoomsCount = $this->getAvailableRoomsCount($roomType->id, $checkIn, $checkOut);
+
+    // Lấy danh sách phòng thuộc RoomType đó (nếu cần)
+    $rooms = Room::with('images_room')
+        ->where('room_type_id', $roomType->id)
+        ->where('status', 1)
+        ->get();
+
+    return view('client.room.detail', compact(
+        'roomType',
+        'allAmenities',
+        'checkIn',
+        'checkOut',
+        'availableRoomsCount',
+        'rooms'
+    ));
+}
+
+public function checkAvailableRoom(Request $request)
+{
+    try {
+        $roomTypeId = $request->room_type_id;
+        $checkIn = $request->check_in;
+        $checkOut = $request->check_out;
+
+        if (!$roomTypeId || !$checkIn || !$checkOut) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Thiếu dữ liệu'
+            ]);
+        }
+
+        $available = $this->getAvailableRoomsCount($roomTypeId, $checkIn, $checkOut);
+
+        return response()->json([
+            'status' => true,
+            'available' => $available
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'status' => false,
+            'message' => 'Lỗi server: ' . $e->getMessage()
+        ]);
     }
+}
+
 }

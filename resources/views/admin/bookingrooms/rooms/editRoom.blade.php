@@ -137,16 +137,6 @@
                                     </div>
 
                                     <div class="form-group mb-4">
-                                        <label for="max_people" class="form-label">Số người tối đa <span
-                                                class="text-danger">*</span></label>
-                                        <input type="number" name="max_people" id="max_people"
-                                            class="form-control @error('max_people') is-invalid @enderror"
-                                            value="{{ old('max_people', $room->max_people) }}">
-                                        @error('max_people')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-                                    <div class="form-group mb-4">
                                         <label for="status" class="form-label">Trạng thái <span
                                                 class="text-danger">*</span></label>
                                         <select name="status" id="status"

@@ -57,53 +57,39 @@
     <section>
         <div class="container pt-70 pb-120">
             <div class="section-content">
-                <form action="{{ route('booking.store') }}" method="post">
+              <form action="{{ route('booking.store') }}" method="post" id="payment-form">
+
                     @csrf
                     <div class="row mt-30">
                         <div class="col-md-6">
                             <div class="billing-details">
                                 <div class="checkout-title">
-                                    <h3>Thanh Toán</h3>
+                                    <h3>Thông tin khách hàng</h3>
                                     <div class="booking_code">Đơn đặt phòng: {{ $bookingCode }}</div>
                                 </div>
+
+                                <div class="border p-3 mb-3 rounded bg-light">
+                                    <p><strong>Họ và tên:</strong> {{ $user->name }}</p>
+                                    <p><strong>Số điện thoại:</strong> {{ $user->phone }}</p>
+                                    <p><strong>Email:</strong> {{ $user->email }}</p>
+                                    <p><strong>CCCD:</strong> {{ $user->cccd }}</p>
+                                </div>
+
                                 <div class="row">
                                     <div class="mb-3 col-md-6">
-                                        <label for="checkuot-form-fname">Họ và tên</label>
-                                        <input id="checkuot-form-fname" type="name" class="form-control"
-                                            value="{{ $user->name ?? null }}" placeholder="Họ và tên" name="name">
-                                    </div>
-                                    <div class="mb-3 col-md-6">
-                                        <label for="checkuot-form-lname">Số điện thoại</label>
-                                        <input id="checkuot-form-lname" type="number" class="form-control"
-                                            value="{{ $user->phone ?? null }}" placeholder="Số điện thoại" name="phone">
-                                    </div>
-                                    <div class="col-md-12">
-                                        <div class="mb-3">
-                                            <label for="checkuot-form-email">Địa chỉ Email</label>
-                                            <input id="checkuot-form-email" type="email" class="form-control"
-                                                name="email" value="{{ $user->email ?? null }}"
-                                                placeholder="Địa chỉ Email">
-                                        </div>
-                                        <div class="mb-3">
-                                            <label for="checkuot-form-cc">Số CCCD</label>
-                                            <input id="checkuot-form-cc" type="cc" class="form-control"
-                                                name="cccd" value="{{ $user->cccd ?? null }}" placeholder="CCCD">
-                                        </div>
-                                    </div>
-                                    <div class="mb-3 col-md-6">
-                                        <label for="checkuot-form-checkin">Ngày Nhận phòng</label>
-                                        <input id="checkuot-form-checkin" type="date" class="form-control" readonly name="checkin_date"
+                                        <label>Ngày Nhận phòng</label>
+                                        <input type="date" class="form-control" readonly name="checkin_date"
                                             value="{{ $data['checkin_date'] }}">
                                     </div>
-
                                     <div class="mb-3 col-md-6">
-                                        <label for="checkuot-form-checkout">Ngày Trả phòng</label>
-                                        <input id="checkuot-form-checkout" type="date" class="form-control" readonly name="checkout_date"
+                                        <label>Ngày Trả phòng</label>
+                                        <input type="date" class="form-control" readonly name="checkout_date"
                                             value="{{ $data['checkout_date'] }}">
                                     </div>
                                 </div>
                             </div>
                         </div>
+
                         <div class="col-md-6">
                             <h3 class="mb-3">Thông tin phòng</h3>
                             @if ($room->images_room->isNotEmpty())

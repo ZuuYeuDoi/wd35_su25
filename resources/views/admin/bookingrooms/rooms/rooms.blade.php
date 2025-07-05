@@ -66,7 +66,7 @@
                                         <th>Loại phòng</th>
                                         <th>Hình ảnh phòng</th>
                                         <th>Giá phòng</th>
-                                        <th>Số người tối đa</th>
+                                        <th>Loại giường</th>
                                         <th>Trạng thái</th>
                                         <th>Ngày tạo</th>
                                         <th>Ngày cập nhật</th>
