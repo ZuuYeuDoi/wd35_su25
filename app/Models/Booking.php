@@ -16,6 +16,7 @@ class Booking extends Model
         'check_in_date',
         'check_out_date',
         'deposit',
+        'total_amount',
         'status',
     ];
     protected $casts = [

@@ -9,6 +9,7 @@ use App\Models\RoomType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Models\BookingRoom;
 
 class HomeController extends Controller
 {
@@ -83,7 +84,7 @@ public function getAvailableRoomsCount($roomTypeId, $checkIn, $checkOut)
     $rooms = Room::where('room_type_id', $roomTypeId)->pluck('id');
 
     // Tìm các phòng đã được đặt trong khoảng thời gian đó
-    $bookedRoomIds = Booking::whereIn('room_id', $rooms)
+    $bookedRoomIds = BookingRoom::whereIn('room_id', $rooms)
         ->where(function ($query) use ($checkIn, $checkOut) {
             $query->whereBetween('check_in_date', [$checkIn, $checkOut])
                   ->orWhereBetween('check_out_date', [$checkIn, $checkOut])

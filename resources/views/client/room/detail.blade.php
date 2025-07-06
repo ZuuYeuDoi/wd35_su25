@@ -23,7 +23,7 @@
                 <h3 class="mb-3">Giới thiệu loại phòng</h3>
                 <p>Loại giường: <strong>{{ $roomType->bed_type ?? 'Không rõ' }}</strong></p>
                 <p>Giá từ: <strong>{{ number_format($roomType->room_type_price, 0, ',', '.') }} VND</strong></p>
-                <p>Số phòng còn trống từ <strong>{{ $checkIn }}</strong> đến <strong>{{ $checkOut }}</strong>: 
+                <p>Số phòng còn trống: 
                    <span class="text-success fw-bold">{{ $availableRoomsCount }}</span>
                 </p>
 
@@ -43,52 +43,72 @@
                 </div>
 
                 <h4 class="mt-5">Danh sách phòng trong loại này</h4>
-                @forelse ($roomType->rooms as $room)
-                    <div class="card mb-3">
+                @foreach ($roomType->rooms as $room)
+                    <div class="card mb-3" id="room-{{ $room->id }}">
                         <div class="row g-0">
                             <div class="col-md-4">
                                 <img src="{{ asset('storage/' . ($room->images_room->first()->image_path ?? 'default.jpg')) }}"
-                                     class="img-fluid rounded-start" alt="{{ $room->title }}">
+                                    class="img-fluid rounded-start" alt="{{ $room->title }}">
                             </div>
                             <div class="col-md-8">
                                 <div class="card-body">
                                     <h5 class="card-title">{{ $room->title }}</h5>
                                     <p class="card-text">{{ $room->description }}</p>
                                     <p class="card-text"><strong>{{ number_format($room->price, 0, ',', '.') }} VND</strong></p>
-                                    <a href="{{ route('room_type.detail', $room->id) }}" class="btn btn-sm btn-primary">Xem chi tiết</a>
+
+                                    <button type="button" class="btn btn-sm btn-success" onclick="addToBooking({{ $room->id }}, '{{ $room->title }}', {{ $room->price }})">
+                                        Đặt phòng
+                                    </button>
                                 </div>
                             </div>
                         </div>
                     </div>
-                @empty
-                    <p><em>Không có phòng nào trong loại này</em></p>
-                @endforelse
+                @endforeach
             </div>
 
             <!-- RIGHT -->
-           <div class="p-4 bg-light rounded shadow-sm">
-                <h5 class="mb-3">Kiểm tra phòng trống</h5>
+            <div class="col-lg-4">
+    <div class="p-4 bg-light rounded shadow-sm">
+        <h5 class="mb-3">Đặt phòng</h5>
 
-                <input type="hidden" id="room_type_id" value="{{ $roomType->id }}">
+        <form action="{{ route('booking.checkout') }}" method="POST">
+            @csrf
+            <input type="hidden" name="room_type_id" value="{{ $roomType->id }}">
 
-                <div class="mb-3">
-                    <label for="checkin">Ngày nhận phòng</label>
-                    <input type="date" id="checkin" name="check_in" value="{{ $checkIn }}" class="form-control" required>
-                </div>
-
-                <div class="mb-3">
-                    <label for="checkout">Ngày trả phòng</label>
-                    <input type="date" id="checkout" name="check_out" value="{{ $checkOut }}" class="form-control" required>
-                </div>
-
-                <p class="mt-2 text-muted">
-                    Số phòng còn trống từ 
-                    <span id="date-range">{{ $checkIn }} đến {{ $checkOut }}</span>: 
-                    <span id="available-count" class="fw-bold text-success">{{ $availableRoomsCount }}</span>
-                </p>
-
-                <a href="#room-list" class="btn btn-primary w-100">Xem danh sách phòng</a>
+            <div class="mb-3">
+                <label>Ngày nhận phòng</label>
+                <input type="date" name="check_in" class="form-control" value="{{ $checkIn }}" min="{{ date('Y-m-d') }}" required>
             </div>
+
+            <div class="mb-3">
+                <label>Ngày trả phòng</label>
+                <input type="date" name="check_out" class="form-control" value="{{ $checkOut }}" min="{{ $checkIn }}" required>
+            </div>
+
+            <div class="mb-3">
+                <label>Số lượng phòng</label>
+                <input type="number" name="number_of_rooms" class="form-control" value="1" min="1" max="{{ $availableRoomsCount }}" required>
+            </div>
+
+            <div class="mb-3">
+                <label>Người lớn</label>
+                <input type="number" name="adults" class="form-control" value="2" min="1" required>
+            </div>
+
+            <div class="mb-3">
+                <label>Trẻ em</label>
+                <input type="number" name="children" class="form-control" value="0" min="0" required>
+            </div>
+
+            <p class="mt-2 text-muted">
+                Số phòng còn trống: <span class="fw-bold text-success">{{ $availableRoomsCount }}</span>
+            </p>
+
+            <button type="submit" class="btn btn-primary w-100">Tiếp tục đặt phòng</button>
+        </form>
+    </div>
+</div>
+
         </div>
     </div>
 </section>
@@ -140,16 +160,15 @@
                         availableSpan.classList.remove('text-danger');
                         availableSpan.classList.add('text-success');
                     } else {
-                    availableSpan.innerText = data.message ?? 'Lỗi';
-                    availableSpan.classList.add('text-danger');
-                }
+                        availableSpan.innerText = data.message ?? 'Lỗi';
+                        availableSpan.classList.add('text-danger');
+                    }
                 })
                 .catch(err => {
-                    availableSpan.innerText = 'Lỗi vì không fetch được';
+                    availableSpan.innerText = 'Lỗi';
                     availableSpan.classList.add('text-danger');
                 });
         }
     });
 </script>
 @endpush
-
