@@ -10,6 +10,13 @@ class Room extends Model
 {
     use HasFactory, SoftDeletes;
 
+    const STATUS_AVAILABLE = 0;
+    const STATUS_OCCUPIED = 1;
+    const STATUS_MAINTENANCE = 2;
+    
+    const STATUS_ALREADYBOOKED = 3;
+
+
     protected $fillable = [
         'room_type_id',
         'title',
@@ -40,4 +47,8 @@ class Room extends Model
     {
         return $this->hasMany(Booking::class);
     }
+    public function statusHistories()
+{
+    return $this->hasMany(ManageStatusRoom::class);
+}
 }

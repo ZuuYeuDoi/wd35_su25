@@ -147,13 +147,20 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
-                                        <td>{{ $booking->room->id }}</td>
-                                        <td>{{ $booking->room->title }}</td>
-                                        <td>{{ $booking->room->roomType->name }}</td>
-                                        <td class="text-end">{{ number_format($booking->room->price) }}đ</td>
-                                    </tr>
+                                    @forelse ($booking->bookingRooms as $bookingRoom)
+                                        <tr>
+                                            <td>{{ $bookingRoom->room->id }}</td>
+                                            <td>{{ $bookingRoom->room->title }}</td>
+                                            <td>{{ $bookingRoom->room->roomType->name }}</td>
+                                            <td class="text-end">{{ number_format($bookingRoom->room->price) }}đ</td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="4" class="text-center">Không có phòng nào.</td>
+                                        </tr>
+                                    @endforelse
                                 </tbody>
+
                             </table>
                         </div>
                     </div>
@@ -163,16 +170,58 @@
 
         <!-- Nút -->
         <div class="row action-buttons mt-4">
-            <div class="col-12 col-md-auto mt-3 mt-md-0">
-                <a href="{{ route('bills.temporary', $booking->id) }}" class="btn btn-success px-4 py-3">
-                    Nhận phòng
-                </a>
+            @if ($booking->status == 1)
+                <div class="col-12 col-md-auto mt-3 mt-md-0">
+                    <a href="{{ route('room_order.index') }}" class="btn btn-secondary px-4 py-3">
+                        Quay lại
+                    </a>
+                </div>
+            @elseif ($booking->status == 2)
+                <div class="col-12 col-md-auto mt-3 mt-md-0">
+                    <a href="{{ route('bills.temporary', $booking->id) }}" class="btn btn-success px-4 py-3">
+                        Hóa đơn tạm tính
+                    </a>
+                </div>
+                <div class="col-12 col-md-auto mt-3 mt-md-0">
+                    <a href="{{ route('room_order.index') }}" class="btn btn-secondary px-4 py-3">
+                        Quay lại
+                    </a>
+                </div>
+            @elseif ($booking->status == 3)
+                <div class="col-12 col-md-auto mt-3 mt-md-0">
+                    <a href="{{ route('bills.show', $booking->id) }}" class="btn btn-primary px-4 py-3">
+                        Xem hóa đơn
+                    </a>
+                </div>
+                <div class="col-12 col-md-auto mt-3 mt-md-0">
+                    <a href="{{ route('room_order.index') }}" class="btn btn-secondary px-4 py-3">
+                        Quay lại
+                    </a>
+                </div>
+            @else
+                <div class="col-12 col-md-auto mt-3 mt-md-0">
+                    <a href="{{ route('room_order.index') }}" class="btn btn-secondary px-4 py-3">
+                        Quay lại
+                    </a>
+                </div>
+            @endif
+           @if ($booking->status != 5 && $booking->status != 4 && $booking->status != 2)
+        <form action="{{ route('room_order.cancel', $booking->id) }}" method="POST" onsubmit="return confirm('Bạn có chắc chắn muốn hủy đơn này?');">
+            @csrf
+            @method('PUT')
+
+            <div class="mb-2">
+                <label for="note" class="form-label fw-bold">Lý do hủy đơn:</label>
+                <textarea name="note" id="note" rows="2" class="form-control" placeholder="Nhập lý do..."></textarea>
             </div>
-            <div class="col-12 col-md-auto mt-3 mt-md-0">
-                <a href="{{ route('room_order.index') }}" class="btn btn-secondary px-4 py-3">
-                    Quay lại
-                </a>
-            </div>
+
+            <button type="submit" class="btn btn-danger px-4 py-3">
+                Hủy đơn
+            </button>
+        </form>
+@endif
+
         </div>
+
     </section>
 @endsection

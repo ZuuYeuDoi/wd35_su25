@@ -37,7 +37,7 @@
                                     {{-- Ngày nhận/trả --}}
                                     <div class="col-md-auto">
                                         <input type="date" name="check_in_date" class="form-control"
-                                            value="{{ request('check_in_date') }}" min="{{ date('Y-m-d') }}">
+                                            value="{{ request('check_in_date') }}" >
                                     </div>
                                     <div class="col-md-auto">
                                         <input type="date" name="check_out_date" class="form-control"
@@ -94,9 +94,14 @@
                                                 {{ $statusText }}
                                             </span>
                                         </td>
-                                        <td>
+                                        <td class="d-flex flex-column gap-1">
                                             <a href="{{ route('room_order.show', $booking->id) }}"
                                                 class="btn btn-sm btn-warning">Chi tiết</a>
+                                             @if ($booking->status == 2)
+                                                <a href="{{ route('bills.temporary', $booking->id) }}" class="btn btn-sm btn-success">Hóa đơn tạm tính</a>
+                                            @elseif ($booking->status == 3)
+                                                <a href="{{ route('#', $booking->id) }}" class="btn btn-sm btn-primary">Xem hóa đơn</a>
+                                                @endif
                                         </td>
                                     </tr>
                                 @empty
@@ -124,10 +129,6 @@
             const checkOutInput = document.querySelector('input[name="check_out_date"]');
             const stayTypeOvernight = document.getElementById('overnight');
             const stayTypeDayuse = document.getElementById('dayuse');
-
-            // Cấm chọn ngày quá khứ cho check_in
-            const today = new Date().toISOString().split('T')[0];
-            checkInInput.setAttribute('min', today);
 
             // Cấm chọn ngày check_out trước hoặc bằng check_in
             checkInInput.addEventListener('change', function() {

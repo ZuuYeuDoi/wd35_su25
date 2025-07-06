@@ -66,10 +66,9 @@
                                         <th>Loại phòng</th>
                                         <th>Hình ảnh phòng</th>
                                         <th>Giá phòng</th>
-                                        <th>Loại giường</th>
+                                        
                                         <th>Trạng thái</th>
-                                        <th>Ngày tạo</th>
-                                        <th>Ngày cập nhật</th>
+                                        
                                         <th>Thao tác</th>
                                     </tr>
                                 </thead>
@@ -88,7 +87,7 @@
                                                 @endif
                                             </td>
                                             <td>{{ number_format($room->price) }} VNĐ</td>
-                                            <td>{{ $room->max_people }}</td>
+                                            
                                             <td>
                                                 @if ($room->status == 1)
                                                     <span class="badge bg-success">Hoạt động</span>
@@ -96,8 +95,7 @@
                                                     <span class="badge bg-secondary">Không hoạt động</span>
                                                 @endif
                                             </td>
-                                            <td>{{ $room->created_at->format('d/m/y ') }}</td>
-                                            <td>{{ $room->updated_at->format('d/m/y ') }}</td>
+                                         
                                             <td>
                                                 <a href="{{ route('room.show', $room->id) }}"
                                                     class="btn btn-sm btn-info">Chi tiết</a>

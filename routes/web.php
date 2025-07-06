@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\ServiceController;
 use App\Http\Controllers\Admin\AmenitieController;
 use App\Http\Controllers\Admin\RoomTypeController;
 use App\Http\Controllers\Admin\BookingRoomController;
+use App\Http\Controllers\Admin\CartController as AdminCartController;
 use App\Http\Controllers\User\CartController;
 use App\Http\Controllers\User\ServiceController as UserServiceController;
 
@@ -30,7 +31,10 @@ Route::prefix('/')->group(callback: function () {
     Route::controller(BookingController::class)->group(function () {
         Route::post('/booking', 'index')->name('booking.index');
         Route::post('/booking/checkout', 'checkout')->name('booking.checkout');
+        Route::get('/booking/checkout', 'showCheckoutPage')->name('booking.checkout.vie');
+
         Route::post('/booking/store', 'store')->name('booking.store');
+        
     });
 
     Route::controller(UserServiceController::class)->group(function () {
@@ -132,13 +136,21 @@ Route::prefix('admin')->group(function () {
         Route::get('room_order/{id}/show', 'show')->name('room_order.show');
         // Route::get('room_order/edit/{id}', 'edit')->name('room_order.edit');
         // Route::put('room_order/update/{id}', 'update')->name('room_order.update');
+        Route::put('/room_order/{id}/cancel', [BookingRoomController::class, 'cancel'])->name('room_order.cancel');
+
 
     });
 
     // Quản lý Bill
     Route::controller(BillController::class)->group(function () {
         Route::get('/{id}/temporary', [BillController::class, 'temporary'])->name('bills.temporary');
+        Route::put('/bills/{id}/confirm', [BillController::class, 'confirmPayment'])->name('bills.confirm');
         Route::get('/{id}/final', [BillController::class, 'final'])->name('bills.final');
+    });
+
+    // cart dịch vụ
+    Route::controller(AdminCartController::class)->group(function(){
+        Route::post('/cart/add',[AdminCartController::class, 'add'])->name('cart.add');
     });
 });
 

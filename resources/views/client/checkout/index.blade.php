@@ -54,6 +54,17 @@
     <div class="container pt-70 pb-120">
         <form action="{{ route('booking.store') }}" method="POST" id="payment-form">
             @csrf
+
+                        @if ($errors->any())
+                <div class="alert alert-danger">
+                    <ul class="mb-0">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
             <div class="row mt-30">
                 <div class="col-md-6">
                     <div class="billing-details">
@@ -128,9 +139,11 @@
 
                 <h4>Tổng Thanh Toán:</h4>
                     <div class="p-3 border rounded bg-light" style="font-size: 1.25rem;">
-                        <div name = "total_amount">Tổng tiền phòng: <strong>{{ number_format($totalPrice, 0, ',', '.') }} VND</strong></div>
-                        <div name = "deposit">Tiền cọc (10%): <strong class="text-danger">{{ number_format($totalPrice * 0.1, 0, ',', '.') }} VND</strong></div>
+                        <div>Tổng tiền phòng: <strong>{{ number_format($totalPrice, 0, ',', '.') }} VND</strong></div>
+                        <div>Tiền cọc (10%): <strong class="text-danger">{{ number_format($totalPrice * 0.1, 0, ',', '.') }} VND</strong></div>
                     </div>
+                    <input type="hidden" name="total_amount" value="{{ $totalPrice }}">
+                    <input type="hidden" name="deposit" value="{{ round($totalPrice * 0.1) }}">
 
 
                 <div class="col-md-12 mt-60">

@@ -13,18 +13,19 @@
         <div class="row mb-4">
             <div class="col-md-6">
                 <h5 class="fw-bold">Thông tin khách hàng</h5>
-                <p class="mb-1"><strong>Tên:</strong> Nguyễn Văn A</p>
-                <p class="mb-1"><strong>Số điện thoại:</strong> 0123456789</p>
-                <p class="mb-1"><strong>Email:</strong> nguyenvana@example.com</p>
-                <p class="mb-1"><strong>Địa chỉ:</strong> 123 Đường ABC, Quận XYZ, TP.HCM</p>
+                <p class="mb-1"><strong>Tên:</strong> {{ $booking->user->name }}</p>
+                <p class="mb-1"><strong>Số điện thoại:</strong> {{ $booking->user->phone }}</p>
+                <p class="mb-1"><strong>Email:</strong> {{ $booking->user->email }}</p>
+                <p class="mb-1"><strong>Địa chỉ:</strong> {{ $booking->user->address ?? '---' }}</p>
             </div>
             <div class="col-md-6 text-md-end">
                 <h5 class="fw-bold">Chi tiết hóa đơn</h5>
-                <p class="mb-1"><strong>Mã hóa đơn:</strong> HD001</p>
-                <p class="mb-1"><strong>Ngày lập:</strong> 28/06/2025</p>
+                <p class="mb-1"><strong>Mã hóa đơn:</strong> HD{{ $booking->id }}</p>
+                <p class="mb-1"><strong>Ngày lập:</strong> {{ $booking->created_at->format('d/m/Y') }}</p>
                 <p class="mb-1"><strong>Trạng thái:</strong> Tạm tính</p>
             </div>
         </div>
+
 
         {{-- Bảng hóa đơn --}}
         <div class="table-responsive mb-4">
@@ -39,27 +40,45 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>1</td>
-                        <td>Dịch vụ A</td>
-                        <td>2</td>
-                        <td>500.000đ</td>
-                        <td>1.000.000đ</td>
-                    </tr>
-                    <tr>
-                        <td>2</td>
-                        <td>Dịch vụ B</td>
-                        <td>1</td>
-                        <td>300.000đ</td>
-                        <td>300.000đ</td>
-                    </tr>
+                    @php $total = 0; $i = 1; @endphp
+                    @foreach ($booking->bookingRooms as $bookingRoom)
+                        @php
+                            $room = $bookingRoom->room;
+                            $roomPrice = $room->price;
+                            $total += $roomPrice;
+                        @endphp
+                        <tr>
+                            <td>{{ $i++ }}</td>
+                            <td>{{ $room->title }} ({{ $room->roomType->name }})</td>
+                            <td>1</td>
+                            <td>{{ number_format($roomPrice, 0, ',', '.') }}đ</td>
+                            <td>{{ number_format($roomPrice, 0, ',', '.') }}đ</td>
+                        </tr>
+                    @endforeach
+                    @if ($cart && $cart->cartServiceItems)
+                        @foreach ($cart->cartServiceItems as $item)
+                            @php
+                                $service = $item->service;
+                                $serviceTotal = $service->price * $item->quantity;
+                                $total += $serviceTotal;
+                            @endphp
+                            <tr>
+                                <td>{{ $i++ }}</td>
+                                <td>{{ $service->name }}</td>
+                                <td>{{ $item->quantity }}</td>
+                                <td>{{ number_format($service->price, 0, ',', '.') }}đ</td>
+                                <td>{{ number_format($serviceTotal, 0, ',', '.') }}đ</td>
+                            </tr>
+                        @endforeach
+                    @endif
                 </tbody>
                 <tfoot>
                     <tr>
                         <td colspan="4" class="text-end fw-bold">Tổng cộng</td>
-                        <td class="fw-bold text-danger">1.300.000đ</td>
+                        <td class="fw-bold text-danger">{{ number_format($total, 0, ',', '.') }}đ</td>
                     </tr>
                 </tfoot>
+
             </table>
         </div>
     </div>
@@ -67,126 +86,34 @@
     {{-- Box thêm dịch vụ --}}
     <div class="card shadow rounded-4 p-4 mb-5">
         <div class="row g-3 mb-4 text-center">
-            {{-- Box 1 --}}
-            <div class="col-md-2">
-                <div class="card h-100 shadow-sm rounded-4 service-box position-relative" style="cursor:pointer;">
-                    <div class="card-body text-center">
-                        <h6 class="fw-bold">Đồ ăn nhanh</h6>
-                        <p class="text-muted mb-2">150.000đ</p>
-                        <button class="btn btn-primary btn-sm rounded-pill">Chọn</button>
-                    </div>
-                    <div class="quantity-box p-3 bg-light rounded-3 position-absolute w-100 bottom-0 start-0 d-none">
-                        <h6 class="fw-bold mb-2">Đồ ăn nhanh</h6>
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <button class="btn btn-outline-secondary btn-sm minus">-</button>
-                            <input type="number" class="form-control w-50 text-center mx-2" value="1" min="1">
-                            <button class="btn btn-outline-secondary btn-sm plus">+</button>
+            @foreach ($services as $service)
+                <div class="col-md-2">
+                    <div class="card h-100 shadow-sm rounded-4 service-box position-relative" style="cursor:pointer;">
+                        <div class="card-body text-center">
+                            <h6 class="fw-bold">{{ $service->name }}</h6>
+                            <p class="text-muted mb-2">
+                                {{ $service->price > 0 ? number_format($service->price, 0, ',', '.') . 'đ' : 'Miễn phí' }}
+                            </p>
+                            <button class="btn btn-primary btn-sm rounded-pill">Chọn</button>
                         </div>
-                        <button class="btn btn-success btn-sm rounded-pill w-100">Xác nhận</button>
+                        <div class="quantity-box p-3 bg-light rounded-3 position-absolute w-100 bottom-0 start-0 d-none">
+                            <h6 class="fw-bold mb-2">{{ $service->name }}</h6>
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <button class="btn btn-outline-secondary btn-sm minus">-</button>
+                                <input type="number" class="form-control w-50 text-center mx-2" value="1" min="1">
+                                <button class="btn btn-outline-secondary btn-sm plus">+</button>
+                            </div>
+                            <button class="btn btn-success btn-sm rounded-pill w-100 confirm-service"
+                                data-service-id="{{ $service->id }}"
+                                data-service-name="{{ $service->name }}"
+                                data-service-price="{{ $service->price }}">
+                                Xác nhận
+                        </button>
+                        </div>
                     </div>
                 </div>
-            </div>
-
-            {{-- Box 2 --}}
-            <div class="col-md-2">
-                <div class="card h-100 shadow-sm rounded-4 service-box position-relative" style="cursor:pointer;">
-                    <div class="card-body text-center">
-                        <h6 class="fw-bold">Đặt taxi</h6>
-                        <p class="text-muted mb-2">50.000đ</p>
-                        <button class="btn btn-primary btn-sm rounded-pill">Chọn</button>
-                    </div>
-                    <div class="quantity-box p-3 bg-light rounded-3 position-absolute w-100 bottom-0 start-0 d-none">
-                        <h6 class="fw-bold mb-2">Đặt taxi</h6>
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <button class="btn btn-outline-secondary btn-sm minus">-</button>
-                            <input type="number" class="form-control w-50 text-center mx-2" value="1" min="1">
-                            <button class="btn btn-outline-secondary btn-sm plus">+</button>
-                        </div>
-                        <button class="btn btn-success btn-sm rounded-pill w-100">Xác nhận</button>
-                    </div>
-                </div>
-            </div>
-
-            {{-- Box 3 --}}
-            <div class="col-md-2">
-                <div class="card h-100 shadow-sm rounded-4 service-box position-relative" style="cursor:pointer;">
-                    <div class="card-body text-center">
-                        <h6 class="fw-bold">Giặt ủi</h6>
-                        <p class="text-muted mb-2">80.000đ</p>
-                        <button class="btn btn-primary btn-sm rounded-pill">Chọn</button>
-                    </div>
-                    <div class="quantity-box p-3 bg-light rounded-3 position-absolute w-100 bottom-0 start-0 d-none">
-                        <h6 class="fw-bold mb-2">Giặt ủi</h6>
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <button class="btn btn-outline-secondary btn-sm minus">-</button>
-                            <input type="number" class="form-control w-50 text-center mx-2" value="1" min="1">
-                            <button class="btn btn-outline-secondary btn-sm plus">+</button>
-                        </div>
-                        <button class="btn btn-success btn-sm rounded-pill w-100">Xác nhận</button>
-                    </div>
-                </div>
-            </div>
-
-            {{-- Box 4 --}}
-            <div class="col-md-2">
-                <div class="card h-100 shadow-sm rounded-4 service-box position-relative" style="cursor:pointer;">
-                    <div class="card-body text-center">
-                        <h6 class="fw-bold">Gọi lễ tân</h6>
-                        <p class="text-muted mb-2">Miễn phí</p>
-                        <button class="btn btn-primary btn-sm rounded-pill">Chọn</button>
-                    </div>
-                    <div class="quantity-box p-3 bg-light rounded-3 position-absolute w-100 bottom-0 start-0 d-none">
-                        <h6 class="fw-bold mb-2">Gọi lễ tân</h6>
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <button class="btn btn-outline-secondary btn-sm minus">-</button>
-                            <input type="number" class="form-control w-50 text-center mx-2" value="1" min="1">
-                            <button class="btn btn-outline-secondary btn-sm plus">+</button>
-                        </div>
-                        <button class="btn btn-success btn-sm rounded-pill w-100">Xác nhận</button>
-                    </div>
-                </div>
-            </div>
-
-            {{-- Box 5 --}}
-            <div class="col-md-2">
-                <div class="card h-100 shadow-sm rounded-4 service-box position-relative" style="cursor:pointer;">
-                    <div class="card-body text-center">
-                        <h6 class="fw-bold">Dọn phòng</h6>
-                        <p class="text-muted mb-2">200.000đ</p>
-                        <button class="btn btn-primary btn-sm rounded-pill">Chọn</button>
-                    </div>
-                    <div class="quantity-box p-3 bg-light rounded-3 position-absolute w-100 bottom-0 start-0 d-none">
-                        <h6 class="fw-bold mb-2">Dọn phòng</h6>
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <button class="btn btn-outline-secondary btn-sm minus">-</button>
-                            <input type="number" class="form-control w-50 text-center mx-2" value="1" min="1">
-                            <button class="btn btn-outline-secondary btn-sm plus">+</button>
-                        </div>
-                        <button class="btn btn-success btn-sm rounded-pill w-100">Xác nhận</button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-2">
-                <div class="card h-100 shadow-sm rounded-4 service-box position-relative" style="cursor:pointer;">
-                    <div class="card-body text-center">
-                        <h6 class="fw-bold">Dọn phòng</h6>
-                        <p class="text-muted mb-2">200.000đ</p>
-                        <button class="btn btn-primary btn-sm rounded-pill">Chọn</button>
-                    </div>
-                    <div class="quantity-box p-3 bg-light rounded-3 position-absolute w-100 bottom-0 start-0 d-none">
-                        <h6 class="fw-bold mb-2">Dọn phòng</h6>
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <button class="btn btn-outline-secondary btn-sm minus">-</button>
-                            <input type="number" class="form-control w-50 text-center mx-2" value="1" min="1">
-                            <button class="btn btn-outline-secondary btn-sm plus">+</button>
-                        </div>
-                        <button class="btn btn-success btn-sm rounded-pill w-100">Xác nhận</button>
-                    </div>
-                </div>
-            </div>
+            @endforeach
         </div>
-
     </div>
 
 
@@ -194,7 +121,12 @@
         Đây là hóa đơn tạm tính, chưa phải hóa đơn xuất chính thức. Mọi thông tin sẽ được xác nhận khi thanh toán.
     </div>
     <div class="text-end">
-        <a href="#" class="btn btn-primary rounded-pill px-4">Xác nhận & Thanh toán</a>
+        <form action="{{ route('bills.confirm', $booking->id) }}" method="POST" onsubmit="return confirm('Xác nhận thanh toán đơn này?');">
+        @csrf
+        @method('PUT')
+        <button type="submit" class="btn btn-primary rounded-pill px-4">Xác nhận & Thanh toán</button>
+</form>
+
     </div>
 </section>
 
@@ -224,5 +156,60 @@
             });
         });
     });
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+    // ... (code plus/minus giữ nguyên)
+
+    document.querySelectorAll('.confirm-service').forEach(button => {
+        button.addEventListener('click', function () {
+            const serviceBox = this.closest('.service-box');
+            const serviceId = this.dataset.serviceId;
+            const serviceName = this.dataset.serviceName;
+            const servicePrice = parseInt(this.dataset.servicePrice);
+            const quantity = parseInt(serviceBox.querySelector('input[type="number"]').value);
+
+            fetch("{{ route('cart.add') }}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': "{{ csrf_token() }}"
+                },
+                body: JSON.stringify({
+                    booking_id: {{ $booking->id }},
+                    service_id: serviceId,
+                    quantity: quantity
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Hiển thị lên bảng hóa đơn
+                    const tbody = document.querySelector('table tbody');
+                    const totalCell = document.querySelector('tfoot td.text-danger');
+                    const newRow = document.createElement('tr');
+
+                    const currentIndex = tbody.querySelectorAll('tr').length + 1;
+
+                    const totalPrice = servicePrice * quantity;
+                    newRow.innerHTML = `
+                        <td>#</td>
+                        <td>${serviceName}</td>
+                        <td>${quantity}</td>
+                        <td>${servicePrice.toLocaleString()}đ</td>
+                        <td>${totalPrice.toLocaleString()}đ</td>
+                    `;
+                    tbody.appendChild(newRow);
+
+                    // Cập nhật tổng tiền
+                    const currentTotal = parseInt(totalCell.textContent.replace(/\D/g, '')) || 0;
+                    totalCell.textContent = (currentTotal + totalPrice).toLocaleString() + 'đ';
+                }
+            });
+        });
+    });
+});
+
 </script>
 @endsection
