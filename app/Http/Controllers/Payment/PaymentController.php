@@ -47,6 +47,7 @@ class PaymentController extends Controller
             "vnp_TxnRef" => $vnp_TxnRef,
         );
 
+        // dd($inputData);
         // if (isset($vnp_BankCode) && $vnp_BankCode != "") {
         //     $inputData['vnp_BankCode'] = $vnp_BankCode;
         // }
