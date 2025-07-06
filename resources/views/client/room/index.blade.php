@@ -56,7 +56,7 @@
         }
 
         ul.bx-links li::before {
-            content: "✓ ";
+            content: "\2713 ";
             color: #d4a762;
         }
     </style>
@@ -77,75 +77,55 @@
     </section>
     <!-- end main-content -->
 
+    
     <!-- rooms-section -->
     <section class="rooms-section pb-100">
         <div class="auto-container">
-            @foreach ($roomTypes as $roomType)
-                @if ($roomType->rooms->isNotEmpty())
-                    <div class="room-type-section mb-5">
-                        <h3 class="text-center mb-4" style="font-size: 28px; font-weight: bold;">{{ $roomType->name }}
-                        </h3>
-                        <div class="row">
-                            @foreach ($roomType->rooms as $item)
-                                <div class="room-block col-lg-6 col-md-6">
-                                    <div class="inner-box wow fadeIn">
-                                        <div class="image-box">
-                                            @php
-                                                $image = $item->images_room->first();
-                                            @endphp
-                                            <a href="{{ route('room.detail', ['id' => $item->id]) }}">
-                                                <img src="{{ $image ? asset('storage/' . $image->image_path) : asset('client/images/no-image.png') }}"
-                                                    alt="Room Image">
-                                            </a>
-                                        </div>
+            <div class="row">
 
-                                        @php
-                                            $bed = match ($item->max_people) {
-                                                1 => '1 giường đơn',
-                                                2 => '2 giường đơn',
-                                                3 => '1 giường đôi',
-                                                4 => '1 giường đôi + 1 giường đơn',
-                                                default => 'Không rõ',
-                                            };
-                                        @endphp
+                    @foreach ($groupedRoomTypes as $type => $roomTypes)
+                        <div class="room-type-section">
+                            <h3 class="room-type-title">{{ $type }}</h3>
+                            <div class="row">
+                                @foreach ($roomTypes as $roomType)
+                                    <div class="room-block col-lg-6 col-md-6">
+                                        <div class="inner-box wow fadeIn">
+                                            <div class="image-box">
+                                                @php
+                                                    $image = $roomType->image ? asset('storage/' . $roomType->image) : asset('client/images/no-image.png');
+                                                    $bed = $roomType->bed_type ?? 'Không rõ';
+                                                    $roomTypeUrl = route('room_type.detail', $roomType->id);
+                                                @endphp
+                                                <a href="{{ $roomTypeUrl }}">
+                                                    <img src="{{ $image }}" alt="Room Type Image">
+                                                </a>
+                                            </div>
 
-                                        <div class="content-box">
-                                            <h6 class="title">
-                                                <a
-                                                    href="{{ route('room.detail', ['id' => $item->id]) }}">{{ $item->title }}</a>
-                                            </h6>
-                                            <span class="price">{{ $item->roomType->name }}</span>
-                                            <span class="price">{{ number_format($item->price, 0, ',', '.') }} VND /
-                                                đêm</span>
-                                            <span class="price"><i class="fal fa-bed me-2"></i>{{ $bed }}</span>
-                                        </div>
+                                            <div class="content-box">
+                                                <h6 class="title">{{ $roomType->name }}</h6>
+                                                <span class="price">{{ number_format($roomType->room_type_price, 0, ',', '.') }} VND / đêm</span>
+                                                <span class="price"><i class="fal fa-bed me-2"></i>{{ $bed }}</span>
+                                            </div>
 
-                                        <div class="box-caption">
-                                            <a href="{{ route('room.detail', ['id' => $item->id]) }}" class="book-btn">Đặt
-                                                phòng</a>
-                                            <ul class="bx-links">
-                                                @if (!empty($item->amenities) && is_array($item->amenities))
-                                                    @foreach ($item->amenities as $amenityId)
+                                            <div class="box-caption">
+                                                <a href="{{ $roomTypeUrl }}" class="book-btn">Đặt phòng</a>
+                                                <ul class="bx-links">
+                                                    @foreach ($roomType->amenities ?? [] as $amenityId)
                                                         @if ($allAmenities->has($amenityId))
                                                             <li>{{ $allAmenities[$amenityId]->name }}</li>
                                                         @endif
                                                     @endforeach
-                                                @else
-                                                    <li><em>Không có tiện ích</em></li>
-                                                @endif
-                                            </ul>
+                                                </ul>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            @endforeach
+                                @endforeach
+                            </div>
                         </div>
-                    </div>
-                @endif
-            @endforeach
+                    @endforeach
 
-            @if ($roomTypes->every(fn($rt) => $rt->rooms->isEmpty()))
-                <p>Không tìm thấy phòng phù hợp với yêu cầu của bạn.</p>
-            @endif
+
+            </div>
         </div>
     </section>
 @endsection

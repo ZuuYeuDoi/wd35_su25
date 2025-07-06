@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Admin;
 
-
 use Carbon\Carbon;
 use App\Models\Amenitie;
 use App\Models\RoomType;
@@ -12,7 +11,7 @@ use Illuminate\Support\Facades\Storage;
 
 class RoomTypeController extends Controller
 {
-      public function index()
+    public function index()
     {
         $roomTypes = RoomType::orderBy('id', 'desc')->paginate(10);
         return view('admin.bookingrooms.roomtypes.viewRoomType', compact('roomTypes'));
@@ -21,7 +20,7 @@ class RoomTypeController extends Controller
     public function create()
     {
         $amenities = Amenitie::where('status', 1)->get();
-        return view('admin.bookingrooms.roomtypes.createRoomType',compact('amenities'));
+        return view('admin.bookingrooms.roomtypes.createRoomType', compact('amenities'));
     }
 
     public function store(Request $request)
@@ -29,24 +28,23 @@ class RoomTypeController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'type' => 'required|string|max:255',
+            'bed_type' => 'required|string|max:255',
             'room_type_price' => 'required|numeric|min:0',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'amenities' => 'nullable|array',
             'amenities.*' => 'integer|exists:room_amenities,id'
-
         ]);
-        
+
+        $data = $request->only(['name', 'type', 'bed_type', 'room_type_price']);
+
         if ($request->hasFile('image')) {
             $data['image'] = $request->file('image')->store('room_types', 'public');
-            
         }
-
-        $data = $request->only(['name', 'type', 'room_type_price', 'image']);
 
         $data['amenities'] = $request->input('amenities', []);
 
+        // dd($data);
         RoomType::create($data);
-
 
         return redirect()->route('room_types.index')->with('success', 'Thêm loại phòng thành công');
     }
@@ -59,7 +57,6 @@ class RoomTypeController extends Controller
 
     public function edit($id)
     {
-
         $roomType = RoomType::findOrFail($id);
         $amenities = Amenitie::where('status', 1)->get();
         return view('admin.bookingrooms.roomtypes.editRoomType', compact('roomType', 'amenities'));
@@ -72,20 +69,19 @@ class RoomTypeController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'type' => 'required|string|max:255',
+            'bed_type' => 'required|string|max:255',
             'room_type_price' => 'required|numeric|min:0',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'amenities' => 'nullable|array',
-            'amenities,*' => 'interger|exist: room_amenities,id'
+            'amenities.*' => 'integer|exists:room_amenities,id'
         ]);
 
-        $data = $request->only(['name', 'type', 'room_type_price']);
+        $data = $request->only(['name', 'type', 'bed_type', 'room_type_price']);
 
         if ($request->hasFile('image')) {
-            // Xóa ảnh cũ nếu có
             if ($roomType->image && Storage::disk('public')->exists($roomType->image)) {
                 Storage::disk('public')->delete($roomType->image);
             }
-
             $data['image'] = $request->file('image')->store('room_types', 'public');
         }
 
@@ -100,7 +96,6 @@ class RoomTypeController extends Controller
     {
         $roomType = RoomType::findOrFail($id);
 
-        // Xóa ảnh nếu có
         if ($roomType->image && Storage::disk('public')->exists($roomType->image)) {
             Storage::disk('public')->delete($roomType->image);
         }

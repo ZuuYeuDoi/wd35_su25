@@ -74,37 +74,34 @@ class PaymentController extends Controller
         return redirect($vnp_Url);
     }
 
-     public function paymentReturn(Request $request)
-{
-    if ($request->vnp_ResponseCode === "00") {
-        // Lấy booking_id từ vnp_TxnRef
+    public function paymentReturn(Request $request)
+    {
         $txnRef = $request->input('vnp_TxnRef');
         $parts = explode('-', $txnRef);
         $bookingId = $parts[0] ?? null;
 
         if (!$bookingId) {
-            // Không lấy được booking_id → thất bại
             return view('client.payments.failed');
         }
 
-        // Tạo payment
-        Payment::create([
-            'booking_id' => $bookingId,
-            'pay_date' => now(),
-            'total_price' => $request->vnp_Amount / 100, // VNP trả về số nhân 100
-            'payment_status' => 1, // Thành công
-            'payment_method' => 'VNPAY',
-            'vnp_bankcode' => $request->vnp_BankCode ?? null,
-        ]);
+        if ($request->vnp_ResponseCode === "00") {
+            // Thanh toán thành công
+            Payment::create([
+                'booking_id' => $bookingId,
+                'pay_date' => now(),
+                'total_price' => $request->vnp_Amount / 100,
+                'payment_status' => 1,
+                'payment_method' => 'VNPAY',
+                'vnp_bankcode' => $request->vnp_BankCode ?? null,
+            ]);
 
-        // Cập nhật trạng thái booking
-        Booking::where('id', $bookingId)->update(['status' => 1]);
+            Booking::where('id', $bookingId)->update(['status' => 1]); 
 
-        return view('client.payments.success');
+            return view('client.payments.success');
+        } else {
+            Booking::where('id', $bookingId)->update(['status' => 2]);
+
+            return view('client.payments.failed');
+        }
     }
-
-    // Thanh toán thất bại
-    return view('client.payments.failed');
-}
-
 }

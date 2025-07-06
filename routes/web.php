@@ -15,17 +15,21 @@ use App\Http\Controllers\Admin\BookingRoomController;
 use App\Http\Controllers\User\CartController;
 use App\Http\Controllers\User\ServiceController as UserServiceController;
 
+// Route::get('/check-available-room', [HomeController::class, 'checkAvailableRoom'])->name('room_type.check_availability');
 
 
-Route::prefix('/')->group(function () {
+
+Route::prefix('/')->group(callback: function () {
     Route::controller(HomeController::class)->group(function () {
         Route::get('', 'index')->name('room.index');
         Route::get('/', 'index')->name('home');
         Route::get('room', 'indexRoom')->name('room.indexRoom');
-        Route::get('room/{id}', 'show')->name('room.detail');
+        Route::get('room-type/{id}', 'showRoomType')->name('room_type.detail');
+        Route::get('check-available-room', 'checkAvailableRoom')->name('room_type.check_availability');
     });
     Route::controller(BookingController::class)->group(function () {
         Route::post('/booking', 'index')->name('booking.index');
+        Route::post('/booking/checkout', 'checkout')->name('booking.checkout');
         Route::post('/booking/store', 'store')->name('booking.store');
     });
 
