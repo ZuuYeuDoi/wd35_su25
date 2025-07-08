@@ -99,8 +99,8 @@
                                                 class="btn btn-sm btn-warning">Chi tiết</a>
                                              @if ($booking->status == 2)
                                                 <a href="{{ route('bills.temporary', $booking->id) }}" class="btn btn-sm btn-success">Hóa đơn tạm tính</a>
-                                            @elseif ($booking->status == 3)
-                                                <a href="{{ route('#', $booking->id) }}" class="btn btn-sm btn-primary">Xem hóa đơn</a>
+                                            {{-- @elseif ($booking->status == 3)
+                                                <a href="{{ route('bills.', $booking->id) }}" class="btn btn-sm btn-primary">Xem hóa đơn</a> --}}
                                                 @endif
                                         </td>
                                     </tr>

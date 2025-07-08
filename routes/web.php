@@ -31,8 +31,7 @@ Route::prefix('/')->group(callback: function () {
     Route::controller(BookingController::class)->group(function () {
         Route::post('/booking', 'index')->name('booking.index');
         Route::post('/booking/checkout', 'checkout')->name('booking.checkout');
-        Route::get('/booking/checkout', 'showCheckoutPage')->name('booking.checkout.vie');
-
+        Route::get('/booking/checkout', 'showCheckoutPage')->name('booking.checkout.view');
         Route::post('/booking/store', 'store')->name('booking.store');
         
     });

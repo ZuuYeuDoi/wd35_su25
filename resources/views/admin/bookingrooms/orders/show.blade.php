@@ -46,10 +46,8 @@
                                 <label>Ngày tạo</label>
                                 <div class="date-time-field">
                                     <div class="date">
-                                        <input type="text" class="form-control form-control-modern" name="orderDate"
-                                            value="{{ $booking->created_at ? $booking->created_at->format('d-m-Y') : '' }}
-"
-                                            readonly />
+                                        <input type="text" class="form-control form-control-modern" name="orderDate" value="{{ $booking->created_at ? $booking->created_at->format('d-m-Y') : '' }}
+    " readonly />
                                     </div>
                                     <div class="time">
                                         <span class="px-2">@</span>
@@ -170,6 +168,11 @@
 
         <!-- Nút -->
         <div class="row action-buttons mt-4">
+            <div class="col-12 col-md-auto mt-3 mt-md-0">
+                <a href="{{ route('bills.temporary', $booking->id) }}" class="btn btn-secondary px-4 py-3">
+                    Nhận phòng
+                </a>
+            </div>
             @if ($booking->status == 1)
                 <div class="col-12 col-md-auto mt-3 mt-md-0">
                     <a href="{{ route('room_order.index') }}" class="btn btn-secondary px-4 py-3">
@@ -205,21 +208,22 @@
                     </a>
                 </div>
             @endif
-           @if ($booking->status != 5 && $booking->status != 4 && $booking->status != 2)
-        <form action="{{ route('room_order.cancel', $booking->id) }}" method="POST" onsubmit="return confirm('Bạn có chắc chắn muốn hủy đơn này?');">
-            @csrf
-            @method('PUT')
+            @if ($booking->status != 5 && $booking->status != 4 && $booking->status != 2)
+                <form action="{{ route('room_order.cancel', $booking->id) }}" method="POST"
+                    onsubmit="return confirm('Bạn có chắc chắn muốn hủy đơn này?');">
+                    @csrf
+                    @method('PUT')
 
-            <div class="mb-2">
-                <label for="note" class="form-label fw-bold">Lý do hủy đơn:</label>
-                <textarea name="note" id="note" rows="2" class="form-control" placeholder="Nhập lý do..."></textarea>
-            </div>
+                    <div class="mb-2">
+                        <label for="note" class="form-label fw-bold">Lý do hủy đơn:</label>
+                        <textarea name="note" id="note" rows="2" class="form-control" placeholder="Nhập lý do..."></textarea>
+                    </div>
 
-            <button type="submit" class="btn btn-danger px-4 py-3">
-                Hủy đơn
-            </button>
-        </form>
-@endif
+                    <button type="submit" class="btn btn-danger px-4 py-3">
+                        Hủy đơn
+                    </button>
+                </form>
+            @endif
 
         </div>
 
