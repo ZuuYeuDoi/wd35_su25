@@ -159,34 +159,6 @@
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
                                     </div>
-
-                                    <div class="form-group mb-4">
-                                        <label class="form-label">Loại phòng <span class="text-danger">*</span></label>
-
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="radio" name="max_people" id="single" value="1" {{ old('max_people') == '1' ? 'checked' : '' }}>
-                                            <label class="form-check-label" for="single">Single Bedroom</label>
-                                        </div>
-
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="radio" name="max_people" id="twin" value="3" {{ old('max_people') == '3' ? 'checked' : '' }}>
-                                            <label class="form-check-label" for="twin">Twin Bedroom</label>
-                                        </div>
-
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="radio" name="max_people" id="double" value="3" {{ old('max_people') == '2' ? 'checked' : '' }}>
-                                            <label class="form-check-label" for="double">Double Bedroom</label>
-                                        </div>
-
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="radio" name="max_people" id="triple" value="4" {{ old('max_people') == '4' ? 'checked' : '' }}>
-                                            <label class="form-check-label" for="triple">Triple Bedroom</label>
-                                        </div>
-
-                                        @error('max_people')
-                                            <div class="invalid-feedback d-block">{{ $message }}</div>
-                                        @enderror
-                                    </div>
                                 </div>
 
                                 <div class="col-md-6">

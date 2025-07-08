@@ -4,17 +4,22 @@ namespace App\Http\Controllers\User;
 
 use Carbon\Carbon;
 use App\Models\Room;
-use App\Models\Guest;
-use App\Models\Amenitie;
+use App\Models\Booking;
+use App\Models\RoomType;
+use App\Models\BookingRoom;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
-use App\Models\Booking; // thêm nếu chưa có
 
 class BookingController extends Controller
 {
     public function index(Request $request)
     {
+        // Bắt buộc đăng nhập
+        if (!Auth::check()) {
+            return redirect()->route('login')->with('error', 'Vui lòng đăng nhập để tiếp tục đặt phòng.');
+        }
+
         $request->validate([
             'checkin_date' => 'required|date',
             'checkout_date' => 'required|date|after:checkin_date',
@@ -24,21 +29,24 @@ class BookingController extends Controller
             'checkout_date.after' => 'Ngày trả phòng phải sau ngày nhận phòng.',
         ]);
 
-        $user = Auth::check() ? Auth::user() : null;
+        $user = Auth::user();
         $data = $request->only(['checkin_date', 'checkout_date']);
-        $roomId = $request->input('room_id');
-        $room = Room::with('images_room', 'roomType')->findOrFail($roomId);
+        $roomIds = $request->input('room_ids', []);
+        $rooms = Room::with('images_room', 'roomType')->whereIn('id', $roomIds)->get();
 
         $checkin = Carbon::parse($data['checkin_date']);
         $checkout = Carbon::parse($data['checkout_date']);
         $numberOfNights = $checkin->diffInDays($checkout);
 
         $bookingCode = $this->generateBookingCode();
-        $totalPrice = $numberOfNights * $room->price;
+        
+        $totalPrice = $rooms->sum(function ($room) use ($numberOfNights) {
+            return $room->price * $numberOfNights;
+        });
 
-        // 👉 Tạo đối tượng booking tạm (chưa lưu vào DB)
+        // Booking tạm chưa lưu DB
         $booking = new \stdClass();
-        $booking->id = null; // hoặc gán ID tạm thời nếu cần
+        $booking->id = null;
         $booking->total_price = $totalPrice;
 
         return view('client.checkout.index', compact(
@@ -48,9 +56,199 @@ class BookingController extends Controller
             'totalPrice',
             'numberOfNights',
             'bookingCode',
-            'booking' // ✅ thêm vào đây để tránh lỗi
+            'booking'
         ));
     }
+
+    // public function checkout(Request $request)
+    // {
+    //     $data = $request->validate([
+    //         'room_type_id' => 'required|exists:room_types,id',
+    //         'check_in' => 'required|date|after_or_equal:today',
+    //         'check_out' => 'required|date|after:check_in',
+    //         'number_of_rooms' => 'required|integer|min:1',
+    //         'adults' => 'required|integer|min:1',
+    //         'children' => 'required|integer|min:0',
+    //     ]);
+    //     if (!Auth::check()) {
+    //                 return redirect()->route('login')->with('error', 'Vui lòng đăng nhập để tiếp tục đặt phòng.');
+    //             }
+    //     $user = Auth::user();
+
+    //     $checkIn = Carbon::parse($data['check_in']);
+    //     $checkOut = Carbon::parse($data['check_out']);
+    //     $numberOfNights = $checkIn->diffInDays($checkOut);
+    //     $bookingCode = $this->generateBookingCode();
+
+    //     $roomType = RoomType::findOrFail($data['room_type_id']);
+    //     $pricePerRoom = $roomType->room_type_price;
+
+    //     $totalPrice = $data['number_of_rooms'] * $numberOfNights * $pricePerRoom;
+
+    //     return view('client.checkout.index', [
+    //         'user' => $user,
+    //         'roomType' => $roomType,
+    //         'checkIn' => $checkIn->toDateString(),
+    //         'checkOut' => $checkOut->toDateString(),
+    //         'numberOfRooms' => $data['number_of_rooms'],
+    //         'adults' => $data['adults'],
+    //         'children' => $data['children'],
+    //         'pricePerRoom' => $pricePerRoom,
+    //         'numberOfNights' => $numberOfNights,
+    //         'totalPrice' => $totalPrice,
+    //         'data' => $data,
+    //         'bookingCode' => $bookingCode,
+    //     ]);
+    // }
+
+    public function checkout(Request $request)
+{
+    $data = $request->validate([
+        'room_type_id' => 'required|exists:room_types,id',
+        'check_in' => 'required|date|after_or_equal:today',
+        'check_out' => 'required|date|after:check_in',
+        'number_of_rooms' => 'required|integer|min:1',
+        'adults' => 'required|integer|min:1',
+        'children' => 'required|integer|min:0',
+    ]);
+
+    if (!Auth::check()) {
+        return redirect()->route('login')->with('error', 'Vui lòng đăng nhập để tiếp tục đặt phòng.');
+    }
+
+    $bookingCode = $this->generateBookingCode();
+
+    // Lưu dữ liệu vào session để dùng ở bước GET
+    session([
+        'booking_data' => $data,
+        'booking_code' => $bookingCode
+    ]);
+
+    return redirect()->route('booking.checkout.view');
+}
+
+public function showCheckoutPage()
+{
+    $data = session('booking_data');
+    $bookingCode = session('booking_code');
+
+    if (!$data || !$bookingCode) {
+        return redirect()->route('room.index')->with('error', 'Dữ liệu đặt phòng không hợp lệ.');
+    }
+
+    $user = Auth::user();
+    $roomType = RoomType::findOrFail($data['room_type_id']);
+    $checkIn = Carbon::parse($data['check_in']);
+    $checkOut = Carbon::parse($data['check_out']);
+    $numberOfNights = $checkIn->diffInDays($checkOut);
+    $pricePerRoom = $roomType->room_type_price;
+    $totalPrice = $data['number_of_rooms'] * $numberOfNights * $pricePerRoom;
+
+    return view('client.checkout.index', [
+        'user' => $user,
+        'roomType' => $roomType,
+        'checkIn' => $checkIn->toDateString(),
+        'checkOut' => $checkOut->toDateString(),
+        'numberOfRooms' => $data['number_of_rooms'],
+        'adults' => $data['adults'],
+        'children' => $data['children'],
+        'pricePerRoom' => $pricePerRoom,
+        'numberOfNights' => $numberOfNights,
+        'totalPrice' => $totalPrice,
+        'data' => $data,
+        'bookingCode' => $bookingCode,
+    ]);
+}
+     private function getAvailableRooms($roomTypeId, $checkIn, $checkOut, $limit = null)
+    {
+        $roomIds = Room::where('room_type_id', $roomTypeId)
+            ->where('status', 1)
+            ->pluck('id');
+
+        $bookedRoomIds = BookingRoom::whereIn('room_id', $roomIds)
+            ->where(function ($query) use ($checkIn, $checkOut) {
+                $query->whereBetween('check_in_date', [$checkIn, $checkOut])
+                      ->orWhereBetween('check_out_date', [$checkIn, $checkOut])
+                      ->orWhere(function ($q) use ($checkIn, $checkOut) {
+                          $q->where('check_in_date', '<=', $checkIn)
+                            ->where('check_out_date', '>=', $checkOut);
+                      });
+            })
+            ->pluck('room_id');
+
+        $availableQuery = Room::where('room_type_id', $roomTypeId)
+            ->where('status', 1)
+            ->whereNotIn('id', $bookedRoomIds);
+
+        return $limit ? $availableQuery->limit($limit)->get() : $availableQuery->get();
+    }
+
+    public function store(Request $request)
+    {
+        if (!Auth::check()) {
+            return redirect()->route('login')->with('error', 'Vui lòng đăng nhập để tiếp tục.');
+        }
+
+        $data = $request->validate([
+            'room_type_id' => 'required|exists:room_types,id',
+            'check_in' => 'required|date|after_or_equal:today',
+            'check_out' => 'required|date|after:check_in',
+            'number_of_rooms' => 'required|integer|min:1',
+            'adults' => 'required|integer|min:1',
+            'children' => 'required|integer|min:0',
+            'deposit' => 'required|numeric|min:0',
+            'total_amount' => 'required|numeric|min:0',
+        ]);
+
+        $checkIn = Carbon::parse($data['check_in']);
+        $checkOut = Carbon::parse($data['check_out']);
+        $numberOfNights = $checkIn->diffInDays($checkOut);
+
+        $roomType = RoomType::findOrFail($data['room_type_id']);
+        $user = Auth::user();
+
+        $availableRooms = $this->getAvailableRooms(
+            $roomType->id,
+            $checkIn,
+            $checkOut,
+            $data['number_of_rooms']
+        );
+
+        if ($availableRooms->count() < $data['number_of_rooms']) {
+            return back()->with('error', 'Không đủ phòng trống cho loại phòng này trong thời gian đã chọn.');
+        }
+
+        // Tạo booking
+        $booking = Booking::create([
+            'booking_code'    => $this->generateBookingCode(),
+            'user_id'         => $user->id,
+            'check_in_date'   => $checkIn,
+            'check_out_date'  => $checkOut,
+            'status'          => 0,
+            'adults'          => $data['adults'],
+            'children'        => $data['children'],
+            'deposit'         => intval($data['deposit']),
+            'total_amount'    => intval($data['total_amount']),
+        ]);
+
+        // Gán phòng vào booking_rooms
+        foreach ($availableRooms as $room) {
+            BookingRoom::create([
+                'booking_id'     => $booking->id,
+                'room_id'        => $room->id,
+                'check_in_date'  => $checkIn,
+                'check_out_date' => $checkOut,
+                'price'          => $room->price,
+            ]);
+        }
+        
+        // Điều hướng sang trang thanh toán với số tiền là tiền cọc
+        return view('client.payments.auto_submit', [
+            'booking_id' => $booking->id,
+            'amount'     => intval($data['deposit']), // chỉ thanh toán 10%
+        ]);
+    }
+
 
     private function generateBookingCode()
     {
@@ -58,56 +256,4 @@ class BookingController extends Controller
         $random = mt_rand(1000, 9999);
         return "BK-{$date}-{$random}";
     }
-
-        public function store(Request $request)
-{
-    $data = $request->validate([
-        'name' => 'required|string|max:255',
-        'email' => 'nullable|email|max:255',
-        'phone' => 'required|string|max:255',
-        'cccd' => 'required|string|max:20',
-        'checkin_date' => 'required|date',
-        'checkout_date' => 'required|date|after:checkin_date',
-        'room_id' => 'required|exists:rooms,id',
-    ]);
-
-    // Tạo guest
-    $guest = Guest::create([
-        'name' => $data['name'],
-        'email' => $data['email'],
-        'phone' => $data['phone'],
-        'cccd' => $data['cccd'],
-    ]);
-
-    // Tính số đêm
-    $checkin = Carbon::parse($data['checkin_date']);
-    $checkout = Carbon::parse($data['checkout_date']);
-    $numberOfNights = $checkin->diffInDays($checkout);
-
-    // Lấy giá phòng
-    $room = Room::findOrFail($data['room_id']);
-    $totalPrice = $numberOfNights * $room->price;
-
-    // dd($room, $totalPrice);
-    // Tạo booking
-    $booking = Booking::create([
-        'booking_code' => $this->generateBookingCode(),
-        'room_id' => $room->id,
-        'user_id'  => Auth::check() ? Auth::id() : null,
-        'guest_id' => Auth::check() ? null : $guest->id,
-        'check_in_date' => $data['checkin_date'],
-        'check_out_date' => $data['checkout_date'],
-        'deposit' => null,
-        'status' => 0,
-    ]);
-
-    // Chuyển sang payment
-    return view('client.payments.auto_submit', [
-    'booking_id' => $booking->id,
-    'amount' => $totalPrice,
-    ]);
 }
-    
-}
-
-

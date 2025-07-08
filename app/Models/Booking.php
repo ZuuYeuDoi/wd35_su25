@@ -16,7 +16,9 @@ class Booking extends Model
         'check_in_date',
         'check_out_date',
         'deposit',
+        'total_amount',
         'status',
+        'special_request',
     ];
     protected $casts = [
         'check_in_date' => 'datetime',
@@ -41,4 +43,20 @@ class Booking extends Model
     {
         return $this->hasOne(Cart::class, 'booking_id');
     }
+    public function bookingRooms()
+{
+    return $this->hasMany(\App\Models\BookingRoom::class, 'booking_id');
+}
+
+public function payments()
+{
+    return $this->hasMany(\App\Models\Payment::class, 'booking_id');
+}
+
+public function manageStatusRooms()
+{
+    return $this->hasMany(ManageStatusRoom::class);
+}
+
+
 }

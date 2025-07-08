@@ -37,8 +37,7 @@
                                     <th>Giá mặc định</th>
                                     <th>Hình ảnh</th>
                                     <th>Tiện ích</th>
-                                    <th>Ngày tạo</th>
-                                    <th>Ngày cập nhật</th>
+                                
                                     <th>Thao tác</th>
                                 </tr>
                             </thead>
@@ -74,8 +73,7 @@
                                         @endif
                                     </td>
 
-                                    <td>{{ $type->created_at->format('d/m/Y') }}</td>
-                                    <td>{{ $type->updated_at->format('d/m/Y') }}</td>
+                                    
                                     <td>
                                         <a href="{{ route('room_types.edit', $type->id) }}" class="btn btn-sm btn-warning">Sửa</a>
                                         <form action="{{ route('room_types.destroy', $type->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Bạn có chắc muốn xóa?')">

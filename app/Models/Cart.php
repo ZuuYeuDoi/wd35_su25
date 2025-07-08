@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\CartService;
 use Illuminate\Database\Eloquent\Model;
 
 class Cart extends Model
@@ -20,4 +21,11 @@ class Cart extends Model
     {
         return $this->hasMany(CartService::class, 'cart_id');
     }
+
+    public function cartServiceItems()
+    {
+        return $this->hasMany(CartServiceItem::class);
+    }
+
+        
 }
