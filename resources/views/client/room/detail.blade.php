@@ -55,6 +55,7 @@
             font-weight: 600;
             margin-bottom: 5px;
         }
+        
     </style>
 @endpush
 @section('content')
