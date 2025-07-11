@@ -22,7 +22,7 @@
                 </ul>
             </li>
             </li>
-            <li><a href="page-contact.html">Liên Hệ</a></li>
+            <li><a href="/about">Giới Thiệu</a></li>
             <li class="dropdown">
                 <a href="#">
                     {{ Auth::check() ? Auth::user()->name : 'Tài khoản' }}
