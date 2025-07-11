@@ -36,7 +36,7 @@
                             <li><a href="{{ route('register') }}">{{ __('Register') }}</a></li>
                         @endif
                     @else
-                        <li><a href="/account">Thông tin cá nhân</a></li>
+                        <li><a href="/profile">Thông tin cá nhân</a></li>
                         <li>
                             <a href="{{ route('logout') }}"
                                 onclick="event.preventDefault(); document.getElementById('logout-form').submit();">

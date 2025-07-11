@@ -34,29 +34,22 @@ class Booking extends Model
         return $this->belongsTo(User::class, 'user_id');
     }
 
-    public function guest()
-    {
-        return $this->belongsTo(Guest::class, 'guest_id');
-    }
-
     public function cart()
     {
         return $this->hasOne(Cart::class, 'booking_id');
     }
     public function bookingRooms()
-{
-    return $this->hasMany(\App\Models\BookingRoom::class, 'booking_id');
-}
+    {
+        return $this->hasMany(BookingRoom::class, 'booking_id');
+    }
 
-public function payments()
-{
-    return $this->hasMany(\App\Models\Payment::class, 'booking_id');
-}
+    public function payments()
+    {
+        return $this->hasMany(\App\Models\Payment::class, 'booking_id');
+    }
 
-public function manageStatusRooms()
-{
-    return $this->hasMany(ManageStatusRoom::class);
-}
-
-
+    public function manageStatusRooms()
+    {
+        return $this->hasMany(ManageStatusRoom::class);
+    }
 }
