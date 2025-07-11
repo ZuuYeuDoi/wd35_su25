@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\User\AboutController;
 use App\Http\Controllers\Admin\BillController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -48,6 +49,11 @@ Route::prefix('/')->group(callback: function () {
         Route::post('/cart/remove/{id}', 'remove')->name('cart.remove');
         Route::post('/cart/update', 'update')->name('cart.update');
         Route::post('/cart/order', 'order')->name('cart.order');
+    });
+
+
+    Route::controller(AboutController::class)->group(function () {
+        Route::get('/about', 'index')->name('about');
     });
 });
 
@@ -137,9 +143,11 @@ Route::prefix('admin')->group(function () {
 
     // Quản lý Bill
     Route::controller(BillController::class)->group(function () {
+        Route::get('/admin/bills', [BillController::class, 'index'])->name('bills.index');
         Route::get('/{id}/temporary', [BillController::class, 'temporary'])->name('bills.temporary');
         Route::put('/bills/{id}/confirm', [BillController::class, 'confirmPayment'])->name('bills.confirm');
         Route::get('/{id}/final', [BillController::class, 'final'])->name('bills.final');
+        Route::get('/admin/bills/{id}', [BillController::class, 'show'])->name('bills.show');
     });
 
     // cart dịch vụ

@@ -86,6 +86,19 @@
                                    </li>
                                </ul>
                            </li>
+                                <li class="nav-parent">
+                               <a class="nav-link" href="javascript:void(0)">
+                                   <i class="fas fa-user" aria-hidden="true"></i>
+                                   <span>Quản lý Hóa đơn</span>
+                               </a>
+                               <ul class="nav nav-children">
+                                   <li>
+                                       <a class="nav-link" href="{{ route('bills.index') }}">
+                                           Danh sách Hóa đơn
+                                       </a>
+                                   </li>
+                               </ul>
+                           </li>
 
                            <li class="nav-parent">
                                <a class="nav-link" href="javascript:void(0)">
