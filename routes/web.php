@@ -43,12 +43,12 @@ Route::prefix('/')->group(callback: function () {
         Route::get('/service-detail/{id}', 'showClient')->name('services.showClient');
     });
 
-    Route::controller(CartController::class)->group(function () {
-        Route::post('/cart/add', 'addService')->name('cart.add');
-        route::get('/cart', 'index')->name('cart.ídex');
+    Route::controller(CartController::class)->middleware('auth')->group(function () {
+        Route::post('/cart/add', 'addService')->name('cart.addCart');
+        route::get('/cart', 'index')->name('cart.index');
         Route::post('/cart/remove/{id}', 'remove')->name('cart.remove');
         Route::post('/cart/update', 'update')->name('cart.update');
-        Route::post('/cart/order', 'order')->name('cart.order');
+        Route::post('/cart/order', 'order')->name('cart.orderUser');
     });
 
 

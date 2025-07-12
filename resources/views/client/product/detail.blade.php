@@ -61,7 +61,7 @@
                         </h3>
                     </div>
 
-                    <form action="{{ route('cart.add') }}" method="POST">
+                    <form action="{{ route('cart.addCart') }}" method="POST">
                         @csrf
                         <input type="hidden" name="service_id" value="{{ $product->id }}">
                         <input type="hidden" name="booking_id" value="{{ $booking?->id }}">
@@ -82,17 +82,23 @@
                         </div>
 
                         <div class="product-details__buttons mt-4">
-                            @if ($booking)
-                                <button type="submit" class="theme-btn btn-style-one">
-                                    <span class="btn-title">Thêm vào giỏ hàng</span>
-                                </button>
-                            @else
+                            @guest
                                 <div class="alert alert-warning">
-                                    Vui lòng <a href="{{ route('login') }}">đăng nhập</a> và đặt phòng để sử dụng dịch vụ
-                                    này.
+                                    Vui lòng <a href="{{ route('login') }}">đăng nhập</a> để sử dụng dịch vụ này.
                                 </div>
-                            @endif
+                            @else
+                                @if ($booking)
+                                    <button type="submit" class="theme-btn btn-style-one">
+                                        <span class="btn-title">Thêm vào giỏ hàng</span>
+                                    </button>
+                                @else
+                                    <div class="alert alert-warning">
+                                        Bạn chưa có lịch booking vui lòng đặt phòng để sử dụng dịch vụ này.
+                                    </div>
+                                @endif
+                            @endguest
                         </div>
+
                     </form>
 
                     <div class="product-details__content mt-4">

@@ -6,10 +6,10 @@
             overflow-y: auto;
             z-index: 1100;
         }
+
         .search-popup {
             overflow: auto;
         }
-
     </style>
 @endpush
 
@@ -31,7 +31,7 @@
                     <button class="ui-btn ui-btn search-btn">
                         <span class="icon lnr lnr-icon-search"></span>
                     </button>
-                    <a href="shop-cart.html" class="ui-btn cart-btn">
+                    <a href="{{ route('cart.index') }}" class="ui-btn cart-btn">
                         <i class="lnr-icon-shopping-cart"></i>
                         <span class="items-count">0</span>
                     </a>
