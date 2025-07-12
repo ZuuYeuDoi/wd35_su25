@@ -2,12 +2,12 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use App\Models\Booking;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -27,6 +27,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'cccd',
         'role_id',
         'status',
+        'remember_token',
     ];
 
     /**
@@ -50,5 +51,27 @@ class User extends Authenticatable implements MustVerifyEmail
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function bookings()
+    {
+        return $this->hasMany(Booking::class, 'user_id');
+    }
+
+    public function serviceBookings()
+    {
+        return $this->hasMany(BillServices::class);
+    }
+
+    public function cartServiceItems()
+    {
+        return $this->hasManyThrough(
+            CartServiceItem::class,
+            Cart::class,
+            'user_id',  // FK trên bảng carts
+            'cart_id',  // FK trên cart_service_items
+            'id',       // PK users
+            'id'   // PK carts
+        );
     }
 }

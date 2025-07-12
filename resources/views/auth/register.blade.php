@@ -41,12 +41,6 @@
                     </div>
 
                     <div class="input-group">
-                        <input id="cccd" type="text" class="form-control  is-invalid"
-                            name="cccd" value="{{ old('cccd') }}" required autocomplete="cccd">
-                        <label for="cccd" class="form-label">Số căn cước công dân</label>
-                    </div>
-
-                    <div class="input-group">
                         <input id="email" type="email" class="form-control @error('email') is-invalid @enderror"
                             name="email" value="{{ old('email') }}" required autocomplete="email">
                         @error('email')

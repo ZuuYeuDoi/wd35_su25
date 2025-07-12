@@ -46,7 +46,22 @@ class Bill extends Model
         return $this->hasMany(BillFee::class);
     }
 
+    public function billServices()
+    {
+        return $this->hasMany(BillService::class);
+    }
+
+    public function billRooms()
+    {
+        return $this->hasMany(BillRoom::class);
+    }
+
+    public function billFees()
+    {
+        return $this->hasMany(BillFee::class);
+    }
+
     protected $casts = [
-    'payment_date' => 'datetime',
+        'payment_date' => 'datetime',
     ];
 }

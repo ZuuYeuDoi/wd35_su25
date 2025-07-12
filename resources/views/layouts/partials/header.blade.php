@@ -1,6 +1,7 @@
 <header class="header">
     <div class="logo-container">
-        <a href="#" class="logo"> <img src="{{ asset('assets/img/logo.png') }}" width="75" height="35" alt="Porto Admin" />
+        <a href="#" class="logo"> <img src="{{ asset('assets/img/logo.png') }}" width="75" height="35"
+                alt="Porto Admin" />
         </a>
         <div class="d-md-none toggle-sidebar-left" data-toggle-class="sidebar-left-opened" data-target="html"
             data-fire-event="sidebar-left-opened">
@@ -88,7 +89,8 @@
                             <li>
                                 <a href="#" class="clearfix">
                                     <figure class="image">
-                                        <img src="{{ asset('assets/img/%21sample-user.jpg') }}" alt="Joseph Junior" class="rounded-circle" />
+                                        <img src="{{ asset('assets/img/%21sample-user.jpg') }}" alt="Joseph Junior"
+                                            class="rounded-circle" />
                                     </figure>
                                     <span class="title">Joseph Junior</span>
                                     <span class="message truncate">Truncated message. Lorem ipsum dolor sit
@@ -110,7 +112,8 @@
                             <li>
                                 <a href="#" class="clearfix">
                                     <figure class="image">
-                                        <img src="{{ asset('assets/img/%21sample-user.jpg') }}" alt="Joe Junior" class="rounded-circle" />
+                                        <img src="{{ asset('assets/img/%21sample-user.jpg') }}" alt="Joe Junior"
+                                            class="rounded-circle" />
                                     </figure>
                                     <span class="title">Joe Junior</span>
                                     <span class="message">Lorem ipsum dolor sit.</span>
@@ -189,11 +192,11 @@
         <div id="userbox" class="userbox">
             <a href="#" data-bs-toggle="dropdown">
                 <figure class="profile-picture">
-                    <img src="{{asset('assets/img/%21logged-user.jpg')}}" alt="Joseph Doe" class="rounded-circle"
+                    <img src="{{ asset('assets/img/%21logged-user.jpg') }}" alt="Joseph Doe" class="rounded-circle"
                         data-lock-picture="{{ asset('assets/img/%21logged-user.jpg') }}" />
                 </figure>
                 <div class="profile-info" data-lock-name="John Doe" data-lock-email="johndoe@okler.com">
-                    <span class="name">HoangTaly</span>
+                    <span class="name">{{ Auth::user()->name }}</span>
                     <span class="role">Quản trị viên</span>
                 </div>
                 <i class="fa custom-caret"></i>
@@ -202,17 +205,19 @@
                 <ul class="list-unstyled mb-2">
                     <li class="divider"></li>
                     <li>
-                        <a role="menuitem" tabindex="-1" href="/admin/profile"><i
-                                class="bx bx-user-circle"></i> Thông tin của tôi</a>
+                        <a role="menuitem" tabindex="-1" href="/admin/profile"><i class="bx bx-user-circle"></i>
+                            Thông tin của tôi</a>
                     </li>
                     <li>
-                        <a role="menuitem" tabindex="-1" href="/admin/lock-screen" data-lock-screen="true"><i
-                                class="bx bx-lock"></i> Khóa màn hình</a>
+                        <a role="menuitem" tabindex="-1" href="{{ route('logout') }}"
+                            onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                            <i class="bx bx-power-off"></i>Đăng xuất
+                        </a>
                     </li>
-                    <li>
-                        <a role="menuitem" tabindex="-1" href="pages-signin.html"><i class="bx bx-power-off"></i>
-                            Đăng xuất</a>
-                    </li>
+                    <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                        @csrf
+                    </form>
+
                 </ul>
             </div>
         </div>

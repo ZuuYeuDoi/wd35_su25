@@ -96,7 +96,7 @@ class BillController extends Controller
                 $total = $room->price * $nights;
                 $roomAmount += $total;
 
-               BillRoom::create([
+                BillRoom::create([
                     'bill_id'          => $bill->id,
                     'room_name'        => $room->title . ' (' . $room->roomType->name . ')',
                     'price_per_night'  => $room->price,
@@ -170,4 +170,35 @@ class BillController extends Controller
 
         return view('admin.bills.final_bill', compact('bill'));
     }
+
+  public function index(Request $request)
+{
+    $query = Bill::query();
+
+    if ($request->filled('customer_name')) {
+        $query->where('customer_name', 'like', '%' . $request->customer_name . '%');
+    }
+
+    if ($request->filled('customer_phone')) {
+        $query->where('customer_phone', 'like', '%' . $request->customer_phone . '%');
+    }
+
+    if ($request->filled('status')) {
+        $query->where('status', $request->status);
+    }
+
+    if ($request->filled('payment_date')) {
+        $query->whereDate('payment_date', $request->payment_date);
+    }
+
+    $bills = $query->latest()->paginate(10);
+
+    return view('admin.bills.index', compact('bills'));
+}
+
+   public function show($id)
+{
+    $bill = Bill::with(['billRooms', 'billServices', 'billFees'])->findOrFail($id);
+    return view('admin.bills.show', compact('bill'));
+}
 }

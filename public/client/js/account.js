@@ -6,16 +6,16 @@ document.addEventListener('DOMContentLoaded', function() {
     menuItems.forEach(item => {
         item.addEventListener('click', function(e) {
             e.preventDefault();
-            
+
             // Xóa class active từ tất cả menu items
             menuItems.forEach(mi => mi.classList.remove('active'));
-            
+
             // Thêm class active cho menu item được click
             this.classList.add('active');
-            
+
             // Ẩn tất cả content sections
             contentSections.forEach(section => section.classList.remove('active'));
-            
+
             // Hiển thị content section tương ứng
             const targetId = this.getAttribute('href').substring(1);
             document.getElementById(targetId).classList.add('active');
@@ -26,11 +26,11 @@ document.addEventListener('DOMContentLoaded', function() {
     const profileForm = document.querySelector('.profile-form');
     if (profileForm) {
         profileForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
+            // e.preventDefault();
+
             // Lấy dữ liệu từ form
             const formData = new FormData(this);
-            
+
             // Gửi dữ liệu lên server (cần thêm API endpoint)
             // fetch('/api/update-profile', {
             //     method: 'POST',
@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // });
 
             // Tạm thời hiển thị thông báo thành công
-            showNotification('Cập nhật thông tin thành công!', 'success');
+            // showNotification('Cập nhật thông tin thành công!', 'success');
         });
     }
 
@@ -58,14 +58,14 @@ document.addEventListener('DOMContentLoaded', function() {
         const notification = document.createElement('div');
         notification.className = `notification ${type}`;
         notification.textContent = message;
-        
+
         document.body.appendChild(notification);
-        
+
         // Hiển thị thông báo
         setTimeout(() => {
             notification.classList.add('show');
         }, 100);
-        
+
         // Ẩn thông báo sau 3 giây
         setTimeout(() => {
             notification.classList.remove('show');
@@ -74,4 +74,4 @@ document.addEventListener('DOMContentLoaded', function() {
             }, 300);
         }, 3000);
     }
-}); 
+});

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\User\AboutController;
 use App\Http\Controllers\Admin\BillController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -14,6 +15,8 @@ use App\Http\Controllers\Admin\RoomTypeController;
 use App\Http\Controllers\Admin\BookingRoomController;
 use App\Http\Controllers\Admin\CartController as AdminCartController;
 use App\Http\Controllers\User\CartController;
+use App\Http\Controllers\User\UserController;
+use App\Http\Controllers\Admin\InforController;
 use App\Http\Controllers\User\ServiceController as UserServiceController;
 
 // Route::get('/check-available-room', [HomeController::class, 'checkAvailableRoom'])->name('room_type.check_availability');
@@ -33,7 +36,6 @@ Route::prefix('/')->group(callback: function () {
         Route::post('/booking/checkout', 'checkout')->name('booking.checkout');
         Route::get('/booking/checkout', 'showCheckoutPage')->name('booking.checkout.view');
         Route::post('/booking/store', 'store')->name('booking.store');
-        
     });
 
     Route::controller(UserServiceController::class)->group(function () {
@@ -48,6 +50,11 @@ Route::prefix('/')->group(callback: function () {
         Route::post('/cart/update', 'update')->name('cart.update');
         Route::post('/cart/order', 'order')->name('cart.order');
     });
+
+
+    Route::controller(AboutController::class)->group(function () {
+        Route::get('/about', 'index')->name('about');
+    });
 });
 
 
@@ -57,10 +64,6 @@ Route::prefix('/')->group(callback: function () {
 Route::get('/room-detail', function () {
     return view('client.room.detail');
 });
-
-
-
-
 
 
 Route::get('/admin', function () {
@@ -136,21 +139,27 @@ Route::prefix('admin')->group(function () {
         // Route::get('room_order/edit/{id}', 'edit')->name('room_order.edit');
         // Route::put('room_order/update/{id}', 'update')->name('room_order.update');
         Route::put('/room_order/{id}/cancel', [BookingRoomController::class, 'cancel'])->name('room_order.cancel');
-
-
     });
 
     // Quản lý Bill
     Route::controller(BillController::class)->group(function () {
+        Route::get('/admin/bills', [BillController::class, 'index'])->name('bills.index');
         Route::get('/{id}/temporary', [BillController::class, 'temporary'])->name('bills.temporary');
         Route::put('/bills/{id}/confirm', [BillController::class, 'confirmPayment'])->name('bills.confirm');
         Route::get('/{id}/final', [BillController::class, 'final'])->name('bills.final');
+        Route::get('/admin/bills/{id}', [BillController::class, 'show'])->name('bills.show');
     });
 
     // cart dịch vụ
-    Route::controller(AdminCartController::class)->group(function(){
-        Route::post('/cart/add',[AdminCartController::class, 'add'])->name('cart.add');
+    Route::controller(AdminCartController::class)->group(function () {
+        Route::post('/cart/add', [AdminCartController::class, 'add'])->name('cart.add');
     });
+
+    Route::controller(InforController::class)->group(function () {
+        Route::get('/profile', [InforController::class, 'showProfile'])->name('admin.profile');
+        Route::post('/profile/update', [InforController::class, 'updateProfile'])->name('admin.profile.update');
+    })->middleware(['auth']);
+
 });
 
 
@@ -195,9 +204,7 @@ Route::get('/admin/add-staff', function () {
 Route::get('/admin/comments', function () {
     return view('admin.comments');
 });
-Route::get('/admin/profile', function () {
-    return view('admin.custommers.staff-profile');
-});
+
 Route::get('/admin/lock-screen', function () {
     return view('admin.lock-screen');
 });
@@ -219,9 +226,12 @@ Route::get('/register', function () {
     return view('auth.register');
 });
 
-Route::get('/account', function () {
-    return view('client.account.account');
+// routes/web.php
+Route::middleware(['auth'])->group(function () {
+    Route::get('/profile', [UserController::class, 'showProfile'])->name('user.profile');
+    Route::post('/profile/update', [UserController::class, 'updateProfile'])->name('user.profile.update');
 });
+
 
 
 Route::get('/account/room', function () {
