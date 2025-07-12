@@ -23,22 +23,32 @@ class RoomController extends Controller
         $rooms = Room::with('roomType')->orderBy('created_at', 'desc')->get();
         return view('admin.bookingrooms.rooms.rooms', compact('rooms'));
     }
-    public function map(Request $request)
-    {
-        $checkIn   = $request->input('check_in');
-        $checkOut  = $request->input('check_out');
-        $stayType  = $request->input('stay_type', 'overnight');
-        $adults    = (int) $request->input('adults', 0);
-        $children  = (int) $request->input('children', 0);
-        $childAges = $request->input('children_ages', []);
+public function map(Request $request)
+{
+    $checkIn   = $request->input('check_in');
+    $checkOut  = $request->input('check_out');
+    $stayType  = $request->input('stay_type', 'overnight');
+    // $adults    = (int) $request->input('adults', 0);
+    // $children  = (int) $request->input('children', 0);
+    // $childAges = $request->input('children_ages', []);
 
         $status = $request->input('status');
 
         $query = Room::with('roomType');
 
-        if ($status !== null && $status !== '') {
-            $query->where('status', $status);
-        }
+    if ($status !== null && $status !== '') {
+        $query->where('status', $status); 
+    }
+
+    // $requiredBeds = $adults;
+    // foreach ($childAges as $age) {
+    //     $age = (int) $age;
+    //     if ($age >= 12) {
+    //         $requiredBeds += 1; 
+    //     } elseif ($age >= 1) {
+    //         $requiredBeds += 0.5; 
+    //     }
+    // }
 
         $requiredBeds = $adults;
         foreach ($childAges as $age) {
@@ -89,6 +99,24 @@ class RoomController extends Controller
     }
 
 
+    // if ($requiredBeds > 0) {
+    //     $query->where('max_people', '>=', ceil($requiredBeds));
+    // }
+
+    $rooms = $query->get();
+
+    return view('admin.bookingrooms.rooms.room-map', [
+        'rooms' => $rooms,
+        'startDate' => $checkIn,
+        'endDate' => $checkOut,
+        // 'adults' => $adults,
+        // 'children' => $children,
+        // 'childAges' => $childAges,
+        'stayType' => $stayType
+    ]);
+}
+
+
     /**
      * Show the form for creating a new resource.
      */
@@ -109,6 +137,7 @@ class RoomController extends Controller
             'room_type_id' => 'required|exists:room_types,id',
             'title' => 'required|string|max:255',
             'price' => 'required|numeric|min:0',
+            // 'max_people' => 'required|integer|min:1',
             'description' => 'required|string',
             'status' => 'required|in:0,1',
             'image_room' => 'required|array|min:1',
@@ -123,6 +152,9 @@ class RoomController extends Controller
             'price.required' => 'Vui lòng nhập giá phòng.',
             'price.numeric' => 'Giá phòng phải là số.',
             'price.min' => 'Giá phòng không được nhỏ hơn 0.',
+            // 'max_people.required' => 'Vui lòng nhập số giường.',
+            // 'max_people.integer' => 'Số giường tối đa phải là số nguyên.',
+            // 'max_people.min' => 'Số giường tối đa ít nhất là 1.',
             'description.required' => 'Vui lòng nhập mô tả.',
             'status.required' => 'Vui lòng chọn trạng thái.',
             'status.in' => 'Trạng thái không hợp lệ.',
@@ -141,6 +173,7 @@ class RoomController extends Controller
                 'room_type_id' => $request->room_type_id,
                 'title' => $request->title,
                 'price' => $request->price,
+                // 'max_people' => $request->max_people,
                 'description' => $request->description,
                 'status' => $request->status,
                 'amenities' => $request->input('amenities')
@@ -206,6 +239,7 @@ class RoomController extends Controller
             'room_type_id' => 'required|exists:room_types,id',
             'title' => 'required|string|max:255',
             'price' => 'required|numeric|min:0',
+            // 'max_people' => 'required|integer|min:1',
             'image_room' => 'nullable|array',
             'image_room.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'description' => 'required|string',
@@ -219,6 +253,9 @@ class RoomController extends Controller
             'price.required' => 'Vui lòng nhập giá phòng.',
             'price.numeric' => 'Giá phòng phải là số.',
             'price.min' => 'Giá phòng không được nhỏ hơn 0.',
+            // 'max_people.required' => 'Vui lòng nhập số giường.',
+            // 'max_people.integer' => 'Số giường tối đa phải là số nguyên.',
+            // 'max_people.min' => 'Số giường tối đa ít nhất là 1.',
             'image_room.array' => 'Dữ liệu ảnh không hợp lệ.',
             'image_room.*.image' => 'Tất cả file phải là hình ảnh.',
             'image_room.*.mimes' => 'Ảnh phải thuộc định dạng jpeg, png, jpg, gif, webp.',
@@ -235,6 +272,7 @@ class RoomController extends Controller
                 'room_type_id' => $request->room_type_id,
                 'title' => $request->title,
                 'price' => $request->price,
+                // 'max_people' => $request->max_people,
                 'description' => $request->description,
                 'status' => $request->status,
                 'amenities' => $request->amenities,

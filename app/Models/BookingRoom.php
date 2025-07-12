@@ -32,6 +32,6 @@ class BookingRoom extends Model
     // Quan hệ: BookingRoom thuộc về 1 Room
     public function room()
     {
-        return $this->belongsTo(Room::class);
+        return $this->belongsTo(Room::class,'room_id');
     }
 }

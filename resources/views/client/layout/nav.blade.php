@@ -22,7 +22,7 @@
                 </ul>
             </li>
             </li>
-            <li><a href="page-contact.html">Liên Hệ</a></li>
+            <li><a href="/about">Giới Thiệu</a></li>
             <li class="dropdown">
                 <a href="#">
                     {{ Auth::check() ? Auth::user()->name : 'Tài khoản' }}
@@ -36,7 +36,7 @@
                             <li><a href="{{ route('register') }}">{{ __('Register') }}</a></li>
                         @endif
                     @else
-                        <li><a href="/account">Thông tin cá nhân</a></li>
+                        <li><a href="/profile">Thông tin cá nhân</a></li>
                         <li>
                             <a href="{{ route('logout') }}"
                                 onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
