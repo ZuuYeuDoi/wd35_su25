@@ -6,7 +6,7 @@
             <h2 class="font-weight-bold text-6">Thống kê</h2>
         </header>
         <div class="row">
-            <div class="col-lg-6 mb-3">
+            {{-- <div class="col-lg-6 mb-3">
                 <section class="card">
                     <div class="card-body">
                         <div class="row">
@@ -58,18 +58,13 @@
                         </div>
                     </div>
                 </section>
-            </div>
+            </div> --}}
             <div class="col-lg-6">
                 <div class="row mb-3">
                     <div class="col-xl-6">
                         <section class="card card-featured-left card-featured-secondary">
                             <div class="card-body">
                                 <div class="widget-summary">
-                                    <div class="widget-summary-col widget-summary-col-icon">
-                                        <div class="summary-icon bg-primary">
-                                            <i class="fas fa-dollar-sign"></i>
-                                        </div>
-                                    </div>
                                     <div class="widget-summary-col">
                                         <div class="summary">
                                             <h4 class="title">Tổng Doanh Thu</h4>
@@ -86,11 +81,6 @@
                         <section class="card card-featured-left card-featured-secondary">
                             <div class="card-body">
                                 <div class="widget-summary">
-                                    <div class="widget-summary-col widget-summary-col-icon">
-                                        <div class="summary-icon bg-primary">
-                                            <i class="fas fa-dollar-sign"></i>
-                                        </div>
-                                    </div>
                                     <div class="widget-summary-col">
                                         <div class="summary">
                                             <h4 class="title">Doanh thu Phòng</h4>
@@ -104,7 +94,7 @@
                         </section>
                     </div>
                 </div>
-                <div class="row">
+                {{-- <div class="row">
                     <div class="col-xl-6">
                         <section class="card card-featured-left card-featured-tertiary mb-3">
                             <div class="card-body">
@@ -147,7 +137,7 @@
                             </div>
                         </section>
                     </div>
-                </div>
+                </div> --}}
             </div>
         </div>
     </section>

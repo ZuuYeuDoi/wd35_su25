@@ -20,43 +20,61 @@ class CartController extends Controller
         $request->validate([
             'booking_id' => 'required|exists:bookings,id',
             'service_id' => 'required|exists:services,id',
-            'quantity' => 'required|integer|min:1',
+            'quantity'   => 'required|integer|min:1',
         ]);
 
-        $cart = Cart::firstOrCreate([
-            'booking_id' => $request->booking_id
-        ], [
-            'status' => 'active'
-        ]);
+        $userId = Auth::id();
+        $service = Service::findOrFail($request->service_id);
 
-        CartService::create([
-            'cart_id' => $cart->id,
-            'service_id' => $request->service_id,
-            'quantity' => $request->quantity,
-            'unit_price' => Service::find($request->service_id)->price,
-        ]);
+        $cart = Cart::where('booking_id', $request->booking_id)
+            ->where('user_id', $userId)
+            ->where('status', 'active')
+            ->first();
 
+        if (!$cart) {
+            $cart = new Cart();
+            $cart->booking_id = $request->booking_id;
+            $cart->user_id    = $userId;
+            $cart->status     = 'active';
+            $cart->save();
+        }
+
+        $cartService = CartService::where('cart_id', $cart->id)
+            ->where('service_id', $service->id)
+            ->first();
+
+        if ($cartService) {
+            $newQuantity = $cartService->quantity + $request->quantity;
+
+            // Nếu là đồ ăn thì kiểm tra cộng dồn vượt tồn kho
+            if ($service->type == 2 && $newQuantity > $service->quantity) {
+                return redirect()->back()->with('error', 'Tổng số lượng vượt quá tồn kho. Còn lại: ' . $service->quantity);
+            }
+
+            $cartService->quantity = $newQuantity;
+            $cartService->save();
+        } else {
+            // Với món ăn kiểm tra nếu vượt kho ngay lần đầu thêm
+            if ($service->type == 2 && $request->quantity > $service->quantity) {
+                return redirect()->back()->with('error', 'Số lượng vượt quá tồn kho. Còn lại: ' . $service->quantity);
+            }
+
+            CartService::create([
+                'cart_id'    => $cart->id,
+                'service_id' => $service->id,
+                'quantity'   => $request->quantity,
+                'unit_price' => $service->price,
+            ]);
+        }
         return redirect()->back()->with('success', 'Đã thêm vào giỏ hàng!');
     }
 
     public function index()
     {
-        $booking = Booking::where('user_id', Auth::id())
-            ->where('status', 2)
-            ->whereDate('actual_check_in', '<=', Carbon::today())
-            ->whereDate('actual_check_out', '>=', Carbon::today())
-            ->first();
-
-        if (!$booking) {
-            return redirect()->route('home')->with('error', 'Không có đơn đặt phòng nào hợp lệ.');
-        }
-
         $cart = Cart::with('services')
-            ->where('booking_id', $booking->id)
             ->where('status', 'active')
             ->with('services.service')
             ->first();
-        // dd($cart);
         return view('client.cart.index', compact('cart'));
     }
 
@@ -84,10 +102,7 @@ class CartController extends Controller
     public function order(Request $request)
     {
         $cartId = $request->input('cart_id');
-        $serviceNames = $request->input('service_names', []);
-        $servicePrices = $request->input('service_prices', []);
         $quantities = $request->input('quantities', []);
-        $subtotals = $request->input('subtotals', []);
 
         if (!$cartId) {
             return back()->with('error', 'Thiếu thông tin giỏ hàng.');
@@ -95,18 +110,19 @@ class CartController extends Controller
 
         DB::beginTransaction();
         try {
-            foreach ($quantities as $id => $qty) {
-                BillServices::create([
-                    // 'bill_id' => 1, 
-                    'cart_id' => $cartId,
-                    'service_name' => $serviceNames[$id] ?? '',
-                    'service_price' => $servicePrices[$id] ?? 0,
-                    'quantity' => $qty,
-                    'total_price' => $subtotals[$id] ?? 0,
-                ]);
-            }
+            $cart = Cart::findOrFail($cartId);
+            $cart->status = 'ordered';
+            $cart->save();
 
-            CartService::where('cart_id', $cartId)->delete();
+            foreach ($quantities as $cartServiceId => $qty) {
+                $cartService = CartService::with('service')->find($cartServiceId);
+
+                if ($cartService && $cartService->service->type == 2) {
+                    $service = $cartService->service;
+                    $service->quantity = max(0, $service->quantity - $qty); 
+                    $service->save();
+                }
+            }
 
             DB::commit();
             return back()->with('success', 'Đặt món thành công!');

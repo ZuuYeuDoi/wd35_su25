@@ -23,71 +23,70 @@ class RoomController extends Controller
         $rooms = Room::with('roomType')->orderBy('created_at', 'desc')->get();
         return view('admin.bookingrooms.rooms.rooms', compact('rooms'));
     }
-public function map(Request $request)
-{
-    $checkIn   = $request->input('check_in');
-    $checkOut  = $request->input('check_out');
-    $stayType  = $request->input('stay_type', 'overnight');
-    $adults    = (int) $request->input('adults', 0);
-    $children  = (int) $request->input('children', 0);
-    $childAges = $request->input('children_ages', []);
+    public function map(Request $request)
+    {
+        $checkIn   = $request->input('check_in');
+        $checkOut  = $request->input('check_out');
+        $stayType  = $request->input('stay_type', 'overnight');
+        $adults    = (int) $request->input('adults', 0);
+        $children  = (int) $request->input('children', 0);
+        $childAges = $request->input('children_ages', []);
 
-    $status = $request->input('status');
+        $status = $request->input('status');
 
-    $query = Room::with('roomType');
+        $query = Room::with('roomType');
 
-    if ($status !== null && $status !== '') {
-        $query->where('status', $status); 
-    }
-
-    $requiredBeds = $adults;
-    foreach ($childAges as $age) {
-        $age = (int) $age;
-        if ($age >= 12) {
-            $requiredBeds += 1; 
-        } elseif ($age >= 1) {
-            $requiredBeds += 0.5; 
+        if ($status !== null && $status !== '') {
+            $query->where('status', $status);
         }
-    }
 
-    if ($checkIn) {
-        try {
-            $startDate = Carbon::createFromFormat('d/m/Y', $checkIn)->startOfDay();
-
-            if ($stayType === 'dayuse') {
-
-                $query->whereDate('created_at', $startDate);
-            } elseif ($checkOut) {
-                $endDate = Carbon::createFromFormat('d/m/Y', $checkOut)->endOfDay();
-
-
-                $query->where(function ($q) use ($startDate, $endDate) {
-                    $q->whereBetween('created_at', [$startDate, $endDate])
-                      ->orWhereBetween('updated_at', [$startDate, $endDate]);
-                });
+        $requiredBeds = $adults;
+        foreach ($childAges as $age) {
+            $age = (int) $age;
+            if ($age >= 12) {
+                $requiredBeds += 1;
+            } elseif ($age >= 1) {
+                $requiredBeds += 0.5;
             }
-        } catch (\Exception $e) {
-
         }
+
+        if ($checkIn) {
+            try {
+                $startDate = Carbon::createFromFormat('d/m/Y', $checkIn)->startOfDay();
+
+                if ($stayType === 'dayuse') {
+
+                    $query->whereDate('created_at', $startDate);
+                } elseif ($checkOut) {
+                    $endDate = Carbon::createFromFormat('d/m/Y', $checkOut)->endOfDay();
+
+
+                    $query->where(function ($q) use ($startDate, $endDate) {
+                        $q->whereBetween('created_at', [$startDate, $endDate])
+                            ->orWhereBetween('updated_at', [$startDate, $endDate]);
+                    });
+                }
+            } catch (\Exception $e) {
+            }
+        }
+
+
+        if ($requiredBeds > 0) {
+            $query->where('max_people', '>=', ceil($requiredBeds));
+        }
+
+        $rooms = $query->get();
+
+        return view('admin.bookingrooms.rooms.room-map', [
+            'rooms' => $rooms,
+            'startDate' => $checkIn,
+            'endDate' => $checkOut,
+            'adults' => $adults,
+            'children' => $children,
+            'childAges' => $childAges,
+            'stayType' => $stayType
+        ]);
     }
-
-
-    if ($requiredBeds > 0) {
-        $query->where('max_people', '>=', ceil($requiredBeds));
-    }
-
-    $rooms = $query->get();
-
-    return view('admin.bookingrooms.rooms.room-map', [
-        'rooms' => $rooms,
-        'startDate' => $checkIn,
-        'endDate' => $checkOut,
-        'adults' => $adults,
-        'children' => $children,
-        'childAges' => $childAges,
-        'stayType' => $stayType
-    ]);
-}
 
 
     /**
@@ -110,7 +109,6 @@ public function map(Request $request)
             'room_type_id' => 'required|exists:room_types,id',
             'title' => 'required|string|max:255',
             'price' => 'required|numeric|min:0',
-            'max_people' => 'required|integer|min:1',
             'description' => 'required|string',
             'status' => 'required|in:0,1',
             'image_room' => 'required|array|min:1',
@@ -125,9 +123,6 @@ public function map(Request $request)
             'price.required' => 'Vui lòng nhập giá phòng.',
             'price.numeric' => 'Giá phòng phải là số.',
             'price.min' => 'Giá phòng không được nhỏ hơn 0.',
-            'max_people.required' => 'Vui lòng nhập số giường.',
-            'max_people.integer' => 'Số giường tối đa phải là số nguyên.',
-            'max_people.min' => 'Số giường tối đa ít nhất là 1.',
             'description.required' => 'Vui lòng nhập mô tả.',
             'status.required' => 'Vui lòng chọn trạng thái.',
             'status.in' => 'Trạng thái không hợp lệ.',
@@ -146,7 +141,6 @@ public function map(Request $request)
                 'room_type_id' => $request->room_type_id,
                 'title' => $request->title,
                 'price' => $request->price,
-                'max_people' => $request->max_people,
                 'description' => $request->description,
                 'status' => $request->status,
                 'amenities' => $request->input('amenities')
@@ -192,16 +186,16 @@ public function map(Request $request)
      * Show the form for editing the specified resource.
      */
     public function edit(string $id)
-{
-    try {
-        $room = Room::with(['roomType', 'images_room'])->findOrFail($id);
-        $roomTypes = RoomType::all();
-        $amenities = Amenitie::where('status', 1)->get();
-        return view('admin.bookingrooms.rooms.editRoom', compact('room', 'roomTypes', 'amenities'));
-    } catch (\Throwable $th) {
-        return view('errors.404');
+    {
+        try {
+            $room = Room::with(['roomType', 'images_room'])->findOrFail($id);
+            $roomTypes = RoomType::all();
+            $amenities = Amenitie::where('status', 1)->get();
+            return view('admin.bookingrooms.rooms.editRoom', compact('room', 'roomTypes', 'amenities'));
+        } catch (\Throwable $th) {
+            return view('errors.404');
+        }
     }
-}
 
     /**
      * Update the specified resource in storage.
@@ -212,7 +206,6 @@ public function map(Request $request)
             'room_type_id' => 'required|exists:room_types,id',
             'title' => 'required|string|max:255',
             'price' => 'required|numeric|min:0',
-            'max_people' => 'required|integer|min:1',
             'image_room' => 'nullable|array',
             'image_room.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'description' => 'required|string',
@@ -226,9 +219,6 @@ public function map(Request $request)
             'price.required' => 'Vui lòng nhập giá phòng.',
             'price.numeric' => 'Giá phòng phải là số.',
             'price.min' => 'Giá phòng không được nhỏ hơn 0.',
-            'max_people.required' => 'Vui lòng nhập số giường.',
-            'max_people.integer' => 'Số giường tối đa phải là số nguyên.',
-            'max_people.min' => 'Số giường tối đa ít nhất là 1.',
             'image_room.array' => 'Dữ liệu ảnh không hợp lệ.',
             'image_room.*.image' => 'Tất cả file phải là hình ảnh.',
             'image_room.*.mimes' => 'Ảnh phải thuộc định dạng jpeg, png, jpg, gif, webp.',
@@ -245,25 +235,24 @@ public function map(Request $request)
                 'room_type_id' => $request->room_type_id,
                 'title' => $request->title,
                 'price' => $request->price,
-                'max_people' => $request->max_people,
                 'description' => $request->description,
                 'status' => $request->status,
-                'amenities' => $request->amenities, 
+                'amenities' => $request->amenities,
             ];
 
             // Xử lý upload ảnh phòng mới nếu có
             if ($request->hasFile('image_room')) {
-            $lastOrder = RoomImage::where('room_id', $room->id)->max('order') ?? 0;
+                $lastOrder = RoomImage::where('room_id', $room->id)->max('order') ?? 0;
 
-            foreach ($request->file('image_room') as $index => $file) {
-                $path = $file->store('rooms/image_room', 'public');
-                RoomImage::create([
-                    'room_id' => $room->id,
-                    'image_path' => $path,
-                    'order' => $lastOrder + $index + 1,
-                ]);
+                foreach ($request->file('image_room') as $index => $file) {
+                    $path = $file->store('rooms/image_room', 'public');
+                    RoomImage::create([
+                        'room_id' => $room->id,
+                        'image_path' => $path,
+                        'order' => $lastOrder + $index + 1,
+                    ]);
+                }
             }
-        }
 
             $room->update($data);
 
@@ -274,17 +263,17 @@ public function map(Request $request)
     }
 
     public function deleteImage($id)
-{
-    try {
-        $image = RoomImage::findOrFail($id);
-        Storage::disk('public')->delete($image->image_path);
-        $image->delete();
+    {
+        try {
+            $image = RoomImage::findOrFail($id);
+            Storage::disk('public')->delete($image->image_path);
+            $image->delete();
 
-        return response()->json(['success' => true]);
-    } catch (\Exception $e) {
-        return response()->json(['success' => false], 500);
+            return response()->json(['success' => true]);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false], 500);
+        }
     }
-}
 
     /**
      * Remove the specified resource from storage.
@@ -295,7 +284,6 @@ public function map(Request $request)
         $room->delete();
 
         return redirect()->route('room.index')->with('success', 'xóa phòng thành công');
-
     }
 
     public function trash()

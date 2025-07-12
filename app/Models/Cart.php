@@ -10,6 +10,7 @@ class Cart extends Model
     protected $fillable = [
         'booking_id',
         'status',
+        'user_id',
     ];
 
     public function booking()
@@ -26,6 +27,8 @@ class Cart extends Model
     {
         return $this->hasMany(CartServiceItem::class);
     }
-
-        
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

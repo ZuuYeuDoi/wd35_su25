@@ -88,8 +88,9 @@
                                             <tr>
                                                 <td>
                                                     <button type="submit"
-                                                        formaction="{{ route('cart.remove', $item->id) }}" formmethod="POST"
-                                                        class="remove-btn" onclick="return confirm('Xóa sản phẩm này?')">
+                                                        formaction="{{ route('cart.remove', $item->id) }}"
+                                                        formmethod="POST" class="remove-btn"
+                                                        onclick="return confirm('Xóa sản phẩm này?')">
                                                         @csrf
                                                         <i class="bi bi-x-circle"></i>
                                                     </button>
@@ -116,8 +117,7 @@
                                                 </td>
                                                 <td>
                                                     <span class="amount" id="subtotal-{{ $item->id }}">
-                                                        {{ number_format($item->quantity * $item->unit_price, 0, ',', '.') }}
-                                                        đ
+                                                        {{ number_format($item->quantity * $item->unit_price, 0, ',', '.') }} đ
                                                     </span>
                                                 </td>
                                             </tr>
@@ -126,18 +126,14 @@
                                 </table>
                                 <button type="submit" class="btn btn-warning">Cập nhật</button>
                             </form>
-                            <form action="{{ route('cart.order') }}" method="POST" class="mt-3">
+
+                            <!-- Form đặt món -->
+                            <form action="{{ route('cart.orderUser') }}" method="POST" class="mt-3">
                                 @csrf
                                 <input type="hidden" name="cart_id" value="{{ $cart->id }}">
                                 @foreach ($cart->services as $item)
-                                    <input type="hidden" name="service_names[{{ $item->id }}]"
-                                        value="{{ $item->service->name }}">
-                                    <input type="hidden" name="service_prices[{{ $item->id }}]"
-                                        value="{{ $item->unit_price }}">
                                     <input type="hidden" name="quantities[{{ $item->id }}]"
-                                        value="{{ $item->quantity }}">
-                                    <input type="hidden" name="subtotals[{{ $item->id }}]"
-                                        value="{{ $item->quantity * $item->unit_price }}">
+                                        id="order-qty-{{ $item->id }}" value="{{ $item->quantity }}">
                                 @endforeach
                                 <button type="submit" class="btn btn-success">Đặt món</button>
                             </form>
@@ -150,6 +146,7 @@
         </div>
     </section>
 @endsection
+
 @push('js')
     <script>
         document.querySelectorAll('.btn-plus').forEach(btn => {
@@ -160,10 +157,11 @@
                 let value = parseInt(input.value) || 1;
                 if (value < max) {
                     input.value = value + 1;
-                    input.dispatchEvent(new Event('change'));
+                    input.dispatchEvent(new Event('input'));
                 }
             });
         });
+
         document.querySelectorAll('.btn-minus').forEach(btn => {
             btn.addEventListener('click', function() {
                 const inputId = this.getAttribute('data-target');
@@ -171,10 +169,11 @@
                 let value = parseInt(input.value) || 1;
                 if (value > 1) {
                     input.value = value - 1;
-                    input.dispatchEvent(new Event('change'));
+                    input.dispatchEvent(new Event('input'));
                 }
             });
         });
+
         document.querySelectorAll('.qty-input').forEach(input => {
             input.addEventListener('input', function() {
                 let value = parseInt(this.value) || 1;
@@ -183,12 +182,16 @@
                 if (value < min) value = min;
                 if (value > max) value = max;
                 this.value = value;
-                // Cập nhật subtotal nếu muốn realtime
+
                 const row = this.closest('tr');
                 if (row) {
-                    const price = parseInt(row.querySelector('td:nth-child(4)').innerText.replace(/\D/g,
-                        ''));
+                    const price = parseInt(row.querySelector('td:nth-child(4)').innerText.replace(/\D/g, ''));
                     row.querySelector('.amount').innerText = (value * price).toLocaleString('vi-VN') + ' đ';
+                }
+
+                const hiddenInput = document.getElementById('order-qty-' + this.id.replace('qty-', ''));
+                if (hiddenInput) {
+                    hiddenInput.value = this.value;
                 }
             });
         });
