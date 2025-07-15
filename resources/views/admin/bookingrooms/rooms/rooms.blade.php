@@ -62,7 +62,7 @@
                                         <th width="3%"><input type="checkbox" name="select-all"
                                                 class="select-all checkbox-style-1 p-relative top-2" value="" /></th>
                                         <th>ID</th>
-                                        <th>Tên phòng</th>
+                                        <th>Mã Số phòng</th>
                                         <th>Loại phòng</th>
                                         <th>Hình ảnh phòng</th>
                                         <th>Giá phòng</th>

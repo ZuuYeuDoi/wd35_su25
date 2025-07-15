@@ -34,7 +34,7 @@ class UserController extends Controller
                 ->latest()
                 ->get();
 
-            // Lấy đồ ăn đã đặt (service type = 2)
+            // Lấy đồ ăn đã đặt (service type = 2) ordered - paid
             $foodItems = CartServiceItem::whereHas('cart.booking', function ($query) use ($user) {
                 $query->where('user_id', $user->id);
             })

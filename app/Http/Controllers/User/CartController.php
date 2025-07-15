@@ -46,7 +46,6 @@ class CartController extends Controller
         if ($cartService) {
             $newQuantity = $cartService->quantity + $request->quantity;
 
-            // Nếu là đồ ăn thì kiểm tra cộng dồn vượt tồn kho
             if ($service->type == 2 && $newQuantity > $service->quantity) {
                 return redirect()->back()->with('error', 'Tổng số lượng vượt quá tồn kho. Còn lại: ' . $service->quantity);
             }
