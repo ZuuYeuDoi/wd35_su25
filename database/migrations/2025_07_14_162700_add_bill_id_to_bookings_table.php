@@ -12,12 +12,6 @@ return new class extends Migration {
             }
         });
 
-        Schema::table('carts', function (Blueprint $table) {
-            if (Schema::hasColumn('carts', 'user_id')) {
-                // Xoá cột user_id nếu có, KHÔNG cần dropForeign nếu không chắc tồn tại
-                $table->dropColumn('user_id');
-            }
-        });
     }
 
     public function down(): void
@@ -25,12 +19,6 @@ return new class extends Migration {
         Schema::table('bookings', function (Blueprint $table) {
             if (Schema::hasColumn('bookings', 'bill_id')) {
                 $table->dropColumn('bill_id');
-            }
-        });
-
-        Schema::table('carts', function (Blueprint $table) {
-            if (!Schema::hasColumn('carts', 'user_id')) {
-                $table->unsignedBigInteger('user_id')->nullable();
             }
         });
     }

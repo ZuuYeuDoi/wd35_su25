@@ -10,7 +10,7 @@ class Cart extends Model
     protected $fillable = [
         'booking_id',
         'status',
-        'user_id',
+        // 'user_id',
     ];
 
     public function booking()
