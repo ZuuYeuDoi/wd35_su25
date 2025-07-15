@@ -1,22 +1,23 @@
 <?php
 
-use App\Http\Controllers\User\AboutController;
-use App\Http\Controllers\Admin\BillController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
-
-use App\Http\Controllers\Payment\PaymentController;
+use App\Http\Controllers\User\CartController;
 use App\Http\Controllers\User\HomeController;
+
+use App\Http\Controllers\User\UserController;
+use App\Http\Controllers\Admin\BillController;
 use App\Http\Controllers\Admin\RoomController;
+use App\Http\Controllers\User\AboutController;
+use App\Http\Controllers\Admin\InforController;
+use App\Http\Controllers\User\ReviewController;
 use App\Http\Controllers\User\BookingController;
 use App\Http\Controllers\Admin\ServiceController;
 use App\Http\Controllers\Admin\AmenitieController;
 use App\Http\Controllers\Admin\RoomTypeController;
+use App\Http\Controllers\Payment\PaymentController;
 use App\Http\Controllers\Admin\BookingRoomController;
 use App\Http\Controllers\Admin\CartController as AdminCartController;
-use App\Http\Controllers\User\CartController;
-use App\Http\Controllers\User\UserController;
-use App\Http\Controllers\Admin\InforController;
 use App\Http\Controllers\User\ServiceController as UserServiceController;
 
 // Route::get('/check-available-room', [HomeController::class, 'checkAvailableRoom'])->name('room_type.check_availability');
@@ -28,6 +29,7 @@ Route::prefix('/')->group(callback: function () {
         Route::get('', 'index')->name('room.index');
         Route::get('/', 'index')->name('home');
         Route::get('room', 'indexRoom')->name('room.indexRoom');
+        Route::get('/room/{id}', [HomeController::class, 'showRoom'])->name('room.detail');
         Route::get('room-type/{id}', 'showRoomType')->name('room_type.detail');
         Route::get('check-available-room', 'checkAvailableRoom')->name('room_type.check_availability');
     });
@@ -55,6 +57,8 @@ Route::prefix('/')->group(callback: function () {
     Route::controller(AboutController::class)->group(function () {
         Route::get('/about', 'index')->name('about');
     });
+
+    Route::post('/reviews', [ReviewController::class, 'store'])->middleware('auth')->name('reviews.store');
 });
 
 
