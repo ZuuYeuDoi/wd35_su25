@@ -53,26 +53,23 @@ class HomeController extends Controller
     }
 
 
-
 public function indexRoom(Request $request)
 {
-    // Lấy tất cả RoomType cùng phòng + ảnh
-    $roomTypes = RoomType::with(['rooms.images_room'])->get();
+    // Lấy RoomType cùng album ảnh (roomImages) theo mối quan hệ bạn đã định nghĩa
+    $roomTypes = RoomType::with('images')->get();
 
-    // Nhóm theo type (ví dụ: Standard, Deluxe...)
+    // Nhóm theo type (Standard, Deluxe, ...)
     $groupedRoomTypes = $roomTypes->groupBy('type');
 
-    // Lấy các ID tiện nghi để load 1 lần
-        $amenityIds = $roomTypes->pluck('amenities')
-            ->filter() // loại bỏ null
-            ->flatMap(function ($item) {
-                // $item có thể là JSON string hoặc array → ép về array
-                return is_array($item) ? $item : json_decode($item, true);
-            })
-            ->unique()
-            ->toArray();
+    // Lấy tiện nghi
+    $amenityIds = $roomTypes->pluck('amenities')
+        ->filter()
+        ->flatMap(function ($item) {
+            return is_array($item) ? $item : json_decode($item, true);
+        })
+        ->unique()
+        ->toArray();
 
-    // Lấy toàn bộ tiện nghi và keyBy theo ID
     $allAmenities = Amenitie::whereIn('id', $amenityIds)->get()->keyBy('id');
 
     return view('client.room.index', compact('groupedRoomTypes', 'allAmenities'));

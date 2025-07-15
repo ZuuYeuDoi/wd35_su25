@@ -19,6 +19,7 @@ class Booking extends Model
         'total_amount',
         'status',
         'special_request',
+        'bill_id',
     ];
     protected $casts = [
         'check_in_date' => 'datetime',

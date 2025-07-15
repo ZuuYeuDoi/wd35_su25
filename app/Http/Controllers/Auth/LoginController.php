@@ -40,6 +40,11 @@ class LoginController extends Controller
         $this->middleware('guest')->except('logout');
         $this->middleware('auth')->only('logout');
     }
+
+    public function username()
+{
+    return 'email';
+}
     protected function validateLogin(HttpRequest $request)
     {
         $request->validate([
@@ -58,5 +63,16 @@ class LoginController extends Controller
     throw ValidationException::withMessages([
         $this->username() => ['Tài khoản hoặc mật khẩu không đúng!'],
     ]);
+}
+
+    protected function authenticated(Request $request, $user)
+{
+    if ($user->role_id == 1) {
+        return redirect('/admin');
+    } elseif ($user->role_id == 2) {
+        return redirect('/staff');
+    }
+
+    return redirect('/');
 }
 }
