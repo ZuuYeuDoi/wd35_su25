@@ -23,13 +23,15 @@ class CartController extends Controller{
             'service_id' => 'required|exists:services,id',
             'quantity' => 'required|integer|min:1'
         ]);
-
+        dd($validated);
+        
         $bookingId = $validated['booking_id'];
 
         // Tạo hoặc lấy cart với status = ordered
         $cart = Cart::firstOrCreate([
             'booking_id' => $bookingId,
             'status' => 'ordered',
+            // 'user_id'=> $booking->user_id,
         ]);
 
         // Thêm item

@@ -59,7 +59,7 @@ class ServiceController extends Controller
         $booking = Booking::where('user_id', Auth::id())
             ->where('status', 2)
             ->whereDate('actual_check_in', '<=', now())
-            ->whereDate('actual_check_out', '>=', now())
+            ->whereDate('check_out_date', '>=', now())
             ->first();
             // dd($booking);
         return view('client.product.detail', compact('product', 'booking'));
