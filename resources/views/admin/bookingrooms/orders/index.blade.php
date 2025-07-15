@@ -75,13 +75,25 @@
                                         $stayType = $checkIn->isSameDay($checkOut) ? 'Trong ngày' : 'Qua đêm';
                                         $statusText = match ((int) $booking->status) {
                                             1 => 'Đã thanh toán cọc',
-                                            2 => 'Hoàn tất checkin',
+                                            2 => 'Hoàn tất check-in',
                                             3 => 'Hoàn tất thanh toán',
-                                            4 => 'Hoàn tất check out',
-                                            5 => 'Đã Hủy',
-                                            default=>'Thanh toán Không thành công!'
+                                            4 => 'Hoàn tất check-out',
+                                            5 => 'Đã hủy',
+                                            default => 'Thanh toán Không thành công!',
                                         };
+
+                                        $now = \Carbon\Carbon::now();
+                                        $today = $now->toDateString();
+                                        $currentHour = (int) $now->format('H');
+
+                                        $isCheckinToday = $booking->check_in_date === $today;
+                                        $isCheckoutToday = $booking->check_out_date === $today;
+
+                                        $isCheckoutLate = $booking->status == 2 && $isCheckoutToday && $currentHour >= 6 && $currentHour <= 12;
+                                        $isLateCheckin = $booking->status == 1 && $isCheckinToday && $currentHour >= 18;
                                     @endphp
+
+
                                     <tr>
                                         <td><strong>{{ $booking->id }}</strong></a></td>
                                         <td>{{ $booking->user->name ?? '---' }}</td>
@@ -90,18 +102,26 @@
                                         <td><span class="badge bg-info">{{ $stayType }}</span></td>
                                         <td>{{ number_format($booking->deposit, 0, ',', '.') }}đ</td>
                                         <td>
-                                            <span class="badge bg-secondary">
-                                                {{ $statusText }}
-                                            </span>
+                                            @if ($isCheckoutLate)
+                                                <span class="badge bg-danger"><i class="fas fa-clock"></i> Đến hạn check-out</span>
+                                            @elseif ($isLateCheckin)
+                                                <span class="badge bg-warning"><i class="fas fa-user-clock"></i> Khách chưa check-in</span>
+                                            @else
+                                                <span class="badge bg-secondary">{{ $statusText }}</span>
+                                            @endif
                                         </td>
-                                        <td class="d-flex flex-column gap-1">
-                                            <a href="{{ route('room_order.show', $booking->id) }}"
-                                                class="btn btn-sm btn-warning">Chi tiết</a>
-                                             @if ($booking->status == 2)
-                                                <a href="{{ route('bills.temporary', $booking->id) }}" class="btn btn-sm btn-success">Hóa đơn tạm tính</a>
-                                            {{-- @elseif ($booking->status == 3)
-                                                <a href="{{ route('bills.', $booking->id) }}" class="btn btn-sm btn-primary">Xem hóa đơn</a> --}}
-                                                @endif
+                                       <td class="d-flex flex-row flex-wrap gap-2">
+                                            <a href="{{ route('room_order.show', $booking->id) }}" class="btn btn-sm btn-warning">Chi tiết</a>
+
+                                            @switch($booking->status)
+                                                @case(2)
+                                                    <a href="{{ route('bills.temporary', $booking->id) }}" class="btn btn-sm btn-success">Hóa đơn tạm tính</a>
+                                                    @break
+
+                                                @case(3)
+                                                    <a href="{{ route('bills.final', $booking->bill_id) }}" class="btn btn-sm btn-primary">Xem hóa đơn</a>
+                                                    @break
+                                            @endswitch
                                         </td>
                                     </tr>
                                 @empty

@@ -13,6 +13,7 @@ class RoomImage extends Model
         'room_id',
         'image_path',
         'order',
+        'room_type_id'
     ];
 
     public function room()

@@ -1,5 +1,18 @@
 @extends('client.index')
 
+@push('css')
+<style>
+    .btn-check:checked + .btn {
+        background-color: #0d6efd;
+        color: #fff;
+    }
+    .btn.active {
+        background-color: #0d6efd;
+        color: #fff;
+    }
+</style>
+@endpush
+
 @section('content')
 <section class="page-title" style="background-image: url({{ asset('client/images/background/page-title-bg.png') }});">
     <div class="auto-container text-center">
@@ -14,18 +27,32 @@
 <section class="pt-120 pb-120">
     <div class="container">
         <div class="row">
-            <!-- LEFT -->
             <div class="col-lg-8">
-                <div class="mb-4">
-                    <img src="{{ asset('storage/' . $roomType->image) }}" alt="{{ $roomType->name }}"
-                         class="img-fluid rounded shadow">
+                <div class="text-center mb-4">
+                    <div style="width: 600px; height: 400px; margin: 0 auto; overflow: hidden; border-radius: 10px;">
+                        <img id="main-room-image"
+                             src="{{ asset('storage/' . ($roomType->images->first()->image_path ?? $roomType->image)) }}"
+                             alt="Ảnh phòng chính"
+                             style="width: 100%; height: 100%; object-fit: cover;">
+                    </div>
                 </div>
-                <h3 class="mb-3">Giới thiệu loại phòng</h3>
+
+                @if ($roomType->images->count())
+                    <div class="d-flex flex-wrap gap-3 justify-content-center">
+                        @foreach ($roomType->images as $img)
+                            <div style="width: 100px; height: 70px; cursor: pointer; overflow: hidden; border-radius: 5px;">
+                                <img src="{{ asset('storage/' . $img->image_path) }}"
+                                     class="img-thumbnail room-thumbnail"
+                                     data-src="{{ asset('storage/' . $img->image_path) }}"
+                                     style="width: 100%; height: 100%; object-fit: cover; padding: 0;">
+                            </div>
+                        @endforeach
+                    </div>
+                @endif
+
+                <h3 class="mt-5">Giới thiệu loại phòng</h3>
                 <p>Loại giường: <strong>{{ $roomType->bed_type ?? 'Không rõ' }}</strong></p>
                 <p>Giá từ: <strong>{{ number_format($roomType->room_type_price, 0, ',', '.') }} VND</strong></p>
-                <p>Số phòng còn trống: 
-                   <span class="text-success fw-bold">{{ $availableRoomsCount }}</span>
-                </p>
 
                 <h4 class="mt-4">Tiện nghi</h4>
                 <div class="row">
@@ -41,74 +68,59 @@
                         <p><em>Không có tiện nghi</em></p>
                     @endforelse
                 </div>
-
-                <h4 class="mt-5">Danh sách phòng trong loại này</h4>
-                @foreach ($roomType->rooms as $room)
-                    <div class="card mb-3" id="room-{{ $room->id }}">
-                        <div class="row g-0">
-                            <div class="col-md-4">
-                                <img src="{{ asset('storage/' . ($room->images_room->first()->image_path ?? 'default.jpg')) }}"
-                                    class="img-fluid rounded-start" alt="{{ $room->title }}">
-                            </div>
-                            <div class="col-md-8">
-                                <div class="card-body">
-                                    <h5 class="card-title">{{ $room->title }}</h5>
-                                    <p class="card-text">{{ $room->description }}</p>
-                                    <p class="card-text"><strong>{{ number_format($room->price, 0, ',', '.') }} VND</strong></p>
-
-                                    <button type="button" class="btn btn-sm btn-success" onclick="addToBooking({{ $room->id }}, '{{ $room->title }}', {{ $room->price }})">
-                                        Đặt phòng
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                @endforeach
             </div>
 
-            <!-- RIGHT -->
             <div class="col-lg-4">
-    <div class="p-4 bg-light rounded shadow-sm">
-        <h5 class="mb-3">Đặt phòng</h5>
+                <div class="p-4 bg-light rounded shadow-sm">
+                    <h5 class="mb-3">Đặt phòng</h5>
 
-        <form action="{{ route('booking.checkout') }}" method="POST">
-            @csrf
-            <input type="hidden" name="room_type_id" value="{{ $roomType->id }}">
+                    <form id="booking-form" action="{{ route('booking.checkout') }}" method="POST">
+                        @csrf
+                        <input type="hidden" id="room_type_id" name="room_type_id" value="{{ $roomType->id }}">
 
-            <div class="mb-3">
-                <label>Ngày nhận phòng</label>
-                <input type="date" name="check_in" class="form-control" value="{{ $checkIn }}" min="{{ date('Y-m-d') }}" required>
+                        <div class="btn-group mb-3" role="group">
+                            <input type="radio" class="btn-check" name="booking_type" id="overnight" autocomplete="off" checked>
+                            <label class="btn btn-outline-primary" for="overnight">Chỗ ở Qua Đêm</label>
+
+                            <input type="radio" class="btn-check" name="booking_type" id="day_use" autocomplete="off">
+                            <label class="btn btn-outline-primary" for="day_use">Chỗ ở Trong Ngày</label>
+                        </div>
+
+                        <div class="mb-3">
+                            <label>Ngày nhận phòng</label>
+                            <input type="date" id="checkin" name="check_in" class="form-control"
+                                   value="{{ $checkIn }}" min="{{ date('Y-m-d') }}" required>
+                        </div>
+
+                        <div class="mb-3" id="checkout-wrapper">
+                            <label>Ngày trả phòng</label>
+                            <input type="date" id="checkout" name="check_out" class="form-control"
+                                   value="{{ $checkOut }}" min="{{ $checkIn }}" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label>Số lượng phòng</label>
+                            <input type="number" name="number_of_rooms" id="number_of_rooms" class="form-control"
+                                   value="1" min="1" max="{{ $availableRoomsCount }}" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label>Người lớn</label>
+                            <input type="number" name="adults" id="adults" class="form-control" value="2" min="1" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label>Trẻ em</label>
+                            <input type="number" name="children" id="children" class="form-control" value="0" min="0" required>
+                        </div>
+
+                        <p>Số phòng còn trống: <span id="available-count" class="fw-bold text-success">{{ $availableRoomsCount }}</span></p>
+                        <p id="warning-no-room" class="text-danger fw-bold d-none">⚠ Không còn phòng trong khoảng thời gian này.</p>
+
+                        <button type="submit" class="btn btn-primary w-100" id="submit-btn">Tiếp tục đặt phòng</button>
+                    </form>
+                </div>
             </div>
-
-            <div class="mb-3">
-                <label>Ngày trả phòng</label>
-                <input type="date" name="check_out" class="form-control" value="{{ $checkOut }}" min="{{ $checkIn }}" required>
-            </div>
-
-            <div class="mb-3">
-                <label>Số lượng phòng</label>
-                <input type="number" name="number_of_rooms" class="form-control" value="1" min="1" max="{{ $availableRoomsCount }}" required>
-            </div>
-
-            <div class="mb-3">
-                <label>Người lớn</label>
-                <input type="number" name="adults" class="form-control" value="2" min="1" required>
-            </div>
-
-            <div class="mb-3">
-                <label>Trẻ em</label>
-                <input type="number" name="children" class="form-control" value="0" min="0" required>
-            </div>
-
-            <p class="mt-2 text-muted">
-                Số phòng còn trống: <span class="fw-bold text-success">{{ $availableRoomsCount }}</span>
-            </p>
-
-            <button type="submit" class="btn btn-primary w-100">Tiếp tục đặt phòng</button>
-        </form>
-    </div>
-</div>
-
         </div>
     </div>
 </section>
@@ -116,59 +128,84 @@
 
 @push('js')
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const today = new Date().toISOString().split('T')[0];
+    document.addEventListener('DOMContentLoaded', function () {
+        const mainImage = document.getElementById('main-room-image');
+        const thumbnails = document.querySelectorAll('.room-thumbnail');
+        const overnightBtn = document.getElementById('overnight');
+        const dayUseBtn = document.getElementById('day_use');
+        const checkoutWrapper = document.getElementById('checkout-wrapper');
         const checkinInput = document.getElementById('checkin');
         const checkoutInput = document.getElementById('checkout');
-        const roomTypeId = document.getElementById('room_type_id').value;
+        const numberOfRoomsInput = document.getElementById('number_of_rooms');
         const availableSpan = document.getElementById('available-count');
-        const dateRangeSpan = document.getElementById('date-range');
+        const warningText = document.getElementById('warning-no-room');
+        const submitBtn = document.getElementById('submit-btn');
+        const roomTypeId = document.getElementById('room_type_id').value;
 
-        // Giới hạn ngày hôm nay là min
-        checkinInput.setAttribute('min', today);
-        checkoutInput.setAttribute('min', today);
-
-        checkinInput.addEventListener('change', function () {
-            const checkinDate = new Date(this.value);
-            const minCheckout = new Date(checkinDate);
-            minCheckout.setDate(minCheckout.getDate() + 1);
-            const minCheckoutStr = minCheckout.toISOString().split('T')[0];
-
-            checkoutInput.setAttribute('min', minCheckoutStr);
-            if (checkoutInput.value && checkoutInput.value <= this.value) {
-                checkoutInput.value = '';
-            }
-
-            fetchAvailability();
+        thumbnails.forEach(thumbnail => {
+            thumbnail.addEventListener('click', function () {
+                mainImage.src = this.getAttribute('data-src');
+            });
         });
 
-        checkoutInput.addEventListener('change', fetchAvailability);
+        overnightBtn.addEventListener('change', syncDate);
+        dayUseBtn.addEventListener('change', syncDate);
+        checkinInput.addEventListener('change', function () {
+            if (dayUseBtn.checked) checkoutInput.value = checkinInput.value;
+            handleCheck();
+        });
+        checkoutInput.addEventListener('change', handleCheck);
 
-        function fetchAvailability() {
+        function syncDate() {
+            checkoutWrapper.style.display = dayUseBtn.checked ? 'none' : '';
+            if (dayUseBtn.checked) checkoutInput.value = checkinInput.value;
+            handleCheck();
+        }
+
+        function handleCheck() {
             const checkIn = checkinInput.value;
             const checkOut = checkoutInput.value;
 
             if (!checkIn || !checkOut) return;
 
-            dateRangeSpan.innerText = `${checkIn} đến ${checkOut}`;
-
             fetch(`{{ route('room_type.check_availability') }}?room_type_id=${roomTypeId}&check_in=${checkIn}&check_out=${checkOut}`)
                 .then(res => res.json())
                 .then(data => {
                     if (data.status) {
-                        availableSpan.innerText = data.available;
-                        availableSpan.classList.remove('text-danger');
-                        availableSpan.classList.add('text-success');
+                        availableSpan.textContent = data.available;
+                        numberOfRoomsInput.max = data.available;
+                        warningText.classList.add('d-none');
+                        submitBtn.disabled = data.available === 0;
+                        availableSpan.classList.toggle('text-danger', data.available === 0);
+                        availableSpan.classList.toggle('text-success', data.available > 0);
                     } else {
-                        availableSpan.innerText = data.message ?? 'Lỗi';
-                        availableSpan.classList.add('text-danger');
+                        availableSpan.textContent = 'Lỗi';
+                        warningText.classList.remove('d-none');
+                        submitBtn.disabled = true;
                     }
                 })
-                .catch(err => {
-                    availableSpan.innerText = 'Lỗi';
-                    availableSpan.classList.add('text-danger');
+                .catch(() => {
+                    availableSpan.textContent = 'Lỗi';
+                    warningText.classList.remove('d-none');
+                    submitBtn.disabled = true;
                 });
         }
+
+        document.getElementById('booking-form').addEventListener('submit', function (e) {
+            const numberOfRooms = parseInt(numberOfRoomsInput.value) || 0;
+            const adults = parseInt(document.getElementById('adults').value) || 0;
+            const children = parseInt(document.getElementById('children').value) || 0;
+            const totalPeople = adults + children;
+            const maxPeoplePerRoom = 2;
+            const maxPeopleAllow = numberOfRooms * maxPeoplePerRoom;
+
+            if (totalPeople > maxPeopleAllow) {
+                alert(`Mỗi phòng tối đa ${maxPeoplePerRoom} người.\nBạn đang chọn ${numberOfRooms} phòng nhưng tới ${totalPeople} người.`);
+                e.preventDefault();
+            }
+        });
+
+        syncDate();
     });
 </script>
 @endpush

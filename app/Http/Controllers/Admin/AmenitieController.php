@@ -24,15 +24,15 @@ class AmenitieController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:10240',
             'name' => 'required|string|max:255',
             'status' => 'required',
             'description' => 'nullable|string',
         ], [
             'image.required' => 'Vui lòng chọn ảnh tiện ích.',
             'image.image' => 'File phải là ảnh hợp lệ.',
-            'image.mimes' => 'Ảnh phải có định dạng jpeg, png, jpg, gif.',
-            'image.max' => 'Ảnh không được vượt quá 2MB.',
+            'image.mimes' => 'Ảnh phải có định dạng jpeg, png, jpg, gif, webp.',
+            'image.max' => 'Ảnh không được vượt quá 10MB.',
             'name.required' => 'Vui lòng nhập tên tiện ích.',
             'name.string' => 'Tên tiện ích phải là chuỗi ký tự.',
             'name.max' => 'Tên tiện ích không được vượt quá 255 ký tự.',

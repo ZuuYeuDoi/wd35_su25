@@ -159,6 +159,17 @@
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
                                     </div>
+
+                                     <div class="form-group mb-4">
+                                        <label for="image_room" class="form-label">Album ảnh phòng <span class="text-danger">*</span></label>
+                                        <input type="file" name="image_room[]" id="image_room"
+                                            class="form-control @error('image_room') is-invalid @enderror" multiple accept="image/*">
+                                        @error('image_room')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+
+                                        <div id="preview_album" class="mt-2 d-flex flex-wrap" style="gap:10px;"></div>
+                                    </div>
                                 </div>
 
                                 <div class="col-md-6">
@@ -173,16 +184,7 @@
                                     </div> --}}
 
                                     {{-- album ảnh --}}
-                                    <div class="form-group mb-4">
-                                        <label for="image_room" class="form-label">Album ảnh phòng <span class="text-danger">*</span></label>
-                                        <input type="file" name="image_room[]" id="image_room"
-                                            class="form-control @error('image_room') is-invalid @enderror" multiple accept="image/*">
-                                        @error('image_room')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
-
-                                        <div id="preview_album" class="mt-2 d-flex flex-wrap" style="gap:10px;"></div>
-                                    </div>
+                                   
 
 
                                     <div class="form-group mb-4">

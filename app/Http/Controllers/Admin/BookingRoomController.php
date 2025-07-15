@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Models\Guest;
 use App\Models\Booking;
 use App\Models\Payment;
+use App\Models\FeesIncurred;
 use Illuminate\Http\Request;
 use App\Models\ManageStatusRoom;
 use App\Http\Controllers\Controller;
@@ -62,7 +63,7 @@ class BookingRoomController extends Controller
     public function show($id)
     {
         $booking = Booking::with([
-            'user', 'guest',
+            'user', 
             'room.roomType',
             'bookingRooms.room.roomType',
             'payments',
@@ -116,6 +117,79 @@ public function cancel(Request $request, $id)
 
     return redirect()->route('room_order.index')->with('success', 'Đơn đặt phòng đã được hủy và cập nhật lý do thành công.');
 }
+        
+    public function showExtendHour($id)
+    {
+        $booking = Booking::with('bookingRooms.room')->findOrFail($id);
+        return view('admin.bookingrooms.orders.extend_hour', compact('booking'));
+    }
+
+    public function handleExtendHour(Request $request, $id)
+    {
+        $request->validate([
+            'extend_hour' => 'required|in:2,4',
+        ]);
+
+        $booking = Booking::findOrFail($id);
+
+        $price_per_hour = [
+            2 => 100000,
+            4 => 200000,
+        ];
+
+        FeesIncurred::create([
+            'booking_id' => $booking->id,
+            'name' => 'Phí gia hạn ' . $request->extend_hour . ' giờ',
+            'description' => 'Khách yêu cầu gia hạn ' . $request->extend_hour . ' giờ',
+            'price' => $price_per_hour[$request->extend_hour],
+        ]);
+
+        return redirect()->route('room_order.show', $booking->id)
+            ->with('success', "Gia hạn thêm {$request->extend_hour} giờ. Phụ thu: " . number_format($price_per_hour[$request->extend_hour]) . "đ");
+    }
+
+    public function showExtendDay($id)
+    {
+        $booking = Booking::with('bookingRooms.room')->findOrFail($id);
+        return view('admin.bookingrooms.orders.extend_day', compact('booking'));
+    }
+
+  public function handleExtendDay(Request $request, $id)
+{
+    $request->validate([
+        'new_check_out_date' => 'required|date|after:' . $request->old_check_out_date,
+    ]);
+
+    $booking = Booking::with('bookingRooms.room')->findOrFail($id);
+
+    $oldCheckOut = Carbon::parse($request->old_check_out_date);
+    $newCheckOut = Carbon::parse($request->new_check_out_date);
+    $checkIn = Carbon::parse($booking->check_in_date);
+
+    $oldDays = $checkIn->diffInDays($oldCheckOut);
+    $newDays = $checkIn->diffInDays($newCheckOut);
+    $extendDays = $newDays - $oldDays;
+
+    if ($extendDays <= 0) {
+        return back()->with('error', 'Ngày mới phải lớn hơn ngày cũ.');
+    }
+
+    $totalRoomFee = $booking->bookingRooms->sum('room.price') * $extendDays;
+
+    FeesIncurred::create([
+        'booking_id' => $booking->id,
+        'name' => 'Phí gia hạn ' . $extendDays . ' ngày',
+        'description' => 'Khách yêu cầu gia hạn thêm ' . $extendDays . ' ngày',
+        'price' => $totalRoomFee,
+    ]);
+
+    $booking->check_out_date = $newCheckOut;
+    $booking->save();
+
+    return redirect()->route('room_order.show', $booking->id)
+        ->with('success', "Gia hạn thêm {$extendDays} ngày. Phụ thu: " . number_format($totalRoomFee) . "đ");
+}
 
 
+        
 }
