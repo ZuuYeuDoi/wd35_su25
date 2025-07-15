@@ -1,5 +1,13 @@
 @extends('layouts.admin')
 @section('title1', 'Loại Phòng')
+@push("css")
+    <style>
+    .d-flex img {
+        border-radius: 4px;
+        box-shadow: 0 0 3px rgba(0,0,0,0.2);
+    }
+</style>
+@endpush
 @section('content')
 <section role="main" class="content-body">
     <header class="page-header">
@@ -49,12 +57,17 @@
                                     <td>{{ $type->type }}</td>
                                     <td>{{ number_format($type->room_type_price) }} VNĐ</td>
                                     <td>
-                                        @if($type->image)
-                                            <img src="{{ asset('storage/' . $type->image) }}" alt="{{ $type->name }}" width="80">
+                                        @if ($type->images->count())
+                                            <div class="d-flex flex-wrap gap-1">
+                                                @foreach ($type->images as $img)
+                                                    <img src="{{ asset('storage/' . $img->image_path) }}" alt="{{ $type->name }}" width="60" height="40" style="object-fit:cover;">
+                                                @endforeach
+                                            </div>
                                         @else
                                             <span class="text-muted">Chưa có</span>
                                         @endif
                                     </td>
+
                                     <td>
                                         @if(!empty($type->amenities))
                                             <ul class="list-unstyled mb-0">

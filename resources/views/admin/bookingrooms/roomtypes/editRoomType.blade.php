@@ -92,15 +92,26 @@
                                     <input type="number" name="room_type_price" class="form-control" value="{{ old('room_type_price', $roomType->room_type_price) }}" min="0" required>
                                 </div>
 
-                                <div class="mb-3">
-                                    <label for="image" class="form-label">Hình ảnh đại diện</label>
-                                    <input type="file" name="image" class="form-control" accept="image/*">
-                                    @if ($roomType->image)
-                                        <div class="mt-2">
-                                            <img src="{{ asset('storage/' . $roomType->image) }}" alt="{{ $roomType->name }}" width="100">
-                                        </div>
-                                    @endif
-                                </div>
+                               <div class="mb-3">
+                                    <label for="images" class="form-label">Album ảnh (có thể chọn nhiều)</label>
+                                    <input type="file" name="images[]" class="form-control" multiple accept="image/*">
+                                </div>        
+
+                                @if ($roomType->images->count())
+                                    <div class="d-flex flex-wrap gap-2 mt-2">
+                                        @foreach ($roomType->images as $img)
+                                            <div style="position:relative;">
+                                                <img src="{{ asset('storage/' . $img->image_path) }}" alt="Image" width="100" height="70" style="object-fit:cover;">
+                                                <form action="{{ route('room_types.image.delete', $img->id) }}" method="POST" onsubmit="return confirm('Xóa ảnh này?')" style="position:absolute;top:0;right:0;">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button class="btn btn-sm btn-danger">x</button>
+                                                </form>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                @endif
+
 
                                 <div class="mb-3">
                                     <label for="description" class="form-label">Mô tả</label>

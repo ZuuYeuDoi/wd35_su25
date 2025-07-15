@@ -40,7 +40,7 @@ class ServiceController extends Controller
             'description' => 'nullable|string',
             'price' => 'required|numeric|min:0',
             'unit' => 'required|string|max:50',
-            'image' => 'required|image|mimes:jpg,jpeg,png|max:2048',
+            'image' => 'required|image|mimes:jpg,jpeg,png,webp|max:10240',
             'status' => 'required|boolean',
             'type' => 'required',
             'quantity' => 'nullable|integer|min:0',
@@ -61,8 +61,8 @@ class ServiceController extends Controller
 
             'image.required' => 'Hình ảnh là bắt buộc.',
             'image.image' => 'Tệp phải là hình ảnh.',
-            'image.mimes' => 'Hình ảnh phải có định dạng jpg, jpeg hoặc png.',
-            'image.max' => 'Kích thước hình ảnh không được vượt quá 2MB.',
+            'image.mimes' => 'Hình ảnh phải có định dạng jpg, jpeg, webp hoặc png.',
+            'image.max' => 'Kích thước hình ảnh không được vượt quá 10MB.',
 
             'status.required' => 'Trạng thái là bắt buộc.',
             'status.boolean' => 'Trạng thái không hợp lệ.',

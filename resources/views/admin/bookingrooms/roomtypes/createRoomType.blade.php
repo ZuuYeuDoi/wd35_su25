@@ -82,7 +82,7 @@
                         </div>
 
                         <div class="mb-3">
-                            <label for="type" class="form-label">Tên loại (type)</label>
+                            <label for="type" class="form-label">Hạng phòng</label>
                             <input type="text" name="type" class="form-control" value="{{ old('type') }}" required>
                         </div>
 
@@ -119,8 +119,13 @@
                         </div>
 
                         <div class="mb-3">
-                            <label for="image" class="form-label">Hình ảnh đại diện</label>
-                            <input type="file" name="image" class="form-control" accept="image/*">
+                            <div class="mb-3">
+                                <label for="images" class="form-label">Album ảnh</label>
+                                <input type="file" id="images" name="images[]" class="form-control" multiple accept="image/*">
+
+                                <div id="preview-images" class="mt-3 d-flex flex-wrap gap-3"></div>
+                            </div>
+
                         </div>
                     </div>
 
@@ -206,4 +211,26 @@
     <!-- Examples -->
     <script src="{{ asset('assets/js/examples/examples.header.menu.js') }}"></script>
     <script src="{{ asset('assets/js/examples/examples.ecommerce.datatables.list.js') }}"></script>
+    <script>
+    document.getElementById('images').addEventListener('change', function (event) {
+        let previewContainer = document.getElementById('preview-images');
+        previewContainer.innerHTML = ''; // clear old preview
+        Array.from(event.target.files).forEach(file => {
+            if (!file.type.startsWith('image/')) return;
+
+            let reader = new FileReader();
+            reader.onload = function (e) {
+                let img = document.createElement('img');
+                img.src = e.target.result;
+                img.classList.add('img-thumbnail');
+                img.style.width = '150px';
+                img.style.height = 'auto';
+                img.style.objectFit = 'cover';
+                previewContainer.appendChild(img);
+            };
+            reader.readAsDataURL(file);
+        });
+    });
+</script>
+
 @endsection

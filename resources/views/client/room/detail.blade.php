@@ -16,12 +16,15 @@
         <div class="row">
             <!-- LEFT -->
             <div class="col-lg-8">
-                <!-- Ảnh chính -->
                 <div class="mb-4">
-                    <img id="mainRoomImage" src="{{ asset('storage/' . $roomType->image) }}" alt="{{ $roomType->name }}"
-                         class="img-fluid rounded shadow mb-3" style="width: 100%; max-height: 400px; object-fit: cover;">
-                    
-                    <!-- Album ảnh -->
+                    <!-- Ảnh chính: lấy ảnh đầu tiên trong danh sách ảnh của phòng -->
+                    <img id="mainRoomImage"
+                        src="{{ asset('storage/' . ($room->images_room->first()->image_path ?? 'default.jpg')) }}"
+                        alt="{{ $room->title }}"
+                        class="img-fluid rounded shadow mb-3"
+                        style="width: 100%; max-height: 400px; object-fit: cover;">
+
+                    <!-- Album ảnh: duyệt tất cả ảnh của phòng -->
                     <div class="d-flex flex-wrap gap-2">
                         @foreach($roomType->rooms->flatMap->images_room->take(5) as $thumb)
                             <img src="{{ asset('storage/' . $thumb->image_path) }}" class="img-thumbnail" style="width: 100px; height: 70px; cursor:pointer;" onclick="changeMainImage('{{ asset('storage/' . $thumb->image_path) }}')">
@@ -29,10 +32,12 @@
                     </div>
                 </div>
 
+
+
                 <!-- MÔ TẢ LOẠI PHÒNG -->
                 <h3 class="mb-4 fw-semibold" style="font-size: 26px;">Mô tả loại phòng</h3>
                 <p class="text-muted" style="line-height: 1.8; font-size: 16px;">
-                    {!! $room->description ?? 'Không có mô tả cho loại phòng này.' !!}
+                    {{ $room->description ?? 'Không có mô tả cho loại phòng này.' }}
                 </p>
 
                 @if ($room)
@@ -249,7 +254,7 @@
 
             if (!checkIn || !checkOut) return;
 
-            fetch(`{{ route('room_type.check_availability') }}?room_type_id=${roomTypeId}&check_in=${checkIn}&check_out=${checkOut}`)
+            fetch({{ route('room_type.check_availability') }}?room_type_id=${roomTypeId}&check_in=${checkIn}&check_out=${checkOut})
                 .then(res => res.json())
                 .then(data => {
                     if (data.status) {
@@ -273,8 +278,7 @@
     }
 
     function addToBooking(id, name, price) {
-        alert(`Đặt phòng: ${name} (${price.toLocaleString()} VND)`);
+        alert(Đặt phòng: ${name} (${price.toLocaleString()} VND));
         // Có thể thêm xử lý lưu vào localStorage hoặc cart
     }
 </script>
-@endpush

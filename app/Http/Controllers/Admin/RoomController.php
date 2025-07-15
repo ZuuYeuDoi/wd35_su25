@@ -176,7 +176,7 @@ public function map(Request $request)
     public function show(string $id)
     {
         try {
-            $room = Room::with('roomType')->findOrFail($id);
+            $room = Room::with('roomType', 'images_room')->findOrFail($id);
             //  $amenityList = Amenitie::whereIn('id', $room->amenities ?? [])->get();
             $amenityList = Amenitie::whereIn('id', (array) $room->amenities)->get();
 
@@ -214,7 +214,7 @@ public function map(Request $request)
             'price' => 'required|numeric|min:0',
             // 'max_people' => 'required|integer|min:1',
             'image_room' => 'nullable|array',
-            'image_room.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'image_room.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:10220',
             'description' => 'required|string',
             'status' => 'required|in:0,1',
             'amenities' => 'required|array',
@@ -232,7 +232,7 @@ public function map(Request $request)
             'image_room.array' => 'Dữ liệu ảnh không hợp lệ.',
             'image_room.*.image' => 'Tất cả file phải là hình ảnh.',
             'image_room.*.mimes' => 'Ảnh phải thuộc định dạng jpeg, png, jpg, gif, webp.',
-            'image_room.*.max' => 'Kích thước ảnh không vượt quá 2MB.',
+            'image_room.*.max' => 'Kích thước ảnh không vượt quá 10MB.',
             'description.required' => 'Vui lòng nhập mô tả.',
             'status.required' => 'Vui lòng chọn trạng thái.',
             'status.in' => 'Trạng thái không hợp lệ.',

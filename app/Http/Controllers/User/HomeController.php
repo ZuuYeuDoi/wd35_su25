@@ -161,6 +161,7 @@ public function showRoomType($id, Request $request)
 public function showRoom($id, Request $request)
 {
     $room = Room::with(['images_room', 'roomType'])->findOrFail($id);
+    
     $roomType = $room->roomType;
 
     // Lấy tiện nghi của loại phòng

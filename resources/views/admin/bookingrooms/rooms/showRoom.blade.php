@@ -12,32 +12,35 @@
             <div class="row">
                 <!-- Ảnh phòng -->
                 <div class="col-md-5 text-center border-end">
-                    @if($room->image_room)
-                        <img src="{{ asset('storage/' . $room->image_room) }}" alt="{{ $room->title }}" class="img-fluid rounded mb-3" style="max-height: 300px; object-fit: cover;">
-                    @else
-                        <div class="alert alert-warning">Không có hình ảnh phòng</div>
-                    @endif
-
-                    @if($room->thumbnail)
-                        <div>
-                            <strong>Ảnh thumbnail:</strong>
-                            <img src="{{ asset('storage/' . $room->thumbnail) }}" alt="Thumbnail {{ $room->title }}" class="img-thumbnail mt-2" style="max-width: 150px;">
+                    @if($room->images_room && $room->images_room->count())
+                        {{-- Ảnh chính --}}
+                        <div class="mb-3">
+                            <img id="main-room-image"
+                                src="{{ asset('storage/' . $room->images_room->first()->image_path) }}"
+                                alt="{{ $room->title }}" class="img-fluid rounded"
+                                style="max-height: 300px; object-fit: cover; width: 100%;">
                         </div>
+
+                        <div class="d-flex gap-2" style="overflow-x: auto; white-space: nowrap;">
+                            @foreach($room->images_room as $image)
+                                <img src="{{ asset('storage/' . $image->image_path) }}" alt="{{ $room->title }}"
+                                    class="img-thumbnail room-thumbnail"
+                                    style="width: 100px; height: 100px; object-fit: cover; cursor: pointer;">
+                            @endforeach
+                        </div>
+
                     @else
-                        <div class="text-muted mt-2">Không có ảnh thumbnail</div>
+                        <div class="alert alert-warning">Không có album ảnh phòng</div>
                     @endif
                 </div>
+
 
                 <!-- Thông tin phòng -->
                 <div class="col-md-7">
                     <table class="table table-borderless mb-0">
                         <tbody>
                             <tr>
-                                <th style="width: 35%;">ID</th>
-                                <td>{{ $room->id }}</td>
-                            </tr>
-                            <tr>
-                                <th>Tên phòng</th>
+                                <th>Số phòng</th>
                                 <td>{{ $room->title }}</td>
                             </tr>
                             <tr>
@@ -47,10 +50,6 @@
                             <tr>
                                 <th>Giá phòng</th>
                                 <td class="text-primary fw-bold">{{ number_format($room->price) }} VNĐ</td>
-                            </tr>
-                            <tr>
-                                <th>Số người tối đa</th>
-                                <td>{{ $room->max_people }}</td>
                             </tr>
                             <tr>
                                 <th>Trạng thái</th>
@@ -100,6 +99,20 @@
         @endif
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const mainImage = document.getElementById('main-room-image');
+        const thumbnails = document.querySelectorAll('.room-thumbnail');
+
+        thumbnails.forEach(thumbnail => {
+            thumbnail.addEventListener('click', function () {
+                mainImage.src = this.src;
+            });
+        });
+    });
+</script>
+
 
 </section>
 @endsection

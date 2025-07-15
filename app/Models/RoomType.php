@@ -15,7 +15,7 @@ class RoomType extends Model
         'type',
         'name',
         'room_type_price',
-        'image',
+        // 'image',
         'amenities',
         'bed_type',
     ];

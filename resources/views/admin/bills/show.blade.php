@@ -176,7 +176,7 @@
     <!-- Nút -->
     <div class="row action-buttons mt-4">
         <div class="col-12 col-md-auto mt-3 mt-md-0">
-            <a href="{{ route('bills.index') }}" class="btn btn-secondary px-4 py-3">
+            <a href="{{ route('bills.show', $bill->id) }}" class="btn btn-secondary px-4 py-3">
                 ← Quay lại danh sách
             </a>
         </div>
