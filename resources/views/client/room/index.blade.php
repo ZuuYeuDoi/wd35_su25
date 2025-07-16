@@ -63,6 +63,7 @@
 @endpush
 
 @section('content')
+
 <section class="page-title" style="background-image: url({{ asset('client/images/background/page-title-bg.png') }});">
     <div class="auto-container">
         <div class="title-outer text-center">

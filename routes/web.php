@@ -1,36 +1,54 @@
 <?php
 
-use App\Http\Controllers\User\AboutController;
-use App\Http\Controllers\Admin\BillController;
+
+
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\User\CartController;
+
+use App\Http\Controllers\User\UserController;
+use App\Http\Controllers\Admin\BillController;
+use App\Http\Controllers\Admin\RoomController;
+use App\Http\Controllers\User\AboutController;
+use App\Http\Controllers\Admin\InforController;
+use App\Http\Controllers\User\ReviewController;
 
 use App\Http\Controllers\Payment\PaymentController;
 use App\Http\Controllers\User\HomeController;
-use App\Http\Controllers\Admin\RoomController;
+
+
 use App\Http\Controllers\User\BookingController;
 use App\Http\Controllers\Admin\ServiceController;
 use App\Http\Controllers\Admin\AmenitieController;
 use App\Http\Controllers\Admin\RoomTypeController;
+
 use App\Http\Controllers\Admin\BookingRoomController;
 use App\Http\Controllers\Admin\CartController as AdminCartController;
-use App\Http\Controllers\User\CartController;
-use App\Http\Controllers\User\UserController;
-use App\Http\Controllers\Admin\InforController;
 use App\Http\Controllers\User\ServiceController as UserServiceController;
+
 
 Route::get('/login', fn() => view('auth.login'))->name('login');
 Route::get('/register', fn() => view('auth.register'))->name('register');
 Auth::routes(['verify' => true]);
 
 
+// ---------------- USER ROUTES ----------------
+Route::middleware(['auth', 'checkRole:3'])->group(function () {
+    Route::get('/profile', [UserController::class, 'showProfile'])->name('user.profile');
+    Route::post('/profile/update', [UserController::class, 'updateProfile'])->name('user.profile.update');
+});
+
 Route::prefix('/')->group(callback: function () {
     Route::controller(HomeController::class)->group(function () {
         Route::get('', 'index')->name('room.index');
         Route::get('/', 'index')->name('home');
         Route::get('room', 'indexRoom')->name('room.indexRoom');
+        Route::get('/room/{id}', [HomeController::class, 'showRoom'])->name('room.detail');
         Route::get('room-type/{id}', 'showRoomType')->name('room_type.detail');
         Route::get('check-available-room', 'checkAvailableRoom')->name('room_type.check_availability');
+    });
+
+
     });
     Route::controller(BookingController::class)->group(function () {
         Route::post('/booking', 'index')->name('booking.index');
@@ -53,10 +71,20 @@ Route::prefix('/')->group(callback: function () {
     });
 
 
+
     Route::controller(AboutController::class)->group(function () {
         Route::get('/about', 'index')->name('about');
     });
-});
+
+    Route::post('/reviews', [ReviewController::class, 'store'])->middleware('auth')->name('reviews.store');
+
+    Route::get('/account/room', fn() => view('client.account.roomDetail'));
+
+
+    Route::controller(AboutController::class)->group(function () {
+        Route::get('/about', 'index')->name('about');
+    });
+
 
 
 // Route::get('/cart', function () {
@@ -165,6 +193,11 @@ Route::prefix('admin')->group(function () {
         Route::get('/profile', [InforController::class, 'showProfile'])->name('admin.profile');
         Route::post('/profile/update', [InforController::class, 'updateProfile'])->name('admin.profile.update');
     })->middleware(['auth']);
+
+    Route::controller(\App\Http\Controllers\Admin\ReviewController::class)->group(function () {
+        Route::get('/comment', 'index')->name('admin.comment.index');
+        Route::patch('/comment/{id}/toggle', 'toggleStatus')->name('admin.comment.toggle');
+    });
 
 });
 

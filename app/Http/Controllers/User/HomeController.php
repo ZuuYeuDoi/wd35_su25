@@ -6,6 +6,7 @@ use App\Models\Room;
 use App\Models\Booking;
 use App\Models\Amenitie;
 use App\Models\RoomType;
+use App\Models\Review;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
@@ -53,15 +54,20 @@ class HomeController extends Controller
     }
 
 
+
 public function indexRoom(Request $request)
 {
-    // Lấy RoomType cùng album ảnh (roomImages) theo mối quan hệ bạn đã định nghĩa
-    $roomTypes = RoomType::with('images')->get();
+    // Chỉ lấy 1 phòng đầu tiên cho mỗi RoomType
+    $roomTypes = RoomType::with([
+        'rooms' => function ($q) {
+            $q->where('status', 1)->limit(1)->with('images_room');
+        }
+    ])->get();
 
-    // Nhóm theo type (Standard, Deluxe, ...)
+    // Nhóm theo type (Deluxe, Standard,...)
     $groupedRoomTypes = $roomTypes->groupBy('type');
 
-    // Lấy tiện nghi
+    // Xử lý tiện nghi
     $amenityIds = $roomTypes->pluck('amenities')
         ->filter()
         ->flatMap(function ($item) {
@@ -74,6 +80,7 @@ public function indexRoom(Request $request)
 
     return view('client.room.index', compact('groupedRoomTypes', 'allAmenities'));
 }
+
 
 public function getAvailableRoomsCount($roomTypeId, $checkIn, $checkOut)
 {
@@ -102,39 +109,109 @@ public function getAvailableRoomsCount($roomTypeId, $checkIn, $checkOut)
 
 public function showRoomType($id, Request $request)
 {
-    // Load RoomType cùng ảnh
-    $roomType = RoomType::with('images')->findOrFail($id);
+    $roomType = RoomType::with([
+    'images',
+    'rooms' => function ($q) {
+        $q->with('images_room');
+    }])->findOrFail($id);
 
-    // Lấy tiện ích (từ JSON hoặc array)
-    $amenityIds = collect($roomType->amenities)
-        ->filter()
-        ->unique()
-        ->toArray();
-
+    $amenityIds = collect($roomType->amenities)->filter()->unique()->toArray();
     $allAmenities = Amenitie::whereIn('id', $amenityIds)->get();
 
-    // Ngày check-in/check-out từ request (hoặc mặc định)
+    $checkIn = $request->check_in ?? now()->format('Y-m-d');
+    $checkOut = $request->check_out ?? now()->addDay()->format('Y-m-d');
+
+    $availableRoomsCount = $this->getAvailableRoomsCount($roomType->id, $checkIn, $checkOut);
+
+    // ✅ Thêm phần lấy đúng phòng
+    $roomId = $request->room_id;
+    $room = null;
+
+    if ($roomId) {
+        $room = $roomType->rooms->firstWhere('id', $roomId);
+    }
+
+    // Nếu không có room_id hoặc không tìm được → lấy phòng đầu tiên
+    $room = $room ?? $roomType->rooms->first();
+
+    $reviews = $room
+    ? Review::where('room_id', $room->id)
+        ->where('status', true) // Chỉ lấy review được hiển thị
+        ->with('user')
+        ->latest()
+        ->get()
+    : collect();
+    $canReview = false;
+    if (auth()->check()) {
+        $canReview = Booking::where('user_id', auth()->id())
+            ->where('status', 4) 
+            ->whereHas('rooms', function ($q) use ($room) {
+                $q->where('rooms.id', $room->id);
+            })
+            ->exists();
+    }
+        return view('client.room.detail', compact(
+            'roomType',
+            'allAmenities',
+            'checkIn',
+            'checkOut',
+            'availableRoomsCount',
+            'room',
+            'reviews',
+            'canReview'
+        ));
+    }
+
+
+public function showRoom($id, Request $request)
+{
+    $room = Room::with(['images_room', 'roomType'])->findOrFail($id);
+    
+    $roomType = $room->roomType;
+
+    // Lấy tiện nghi của loại phòng
+    $amenityIds = collect($roomType->amenities)->filter()->unique()->toArray();
+    $allAmenities = Amenitie::whereIn('id', $amenityIds)->get();
+
+    // Lấy ngày check-in / check-out mặc định
     $checkIn = $request->check_in ?? now()->format('Y-m-d');
     $checkOut = $request->check_out ?? now()->addDay()->format('Y-m-d');
 
     // Tính số lượng phòng còn trống
     $availableRoomsCount = $this->getAvailableRoomsCount($roomType->id, $checkIn, $checkOut);
 
-    // Lấy danh sách phòng thuộc RoomType đó (nếu cần)
-    $rooms = Room::with('images_room')
-        ->where('room_type_id', $roomType->id)
-        ->where('status', 1)
-        ->get();
+    // Lấy danh sách đánh giá
+    $reviews = Review::where('room_id', $room->id)
+    ->where('status', true) // Chỉ lấy review được hiển thị
+    ->with('user')
+    ->latest()
+    ->get();
+
+
+ 
+    $canReview = false;
+    if (auth()->check()) {
+        $canReview = Booking::where('user_id', auth()->id())
+            ->where('status', 4) 
+            ->whereHas('rooms', function ($q) use ($room) {
+                $q->where('rooms.id', $room->id);
+            })
+            ->exists();
+    }
 
     return view('client.room.detail', compact(
+        'room',
         'roomType',
         'allAmenities',
         'checkIn',
         'checkOut',
         'availableRoomsCount',
-        'rooms'
+        'reviews',
+        'canReview' 
     ));
 }
+
+
 
 public function checkAvailableRoom(Request $request)
 {

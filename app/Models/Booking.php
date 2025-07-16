@@ -53,4 +53,11 @@ class Booking extends Model
     {
         return $this->hasMany(ManageStatusRoom::class);
     }
+
+     public function rooms()
+    {
+        return $this->belongsToMany(Room::class, 'booking_rooms', 'booking_id', 'room_id');
+    }
+
+    
 }
