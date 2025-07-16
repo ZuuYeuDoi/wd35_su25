@@ -119,9 +119,12 @@
                                                     @break
 
                                                 @case(3)
-                                                    <a href="{{ route('bills.final', $booking->bill_id) }}" class="btn btn-sm btn-primary">Xem hóa đơn</a>
+                                                    @if ($booking->finalBill)
+                                                        <a href="{{ route('bills.final', $booking->finalBill->id) }}" class="btn btn-sm btn-primary">Xem hóa đơn</a>
+                                                    @endif
                                                     @break
                                             @endswitch
+                                        </td>
                                         </td>
                                     </tr>
                                 @empty
