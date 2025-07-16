@@ -40,19 +40,25 @@
                     </tr>
                 </thead>
                 <tbody>
+                    @php
+                        use Carbon\Carbon;
+                        $nights = Carbon::parse($booking->check_in_date)->diffInDays(Carbon::parse($booking->check_out_date));
+                        if ($nights == 0) $nights = 1; // Nếu check-in = check-out cùng ngày thì tính ít nhất 1 đêm
+                    @endphp
                     @php $total = 0; $i = 1; @endphp
                     @foreach ($booking->bookingRooms as $bookingRoom)
                         @php
                             $room = $bookingRoom->room;
                             $roomPrice = $room->price;
-                            $total += $roomPrice;
+                            $roomTotal = $roomPrice * $nights;
+                            $total += $roomTotal;
                         @endphp
                         <tr>
                             <td>{{ $i++ }}</td>
                             <td>{{ $room->title }} ({{ $room->roomType->name }})</td>
-                            <td>1</td>
-                            <td>{{ number_format($roomPrice, 0, ',', '.') }}đ</td>
-                            <td>{{ number_format($roomPrice, 0, ',', '.') }}đ</td>
+                            <td>{{ $nights }} đêm</td>
+                            <td>{{ number_format($roomPrice, 0, ',', '.') }}đ / đêm</td>
+                            <td>{{ number_format($roomTotal, 0, ',', '.') }}đ</td>
                         </tr>
                     @endforeach
                     @if ($cart && $cart->cartServiceItems)
@@ -71,6 +77,24 @@
                             </tr>
                         @endforeach
                     @endif
+                    @if ($booking->feeIncurreds->count())
+                        <tr class="table-secondary">
+                            <td colspan="5" class="fw-bold">Phụ phí phát sinh</td>
+                        </tr>
+                        @foreach ($booking->feeIncurreds as $fee)
+                            @php
+                                $total += $fee->amount;
+                            @endphp
+                            <tr>
+                                <td>{{ $i++ }}</td>
+                                <td>{{ $fee->name }}</td>
+                                <td>1 lần</td>
+                                <td>{{ number_format($fee->amount, 0, ',', '.') }}đ</td>
+                                <td>{{ number_format($fee->amount, 0, ',', '.') }}đ</td>
+                            </tr>
+                        @endforeach
+                    @endif
+
                 </tbody>
                 <tfoot>
                     <tr>
@@ -136,80 +160,85 @@
 @section('script')
 {{-- script nhỏ để demo mở box + cộng trừ số lượng --}}
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         const boxes = document.querySelectorAll('.service-box');
         boxes.forEach(box => {
             box.querySelector('.btn-primary').addEventListener('click', () => {
-                // đóng hết các box khác
                 document.querySelectorAll('.quantity-box').forEach(q => q.classList.add('d-none'));
                 box.querySelector('.quantity-box').classList.remove('d-none');
             });
 
             box.querySelector('.plus').addEventListener('click', () => {
-                const input = box.querySelector('input');
+                const input = box.querySelector('input[type="number"]');
                 input.value = parseInt(input.value) + 1;
             });
 
             box.querySelector('.minus').addEventListener('click', () => {
-                const input = box.querySelector('input');
+                const input = box.querySelector('input[type="number"]');
                 if (parseInt(input.value) > 1) input.value = parseInt(input.value) - 1;
             });
         });
-    });
-</script>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-    // ... (code plus/minus giữ nguyên)
 
-    document.querySelectorAll('.confirm-service').forEach(button => {
-        button.addEventListener('click', function () {
-            const serviceBox = this.closest('.service-box');
-            const serviceId = this.dataset.serviceId;
-            const serviceName = this.dataset.serviceName;
-            const servicePrice = parseInt(this.dataset.servicePrice);
-            const quantity = parseInt(serviceBox.querySelector('input[type="number"]').value);
+        document.querySelectorAll('.confirm-service').forEach(button => {
+            button.addEventListener('click', function () {
+                const serviceBox = this.closest('.service-box');
+                const serviceId = this.dataset.serviceId;
+                const serviceName = this.dataset.serviceName;
+                const servicePrice = parseInt(this.dataset.servicePrice);
+                const quantity = parseInt(serviceBox.querySelector('input[type="number"]').value);
 
-            fetch("{{ route('cart.add') }}", {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': "{{ csrf_token() }}"
-                },
-                body: JSON.stringify({
-                    booking_id: {{ $booking->id }},
-                    service_id: serviceId,
-                    quantity: quantity
+                fetch("{{ route('cart.add') }}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': "{{ csrf_token() }}"
+                    },
+                    body: JSON.stringify({
+                        booking_id: {{ $booking->id }},
+                        service_id: serviceId,
+                        quantity: quantity
+                    })
                 })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Hiển thị lên bảng hóa đơn
-                    const tbody = document.querySelector('table tbody');
-                    const totalCell = document.querySelector('tfoot td.text-danger');
-                    const newRow = document.createElement('tr');
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Thêm vào table view
+                        const tbody = document.querySelector('table tbody');
+                        const totalCell = document.querySelector('tfoot td.text-danger');
+                        const newRow = document.createElement('tr');
 
-                    const currentIndex = tbody.querySelectorAll('tr').length + 1;
+                        const currentIndex = tbody.querySelectorAll('tr').length + 1;
+                        const totalPrice = servicePrice * quantity;
 
-                    const totalPrice = servicePrice * quantity;
-                    newRow.innerHTML = `
-                        <td>#</td>
-                        <td>${serviceName}</td>
-                        <td>${quantity}</td>
-                        <td>${servicePrice.toLocaleString()}đ</td>
-                        <td>${totalPrice.toLocaleString()}đ</td>
-                    `;
-                    tbody.appendChild(newRow);
+                        newRow.innerHTML = `
+                            <td>${currentIndex}</td>
+                            <td>${serviceName}</td>
+                            <td>${quantity}</td>
+                            <td>${servicePrice.toLocaleString()}đ</td>
+                            <td>${totalPrice.toLocaleString()}đ</td>
+                        `;
+                        tbody.appendChild(newRow);
 
-                    // Cập nhật tổng tiền
-                    const currentTotal = parseInt(totalCell.textContent.replace(/\D/g, '')) || 0;
-                    totalCell.textContent = (currentTotal + totalPrice).toLocaleString() + 'đ';
-                }
+                        // Cập nhật tổng tiền
+                        const currentTotal = parseInt(totalCell.textContent.replace(/\D/g, '')) || 0;
+                        totalCell.textContent = (currentTotal + totalPrice).toLocaleString() + 'đ';
+
+                        // Ẩn lại box sau khi chọn xong
+                        serviceBox.querySelector('.quantity-box').classList.add('d-none');
+                    } else {
+                        alert(data.message || 'Thêm dịch vụ thất bại!');
+                    }
+                })
+                .catch(error => {
+                    console.error(error);
+                    alert('Có lỗi xảy ra!');
+                });
             });
         });
     });
-});
-
 </script>
+
+
 @endsection
