@@ -7,7 +7,8 @@
 
 <body>
 
-    <div class="page-wrapper">
+    <div class="page-wrapper" style="min-height: 100vh; overflow-x: hidden; overflow-y: auto;">
+
 
         <!-- Preloader -->
         <div class="preloader"></div>

@@ -194,6 +194,11 @@ Route::prefix('admin')->group(function () {
         Route::post('/profile/update', [InforController::class, 'updateProfile'])->name('admin.profile.update');
     })->middleware(['auth']);
 
+    Route::controller(\App\Http\Controllers\Admin\ReviewController::class)->group(function () {
+        Route::get('/comment', 'index')->name('admin.comment.index');
+        Route::patch('/comment/{id}/toggle', 'toggleStatus')->name('admin.comment.toggle');
+    });
+
 });
 
 

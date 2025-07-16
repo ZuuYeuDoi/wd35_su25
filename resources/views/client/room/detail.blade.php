@@ -1,4 +1,38 @@
 @extends('client.index')
+@push('css')
+<style>
+    html, body {
+        height: auto !important;
+        min-height: 100vh !important;
+        overflow: visible !important;
+    }
+
+    .page-wrapper {
+        min-height: 100vh !important;
+        height: auto !important;
+        overflow: visible !important;
+    }
+
+    .preloader {
+        display: none !important;
+    }
+
+    /* Force fix nội dung */
+    section.pt-120.pb-120 {
+        padding-bottom: 200px !important;
+    }
+    .review-scroll-container {
+        max-height: 500px;
+        overflow-y: auto;
+        border: 1px solid #ddd;
+    }
+    small.text-muted {
+        margin-left: 4px;
+        font-size: 13px;
+    }
+</style>
+@endpush
+
 
 @section('content')
 <section class="page-title" style="background-image: url({{ asset('client/images/background/page-title-bg.png') }});">
@@ -118,27 +152,32 @@
 @endguest
 
 <!-- DANH SÁCH BÌNH LUẬN -->
-<div class="mt-4">
-    @forelse ($reviews as $review)
-        <div class="border-bottom pb-3 mb-3">
-            <div class="d-flex justify-content-between">
-                <strong>{{ $review->user->name }}</strong>
-                <small class="text-muted">{{ $review->created_at->format('d/m/Y') }}</small>
-            </div>
-            <div class="text-warning mb-1">
-                @for ($i = 1; $i <= 5; $i++)
-                    <i class="fas fa-star{{ $i <= $review->rating ? '' : '-o' }}"></i>
-                @endfor
-            </div>
-            <p class="mb-0">{{ $review->comment }}</p>
-        </div>
-    @empty
-    <p>Chưa có đánh giá nào cho phòng này.</p>
-@endforelse
-</div>
 
-               
-            </div>
+    <div class="mt-4">
+        <h5 class="mb-3">Bình luận từ khách hàng</h5>
+    <div class="review-scroll-container bg-white rounded shadow-sm p-3">
+            @forelse ($reviews as $review)
+                <div class="border rounded p-3 mb-3 bg-light">
+                    <div class="d-flex justify-content-between align-items-start mb-1">
+                        <div style="font-size: 14px;">
+                            <strong>{{ $review->user->name }}</strong>
+                            <small class="text-muted">({{ $review->created_at->format('d/m/Y') }})</small>
+                        </div>
+                        <div class="text-warning" style="font-size: 14px;">
+                            @for ($i = 1; $i <= 5; $i++)
+                                <i class="fas fa-star{{ $i <= $review->rating ? '' : '-o' }}"></i>
+                            @endfor
+                        </div>
+                    </div>
+
+                    <p class="mb-0" style="font-size: 15px;">{{ $review->comment }}</p>
+                </div>
+            @empty
+                <p class="text-muted">Chưa có đánh giá nào cho phòng này.</p>
+            @endforelse
+        </div>
+    </div>
+</div>
 
             <!-- RIGHT -->
             <div class="col-lg-4">

@@ -134,12 +134,17 @@ public function showRoomType($id, Request $request)
     // Nếu không có room_id hoặc không tìm được → lấy phòng đầu tiên
     $room = $room ?? $roomType->rooms->first();
 
-    $reviews = $room ? Review::where('room_id', $room->id)->with('user')->latest()->get() : collect();
+    $reviews = $room
+    ? Review::where('room_id', $room->id)
+        ->where('status', true) // Chỉ lấy review được hiển thị
+        ->with('user')
+        ->latest()
+        ->get()
+    : collect();
     $canReview = false;
-
-    if (auth()->check() && $room) {
+    if (auth()->check()) {
         $canReview = Booking::where('user_id', auth()->id())
-            ->whereDate('check_out_date', '<=', now())
+            ->where('status', 4) 
             ->whereHas('rooms', function ($q) use ($room) {
                 $q->where('rooms.id', $room->id);
             })
@@ -177,15 +182,17 @@ public function showRoom($id, Request $request)
 
     // Lấy danh sách đánh giá
     $reviews = Review::where('room_id', $room->id)
-        ->with('user')
-        ->latest()
-        ->get();
+    ->where('status', true) // Chỉ lấy review được hiển thị
+    ->with('user')
+    ->latest()
+    ->get();
 
-    // ✅ Xác định quyền đánh giá
+
+ 
     $canReview = false;
     if (auth()->check()) {
         $canReview = Booking::where('user_id', auth()->id())
-            ->whereDate('check_out_date', '<=', now())
+            ->where('status', 4) 
             ->whereHas('rooms', function ($q) use ($room) {
                 $q->where('rooms.id', $room->id);
             })
@@ -200,7 +207,7 @@ public function showRoom($id, Request $request)
         'checkOut',
         'availableRoomsCount',
         'reviews',
-        'canReview' // ✅ Đừng quên truyền
+        'canReview' 
     ));
 }
 

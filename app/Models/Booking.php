@@ -58,4 +58,6 @@ class Booking extends Model
     {
         return $this->belongsToMany(Room::class, 'booking_rooms', 'booking_id', 'room_id');
     }
+
+    
 }
