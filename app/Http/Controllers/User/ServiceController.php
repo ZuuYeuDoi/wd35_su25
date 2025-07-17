@@ -12,13 +12,13 @@ class ServiceController extends Controller
 {
     public function index()
     {
-        $services = Service::where('status', 1)->get();
+        $services = Service::where([['status', 1], ['type', 4]])->get();
         return view('client.services.index', compact('services'));
     }
 
     public function detail(Request $request)
     {
-        $services = Service::where('status', 1)->get();
+        $services = Service::where([['status', 1], ['type', 4]])->get();
 
         // Xác định dịch vụ được chọn (nếu có)
         $selectedService = null;
@@ -61,7 +61,7 @@ class ServiceController extends Controller
             ->whereDate('actual_check_in', '<=', now())
             ->whereDate('check_out_date', '>=', now())
             ->first();
-            // dd($booking);
+        // dd($booking);
         return view('client.product.detail', compact('product', 'booking'));
     }
 }

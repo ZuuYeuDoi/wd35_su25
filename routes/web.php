@@ -36,6 +36,7 @@ Auth::routes(['verify' => true]);
 Route::middleware(['auth', 'checkRole:3'])->group(function () {
     Route::get('/profile', [UserController::class, 'showProfile'])->name('user.profile');
     Route::post('/profile/update', [UserController::class, 'updateProfile'])->name('user.profile.update');
+    Route::get('/profile/{id}/booking', [UserController::class, 'showBooking'])->name('user.booking.detail');
 });
 
 Route::prefix('/')->group(callback: function () {
@@ -47,43 +48,41 @@ Route::prefix('/')->group(callback: function () {
         Route::get('room-type/{id}', 'showRoomType')->name('room_type.detail');
         Route::get('check-available-room', 'checkAvailableRoom')->name('room_type.check_availability');
     });
+});
+Route::controller(BookingController::class)->group(function () {
+    Route::post('/booking', 'index')->name('booking.index');
+    Route::post('/booking/checkout', 'checkout')->name('booking.checkout');
+    Route::get('/booking/checkout', 'showCheckoutPage')->name('booking.checkout.view');
+    Route::post('/booking/store', 'store')->name('booking.store');
+});
 
+Route::controller(UserServiceController::class)->group(function () {
+    Route::get('/service', 'indexFood')->name('services.indexFood');
+    Route::get('/service-detail/{id}', 'showClient')->name('services.showClient');
+});
 
-    });
-    Route::controller(BookingController::class)->group(function () {
-        Route::post('/booking', 'index')->name('booking.index');
-        Route::post('/booking/checkout', 'checkout')->name('booking.checkout');
-        Route::get('/booking/checkout', 'showCheckoutPage')->name('booking.checkout.view');
-        Route::post('/booking/store', 'store')->name('booking.store');
-    });
-
-    Route::controller(UserServiceController::class)->group(function () {
-        Route::get('/service', 'indexFood')->name('services.indexFood');
-        Route::get('/service-detail/{id}', 'showClient')->name('services.showClient');
-    });
-
-    Route::controller(CartController::class)->middleware('auth')->group(function () {
-        Route::post('/cart/add', 'addService')->name('cart.addCart');
-        route::get('/cart', 'index')->name('cart.index');
-        Route::post('/cart/remove/{id}', 'remove')->name('cart.remove');
-        Route::post('/cart/update', 'update')->name('cart.update');
-        Route::post('/cart/order', 'order')->name('cart.orderUser');
-    });
+Route::controller(CartController::class)->middleware('auth')->group(function () {
+    Route::post('/cart/add', 'addService')->name('cart.addCart');
+    route::get('/cart', 'index')->name('cart.index');
+    Route::post('/cart/remove/{id}', 'remove')->name('cart.remove');
+    Route::post('/cart/update', 'update')->name('cart.update');
+    Route::post('/cart/order', 'order')->name('cart.orderUser');
+});
 
 
 
-    Route::controller(AboutController::class)->group(function () {
-        Route::get('/about', 'index')->name('about');
-    });
+Route::controller(AboutController::class)->group(function () {
+    Route::get('/about', 'index')->name('about');
+});
 
-    Route::post('/reviews', [ReviewController::class, 'store'])->middleware('auth')->name('reviews.store');
-
-    Route::get('/account/room', fn() => view('client.account.roomDetail'));
+Route::post('/reviews', [ReviewController::class, 'store'])->middleware('auth')->name('reviews.store');
 
 
-    Route::controller(AboutController::class)->group(function () {
-        Route::get('/about', 'index')->name('about');
-    });
+
+
+Route::controller(AboutController::class)->group(function () {
+    Route::get('/about', 'index')->name('about');
+});
 
 
 
@@ -198,7 +197,6 @@ Route::prefix('admin')->group(function () {
         Route::get('/comment', 'index')->name('admin.comment.index');
         Route::patch('/comment/{id}/toggle', 'toggleStatus')->name('admin.comment.toggle');
     });
-
 });
 
 
