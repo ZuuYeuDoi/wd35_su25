@@ -63,7 +63,7 @@
                             </tr>
                             <tr>
                                 <th>Mô tả</th>
-                                <td style="white-space: pre-line;">{{ $room->description ?? 'Chưa có mô tả' }}</td>
+                                <td style="white-space: pre-line;">{!! $room->description !!}</td>
                             </tr>
                             <tr>
                                 <th>Ngày tạo</th>

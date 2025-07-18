@@ -170,7 +170,7 @@ public function showRoom($id, Request $request)
     $roomType = $room->roomType;
 
     // Lấy tiện nghi của loại phòng
-    $amenityIds = collect($roomType->amenities)->filter()->unique()->toArray();
+   $amenityIds = collect($room->amenities)->filter()->unique()->toArray();
     $allAmenities = Amenitie::whereIn('id', $amenityIds)->get();
 
     // Lấy ngày check-in / check-out mặc định
