@@ -1,63 +1,89 @@
 <?php
 
-use App\Http\Controllers\User\AboutController;
-use App\Http\Controllers\Admin\BillController;
+
+
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\User\CartController;
+
+use App\Http\Controllers\User\UserController;
+use App\Http\Controllers\Admin\BillController;
+use App\Http\Controllers\Admin\RoomController;
+use App\Http\Controllers\User\AboutController;
+use App\Http\Controllers\Admin\InforController;
+use App\Http\Controllers\User\ReviewController;
 
 use App\Http\Controllers\Payment\PaymentController;
 use App\Http\Controllers\User\HomeController;
-use App\Http\Controllers\Admin\RoomController;
+
+
 use App\Http\Controllers\User\BookingController;
 use App\Http\Controllers\Admin\ServiceController;
 use App\Http\Controllers\Admin\AmenitieController;
 use App\Http\Controllers\Admin\RoomTypeController;
+
 use App\Http\Controllers\Admin\BookingRoomController;
 use App\Http\Controllers\Admin\CartController as AdminCartController;
-use App\Http\Controllers\Admin\DashboardController;
-use App\Http\Controllers\User\CartController;
-use App\Http\Controllers\User\UserController;
-use App\Http\Controllers\Admin\InforController;
 use App\Http\Controllers\User\ServiceController as UserServiceController;
+
 
 Route::get('/login', fn() => view('auth.login'))->name('login');
 Route::get('/register', fn() => view('auth.register'))->name('register');
 Auth::routes(['verify' => true]);
 
 
+// ---------------- USER ROUTES ----------------
+Route::middleware(['auth', 'checkRole:3'])->group(function () {
+    Route::get('/profile', [UserController::class, 'showProfile'])->name('user.profile');
+    Route::post('/profile/update', [UserController::class, 'updateProfile'])->name('user.profile.update');
+    Route::get('/profile/{id}/booking', [UserController::class, 'showBooking'])->name('user.booking.detail');
+});
+
 Route::prefix('/')->group(callback: function () {
     Route::controller(HomeController::class)->group(function () {
         Route::get('', 'index')->name('room.index');
         Route::get('/', 'index')->name('home');
         Route::get('room', 'indexRoom')->name('room.indexRoom');
+        Route::get('/room/{id}', [HomeController::class, 'showRoom'])->name('room.detail');
         Route::get('room-type/{id}', 'showRoomType')->name('room_type.detail');
         Route::get('check-available-room', 'checkAvailableRoom')->name('room_type.check_availability');
     });
-    Route::controller(BookingController::class)->group(function () {
-        Route::post('/booking', 'index')->name('booking.index');
-        Route::post('/booking/checkout', 'checkout')->name('booking.checkout');
-        Route::get('/booking/checkout', 'showCheckoutPage')->name('booking.checkout.view');
-        Route::post('/booking/store', 'store')->name('booking.store');
-    });
-
-    Route::controller(UserServiceController::class)->group(function () {
-        Route::get('/service', 'indexFood')->name('services.indexFood');
-        Route::get('/service-detail/{id}', 'showClient')->name('services.showClient');
-    });
-
-    Route::controller(CartController::class)->middleware('auth')->group(function () {
-        Route::post('/cart/add', 'addService')->name('cart.addCart');
-        route::get('/cart', 'index')->name('cart.index');
-        Route::post('/cart/remove/{id}', 'remove')->name('cart.remove');
-        Route::post('/cart/update', 'update')->name('cart.update');
-        Route::post('/cart/order', 'order')->name('cart.orderUser');
-    });
-
-
-    Route::controller(AboutController::class)->group(function () {
-        Route::get('/about', 'index')->name('about');
-    });
 });
+Route::controller(BookingController::class)->group(function () {
+    Route::post('/booking', 'index')->name('booking.index');
+    Route::post('/booking/checkout', 'checkout')->name('booking.checkout');
+    Route::get('/booking/checkout', 'showCheckoutPage')->name('booking.checkout.view');
+    Route::post('/booking/store', 'store')->name('booking.store');
+});
+
+Route::controller(UserServiceController::class)->group(function () {
+    Route::get('/service', 'indexFood')->name('services.indexFood');
+    Route::get('/service-detail/{id}', 'showClient')->name('services.showClient');
+});
+
+Route::controller(CartController::class)->middleware('auth')->group(function () {
+    Route::post('/cart/add', 'addService')->name('cart.addCart');
+    route::get('/cart', 'index')->name('cart.index');
+    Route::post('/cart/remove/{id}', 'remove')->name('cart.remove');
+    Route::post('/cart/update', 'update')->name('cart.update');
+    Route::post('/cart/order', 'order')->name('cart.orderUser');
+});
+
+
+
+Route::controller(AboutController::class)->group(function () {
+    Route::get('/about', 'index')->name('about');
+});
+
+Route::post('/reviews', [ReviewController::class, 'store'])->middleware('auth')->name('reviews.store');
+
+
+
+
+Route::controller(AboutController::class)->group(function () {
+    Route::get('/about', 'index')->name('about');
+});
+
 
 
 // Route::get('/cart', function () {
@@ -68,19 +94,15 @@ Route::get('/room-detail', function () {
 });
 
 
-// Route::get('/admin', function () {
-//     return view('admin.dashboard');
-// });
+Route::get('/admin', function () {
+    return view('admin.dashboard');
+});
 Route::get('/admin/info', function () {
     return view('admin.infoHotel');
 });
 
 
 Route::prefix('admin')->group(function () {
-
-    Route::controller(DashboardController::class)->group(function(){
-        Route::get('', 'index')->name('dashboard.index');
-    });
 
     Route::controller(RoomController::class)->group(function () {
         Route::get('rooms', 'index')->name('room.index');
@@ -171,6 +193,10 @@ Route::prefix('admin')->group(function () {
         Route::post('/profile/update', [InforController::class, 'updateProfile'])->name('admin.profile.update');
     })->middleware(['auth']);
 
+    Route::controller(\App\Http\Controllers\Admin\ReviewController::class)->group(function () {
+        Route::get('/comment', 'index')->name('admin.comment.index');
+        Route::patch('/comment/{id}/toggle', 'toggleStatus')->name('admin.comment.toggle');
+    });
 });
 
 

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\FeesIncurred;
 use Illuminate\Database\Eloquent\Model;
 
 class Booking extends Model
@@ -53,4 +54,24 @@ class Booking extends Model
     {
         return $this->hasMany(ManageStatusRoom::class);
     }
+
+     public function rooms()
+    {
+        return $this->belongsToMany(Room::class, 'booking_rooms', 'booking_id', 'room_id');
+    }
+    public function feeIncurreds()
+{
+    return $this->hasMany(FeesIncurred::class, 'booking_id');
+}
+
+public function bills()
+{
+    return $this->hasMany(Bill::class, 'booking_id');
+}
+public function finalBill()
+{
+    return $this->hasOne(Bill::class)->where('bill_type', 'final');
+}
+
+    
 }

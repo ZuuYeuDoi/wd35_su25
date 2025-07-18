@@ -51,4 +51,8 @@ class Room extends Model
 {
     return $this->hasMany(ManageStatusRoom::class);
 }
+public function reviews()
+{
+    return $this->hasMany(\App\Models\Review::class)->where('status', true);
+}
 }

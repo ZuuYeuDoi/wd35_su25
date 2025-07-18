@@ -3,10 +3,7 @@
 @push('css')
     <link rel="stylesheet" href="{{ asset('client/css/account.css') }}">
 @endpush
-{{-- @php
-    dd($bookings);
-    die();
-@endphp --}}
+
 @section('content')
     <section class="page-title" style="background-image: url({{ asset('client/images/background/page-title-bg.png') }});">
         <div class="auto-container">
@@ -27,9 +24,9 @@
             </div>
             <nav class="menu mt-4">
                 <a href="#profile" class="menu-item active"><i class="fas fa-user"></i> Thông tin cá nhân</a>
-                <a href="#room" class="menu-item"><i class="fas fa-bed"></i> Phòng đã đặt</a>
-                <a href="#services" class="menu-item"><i class="fas fa-concierge-bell"></i> Dịch vụ đã đặt</a>
-                <a href="#foods" class="menu-item"><i class="fas fa-utensils"></i> Đồ ăn đã đặt</a>
+                <a href="#bookings" class="menu-item"><i class="fas fa-bed"></i> Đơn đã đặt</a>
+                {{-- <a href="#services" class="menu-item"><i class="fas fa-concierge-bell"></i> Dịch vụ đã đặt</a>
+                {{-- <a href="#foods" class="menu-item"><i class="fas fa-utensils"></i> Đồ ăn đã đặt</a> --}}
             </nav>
         </div>
 
@@ -104,7 +101,7 @@
             </section>
 
             <!-- Phòng đã đặt -->
-            <section id="room" class="content-section">
+            <section id="bookings" class="content-section">
                 <h2 class="mb-4">Phòng đã đặt</h2>
 
                 @forelse ($bookings as $booking)
@@ -132,10 +129,14 @@
                                         <div class="row align-items-center">
 
                                             <div class="col">
-                                                <h6 class="mb-1">{{ $br->room->title ?? 'Không rõ tên phòng' }}</h6>
+                                                <h6 class="mb-1">{{ $br->room->title ?? '---' }} - {{ $br->room->roomType->type ?? '---' }}</h6>
                                                 <small>Giá: {{ number_format($br->price, 0, ',', '.') }}đ / đêm</small>
                                             </div>
                                         </div>
+                                        <a href="{{ route('user.booking.detail', $booking->id) }}"
+                                            class="btn btn-sm btn-primary">
+                                            <i class="fas fa-eye"></i> Xem chi tiết
+                                        </a>
                                     </li>
                                 @endforeach
                             </ul>
@@ -146,10 +147,8 @@
                 @endforelse
             </section>
 
-
-
-        {{-- ========= DỊCH VỤ ĐÃ ĐẶT ========= --}}
-        <section id="services" class="content-section mt-5">
+            {{-- ========= DỊCH VỤ ĐÃ ĐẶT ========= --}}
+            {{-- <section id="services" class="content-section mt-5">
             <h2 class="mb-4">Dịch vụ đã đặt</h2>
 
             @forelse ($serviceItems as $item)
@@ -172,11 +171,10 @@
             @empty
                 <p>Bạn chưa đặt dịch vụ nào.</p>
             @endforelse
-        </section>
+        </section> --}}
 
-
-        {{-- ========= ĐỒ ĂN ĐÃ ĐẶT ========= --}}
-        <section id="foods" class="content-section mt-5">
+            {{-- ========= ĐỒ ĂN ĐÃ ĐẶT ========= --}}
+            {{-- <section id="foods" class="content-section mt-5">
             <h2 class="mb-4">Đồ ăn đã đặt</h2>
 
             @forelse ($foodItems as $item)
@@ -200,8 +198,8 @@
             @empty
                 <p>Bạn chưa đặt món ăn nào.</p>
             @endforelse
-        </section>
-    </div>
+        </section> --}}
+        </div>
     </div>
 @endsection
 

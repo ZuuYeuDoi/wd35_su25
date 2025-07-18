@@ -29,13 +29,15 @@ class Bill extends Model
         'vat_amount',
         'final_amount',
         'status',
+        'booking_id',
+        'bill_type'
     ];
+
 
     public function services()
     {
         return $this->hasMany(BillService::class);
     }
-
     public function rooms()
     {
         return $this->hasMany(BillRoom::class);
@@ -60,6 +62,12 @@ class Bill extends Model
     {
         return $this->hasMany(BillFee::class);
     }
+
+    public function booking()
+{
+    return $this->belongsTo(Booking::class, 'booking_id');
+}
+
 
     protected $casts = [
         'payment_date' => 'datetime',

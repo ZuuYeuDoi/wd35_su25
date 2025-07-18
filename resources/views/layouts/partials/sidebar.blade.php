@@ -160,7 +160,7 @@
                                </ul>
                            </li>
                            <li>
-                               <a class="nav-link" href="/admin/comments">
+                               <a class="nav-link" href="{{ route('admin.comment.index') }}">
                                    <i class="bx bx-envelope" aria-hidden="true"></i>
                                    <span>Quản lý Bình luận</span>
                                </a>

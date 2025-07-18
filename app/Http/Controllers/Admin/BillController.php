@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Models\Bill;
 use App\Models\Cart;
+use App\Models\BillFee;
 use App\Models\Booking;
 use App\Models\Service;
 use App\Models\BillRoom;
@@ -21,7 +22,7 @@ class BillController extends Controller
 
     public function temporary($id)
     {
-        $booking = Booking::with(['user', 'bookingRooms.room.roomType'])->findOrFail($id);
+        $booking = Booking::with(['user', 'bookingRooms.room.roomType', 'feeIncurreds'])->findOrFail($id);
         $services = Service::where('status', 1)->get();
 
         // Cập nhật trạng thái booking
@@ -47,16 +48,14 @@ class BillController extends Controller
 
         $cart = Cart::where('booking_id', $booking->id)
             ->where('status', 'ordered')
-            ->with('cartServiceItems.service') // eager load
+            ->with('cartServiceItems.service') 
             ->first();
 
-        return view('admin.bills.temporary_bill', compact('booking', 'services', 'cart'));
+        return view('admin.bills.temporary_bill', compact('booking', 'services', 'cart' ));
     }
-
 public function confirmPayment($id)
 {
     DB::beginTransaction();
-
     try {
         $booking = Booking::with(['user', 'bookingRooms.room.roomType'])->findOrFail($id);
 
@@ -64,11 +63,13 @@ public function confirmPayment($id)
         $booking->actual_check_out = now();
         $booking->save();
 
+        // Cart service
         $cart = Cart::with('cartServiceItems.service')
             ->where('booking_id', $id)
             ->where('status', 'ordered')
             ->first();
 
+        // Tiền phí
         $roomAmount = 0;
         $serviceAmount = 0;
         $feeAmount = FeesIncurred::where('booking_id', $booking->id)->sum('price');
@@ -76,28 +77,19 @@ public function confirmPayment($id)
         $vatPercent = 8;
         $vatAmount = 0;
 
-        $bill_id = $booking->bill_id;
-
-        $bill = Bill::find($bill_id);
-
-        if (!$bill) {
-            DB::rollBack();
-            return back()->with('error', 'Không tìm thấy hóa đơn cọc của đơn này.');
-        }
-
-        // Tính đêm thực tế
+        // Tính số đêm thực tế
         $actualCheckIn = $booking->actual_check_in ?? $booking->check_in_date;
         $actualCheckOut = $booking->actual_check_out ?? $booking->check_out_date;
         $nights = Carbon::parse($actualCheckIn)->diffInDays(Carbon::parse($actualCheckOut));
         $nights = max(1, $nights);
 
-        // Tính phí phòng
+        // Tính tiền phòng
         foreach ($booking->bookingRooms as $bookingRoom) {
             $room = $bookingRoom->room;
             $roomAmount += $room->price * $nights;
         }
 
-        // Tính phí dịch vụ
+        // Tính dịch vụ
         if ($cart) {
             $cart->status = 'paid';
             $cart->save();
@@ -108,13 +100,26 @@ public function confirmPayment($id)
             }
         }
 
+        // Tiền cọc đã thanh toán trước
+        $depositBill = Bill::where('booking_id', $booking->id)
+            ->where('bill_type', 'deposit')
+            ->where('status', 'paid')
+            ->first();
+
+        $depositAmount = $depositBill ? $depositBill->final_amount : 0;
+
         // Tổng cộng
         $subtotal = $roomAmount + $serviceAmount + $feeAmount - $discount;
-        $vatAmount = intval($subtotal * $vatPercent / 100);
-        $finalTotal = $subtotal + $vatAmount;
+        $subtotalAfterDeposit = max(0, $subtotal - $depositAmount);
+        $vatAmount = intval($subtotalAfterDeposit * $vatPercent / 100);
+        $finalTotal = $subtotalAfterDeposit + $vatAmount;
 
-        // Cập nhật bill cũ
-        $bill->update([
+        // Tạo Bill Final
+        $bill = Bill::create([
+            'customer_name'  => $booking->user->name,
+            'customer_phone' => $booking->user->phone,
+            'booking_id'     => $booking->id,
+            'bill_type'      => 'final',
             'room_amount'    => $roomAmount,
             'service_amount' => $serviceAmount,
             'fee_amount'     => $feeAmount,
@@ -123,29 +128,73 @@ public function confirmPayment($id)
             'final_amount'   => $finalTotal,
             'status'         => 'paid',
             'payment_date'   => now(),
+            'payment_method' => 'cash',
+            'bill_code'      => 'HD' . now()->format('YmdHis'),
+            'note'           => 'Đã trừ tiền cọc: ' . number_format($depositAmount) . 'đ',
         ]);
 
-        // Update booking & room
-        $booking->status = 3; // Đã thanh toán toàn bộ
+        // Lưu chi tiết phòng
+        foreach ($booking->bookingRooms as $bookingRoom) {
+            $room = $bookingRoom->room;
+            BillRoom::create([
+                'bill_id'         => $bill->id,
+                'room_id'         => $room->id,
+                'room_name'       => $room->title,
+                'price_per_night' => $room->price,
+                'nights'          => $nights,
+                'total_price'     => $room->price * $nights,
+            ]);
+        }
+
+        // Lưu chi tiết dịch vụ
+        if ($cart) {
+            foreach ($cart->cartServiceItems as $item) {
+                BillService::create([
+                    'bill_id'      => $bill->id,
+                    'service_id'   => $item->service_id,
+                    'service_name' => $item->service->name,
+                    'unit_price'   => $item->service->price,
+                    'quantity'     => $item->quantity,
+                    'total_price'  => $item->service->price * $item->quantity,
+                ]);
+            }
+        }
+
+        // Lưu phụ thu
+        $fees = FeesIncurred::where('booking_id', $booking->id)->get();
+        foreach ($fees as $fee) {
+            BillFee::create([
+                'bill_id'    => $bill->id,
+                'fee_name'   => $fee->name,
+                'amount'     => $fee->price,
+                'description'=> $fee->description ?? null,
+            ]);
+        }
+
+        // Update booking + phòng
+        $booking->status = 3;
         $booking->save();
 
         foreach ($booking->bookingRooms as $bookingRoom) {
             $room = $bookingRoom->room;
-            $room->status = 3;
+            $room->status = 4;
             $room->save();
         }
 
         DB::commit();
 
-        return redirect()->route('bills.final', $bill_id)
-            ->with('success', 'Checkout thành công, đã cập nhật hóa đơn.');
+        return redirect()->route('bills.final', $bill->id)
+            ->with('success', 'Checkout thành công, đã tạo hóa đơn chính thức.');
     } catch (\Exception $e) {
         DB::rollBack();
         return back()->with('error', 'Có lỗi xảy ra: ' . $e->getMessage());
     }
 }
 
-    public function final($id)
+
+
+
+  public function final($id)
 {
     $bill = Bill::with(['rooms', 'services', 'fees'])->findOrFail($id);
     return view('admin.bills.final_bill', compact('bill'));

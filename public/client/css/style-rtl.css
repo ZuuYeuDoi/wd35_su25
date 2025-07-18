@@ -460,10 +460,16 @@ figure.image {
   margin: 0 auto;
   width: 100%;
   min-width: 300px;
-  overflow: hidden;
+
+  height: auto;
+  min-height: 100vh;
+  overflow-x: hidden;
+  overflow-y: auto;
+
   z-index: 99;
   background-color: #ffffff;
 }
+
 
 .large-container {
   position: static;
