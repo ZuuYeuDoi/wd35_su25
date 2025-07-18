@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,11 +9,18 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
+
 <body>
     <div class="container">
         <div class="form-container">
             <div class="form-box">
                 <h2>Đăng nhập</h2>
+                @if (session('success'))
+                    <div class="alert alert-success" style="color: green; margin-bottom: 10px;">
+                        {{ session('success') }}
+                    </div>
+                @endif
+
                 <form id="loginForm" method="POST" action="{{ route('login') }}" novalidate>
                     @csrf
                     <div class="input-group">
@@ -60,4 +68,5 @@
         </div>
     </div>
 </body>
+
 </html>

@@ -14,47 +14,37 @@ class UserController extends Controller
 {
     public function showProfile()
     {
+        $user = Auth::user();
+        $bookings = Booking::where('user_id', $user->id)->with('bookingRooms.room')->get();
+        return view('client.account.profile', compact('user', 'bookings'));
+    }
+
+
+    public function showBooking($id)
+    {
         try {
             $user = Auth::user();
 
-            // Lấy danh sách phòng đã đặt (bookings + rooms)
-            $bookings = Booking::with(['bookingRooms.room'])
-                ->where('user_id', $user->id)
-                ->latest()
-                ->get();
+            $booking = Booking::with(['bookingRooms.room.images_room'])->where('user_id', $user->id)->findOrFail($id);
 
-            // Lấy dịch vụ đã đặt (service type != food)
-            $serviceItems = CartServiceItem::whereHas('cart.booking', function ($query) use ($user) {
-                $query->where('user_id', $user->id);
+            $serviceItems = CartServiceItem::whereHas('cart.booking', function ($query) use ($user, $id) {
+                $query->where('user_id', $user->id)->where('id', $id);
             })
-                ->whereHas('service', function ($query) {
-                    $query->where('type', '!=', 2);
-                })
-                ->with(['service', 'cart'])
-                ->latest()
+                ->whereHas('service', fn($query) => $query->where('type', '!=', 2))
+                ->with(['service'])
                 ->get();
 
-            // Lấy đồ ăn đã đặt (service type = 2) ordered - paid
-            $foodItems = CartServiceItem::whereHas('cart.booking', function ($query) use ($user) {
-                $query->where('user_id', $user->id);
+            $foodItems = CartServiceItem::whereHas('cart.booking', function ($query) use ($user, $id) {
+                $query->where('user_id', $user->id)->where('id', $id);
             })
-                ->whereHas('service', function ($query) {
-                    $query->where('type', 2);
-                })
-                ->with(['service', 'cart'])
-                ->latest()
+                ->whereHas('service', fn($query) => $query->where('type', 2))
+                ->with(['service'])
                 ->get();
 
-            return view('client.account.profile', compact(
-                'user',
-                'bookings',
-                'serviceItems',
-                'foodItems'
-            ));
+            return view('client.account.bookingDetail', compact('booking', 'serviceItems', 'foodItems'));
         } catch (\Exception $e) {
-            Log::error('Lỗi khi tải trang thông tin người dùng: ' . $e->getMessage());
-
-            return redirect()->back()->with('error', 'Đã xảy ra lỗi khi tải dữ liệu. Vui lòng thử lại sau.');
+            Log::error('Lỗi khi xem chi tiết đặt phòng: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Không thể tải chi tiết đặt phòng.');
         }
     }
 
@@ -67,7 +57,8 @@ class UserController extends Controller
             'password' => ['nullable', 'string', 'min:8', 'confirmed'],
             'current_password' => ['required_with:password'],
             'phone' => ['nullable', 'numeric', 'regex:/^\d{10}$/'],
-            'cccd' => 'nullable',
+            'cccd' => ['nullable'],
+
         ], [
             // Name
             'name.required' => 'Vui lòng nhập tên!',
@@ -92,6 +83,9 @@ class UserController extends Controller
             'phone.required' => 'Vui lòng nhập số điện thoại!',
             'phone.numeric' => 'Số điện thoại phải là số!',
             'phone.regex' => 'Số điện thoại phải gồm 10 số!',
+
+            //cccd
+            // 'cccd.regex' => 'Căn cước công dân phải gồm 9 hoặc 12 chữ số.',
         ]);
 
         try {
@@ -112,6 +106,10 @@ class UserController extends Controller
                 //Lưu mật khẩu mới
                 $user->password = Hash::make($request->password);
                 $user->save();
+
+                // Logout user và chuyển hướng về trang login
+                Auth::logout();
+                return redirect()->route('login')->with('success', 'Đổi mật khẩu thành công, vui lòng đăng nhập lại!');
             }
 
             return redirect()->back()->with('success', 'Cập nhật thành công!');
