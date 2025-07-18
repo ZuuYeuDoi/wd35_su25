@@ -72,7 +72,7 @@
                             <div class="form-group col">
                                 <label for="inputCCCD">CCCD</label>
                                 <input type="text" name="cccd" class="form-control" id="inputCCCD"
-                                    value="{{ old('cccd', $user->cccd ?? '') }}">
+                                    value="{{ old('cccd', $user->cccd ?? '---') }}">
                             </div>
                         </div>
 

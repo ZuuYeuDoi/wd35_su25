@@ -14,7 +14,7 @@ class InforController extends Controller
         $user = Auth::user();
         return view('admin.customers.staff-profile', compact('user'));
     }
-    
+
     public function updateProfile(Request $request)
     {
         $request->validate([
@@ -23,7 +23,7 @@ class InforController extends Controller
             'password' => ['nullable', 'string', 'min:8', 'confirmed'],
             'current_password' => ['required_with:password'],
             'phone' => ['nullable', 'numeric', 'regex:/^\d{10}$/'],
-            'cccd' => 'nullable',
+            'cccd' => ['nullable'],
         ], [
             // Name
             'name.required' => 'Vui lòng nhập tên!',
@@ -48,6 +48,9 @@ class InforController extends Controller
             'phone.required' => 'Vui lòng nhập số điện thoại!',
             'phone.numeric' => 'Số điện thoại phải là số!',
             'phone.regex' => 'Số điện thoại phải gồm 10 số!',
+
+            //cccd
+            // 'cccd.regex' => 'Căn cước công dân phải gồm 9 hoặc 12 chữ số!',
         ]);
 
         try {
@@ -68,6 +71,10 @@ class InforController extends Controller
                 //Lưu mật khẩu mới
                 $user->password = Hash::make($request->password);
                 $user->save();
+
+                // Logout user và chuyển hướng về trang login
+                Auth::logout();
+                return redirect()->route('login')->with('success', 'Đổi mật khẩu thành công, vui lòng đăng nhập lại!');
             }
 
             return redirect()->back()->with('success', 'Cập nhật thành công!');
