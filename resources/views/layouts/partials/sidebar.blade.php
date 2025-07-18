@@ -13,7 +13,7 @@
                    <nav id="menu" class="nav-main" role="navigation">
                        <ul class="nav nav-main">
                            <li>
-                               <a class="nav-link" href="/admin">
+                               <a class="nav-link" href="{{ route('dashboard.index') }}">
                                    <i class="fas fa-dollar-sign" aria-hidden="true"></i>
                                    <span>Thống kê</span>
                                </a>
@@ -86,7 +86,7 @@
                                    </li>
                                </ul>
                            </li>
-                                <li class="nav-parent">
+                           <li class="nav-parent">
                                <a class="nav-link" href="javascript:void(0)">
                                    <i class="fas fa-user" aria-hidden="true"></i>
                                    <span>Quản lý Hóa đơn</span>
