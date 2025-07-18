@@ -30,6 +30,10 @@
         margin-left: 4px;
         font-size: 13px;
     }
+    .room-thumbnail.border-primary {
+    border: 2px solid #007bff !important;
+}
+
 </style>
 @endpush
 
@@ -50,29 +54,36 @@
         <div class="row">
             <!-- LEFT -->
             <div class="col-lg-8">
-                <div class="mb-4">
-                    <!-- Ảnh chính: lấy ảnh đầu tiên trong danh sách ảnh của phòng -->
+                <!-- Ảnh phòng -->
+                @if ($room->images_room && $room->images_room->count())
+                <!-- ẢNH CHÍNH -->
+                <div class="mb-4 text-center">
                     <img id="mainRoomImage"
-                        src="{{ asset('storage/' . ($room->images_room->first()->image_path ?? 'default.jpg')) }}"
-                        alt="{{ $room->title }}"
-                        class="img-fluid rounded shadow mb-3"
-                        style="width: 100%; max-height: 400px; object-fit: cover;">
-
-                    <!-- Album ảnh: duyệt tất cả ảnh của phòng -->
-                    <div class="d-flex flex-wrap gap-2">
-                        @foreach($roomType->rooms->flatMap->images_room->take(5) as $thumb)
-                            <img src="{{ asset('storage/' . $thumb->image_path) }}" class="img-thumbnail" style="width: 100px; height: 70px; cursor:pointer;" onclick="changeMainImage('{{ asset('storage/' . $thumb->image_path) }}')">
+                        src="{{ asset('storage/' . $room->images_room->first()->image_path) }}"
+                        class="img-fluid rounded"
+                        style="width: 100%; max-width: 800px; height: 400px; object-fit: cover;">
+                </div>
+                <!-- ALBUM ẢNH NHỎ -->
+                @if ($room->images_room->count() > 1)
+                    <div class="d-flex justify-content-center flex-wrap gap-2 mb-4">
+                        @foreach ($room->images_room as $image)
+                            <img src="{{ asset('storage/' . $image->image_path) }}"
+                                data-src="{{ asset('storage/' . $image->image_path) }}"
+                                class="img-thumbnail room-thumbnail"
+                                style="width: 90px; height: 90px; object-fit: cover; cursor: pointer;">
                         @endforeach
                     </div>
-                </div>
-
-
+                @endif
+            @else
+                <div class="alert alert-warning">Không có ảnh phòng nào được đăng.</div>
+            @endif
 
                 <!-- MÔ TẢ LOẠI PHÒNG -->
                 <h3 class="mb-4 fw-semibold" style="font-size: 26px;">Mô tả loại phòng</h3>
                 <p class="text-muted" style="line-height: 1.8; font-size: 16px;">
-                    {{ $room->description ?? 'Không có mô tả cho loại phòng này.' }}
+                    {!! $room->description ?? 'Không có mô tả cho loại phòng này.' !!}
                 </p>
+
 
                 @if ($room)
                     <h3 class="mb-4 fw-semibold mt-5" style="font-size: 26px;">Thông tin chi tiết một phòng</h3>
@@ -236,8 +247,7 @@
                                     </div>
                                     <div class="col-8">
                                         <div class="card-body py-2 px-3">
-                                            <h6 class="card-title mb-1" style="font-size: 15px;">{{ $r->title }}</h6>
-                                            <p class="card-text mb-1" style="font-size: 13px;">{{ $r->description }}</p>
+                                            <h6 class="card-title mb-1" style="font-size: 15px;">{{ $roomType->name }}</h6>
                                             <p class="card-text mb-1">
                                                 <strong class="text-danger" style="font-size: 14px;">{{ number_format($r->price, 0, ',', '.') }} VND</strong>
                                             </p>
@@ -265,35 +275,40 @@
         const today = new Date().toISOString().split('T')[0];
         const checkinInput = document.getElementById('checkin');
         const checkoutInput = document.getElementById('checkout');
-        const roomTypeId = document.getElementById('room_type_id').value;
+        const roomTypeId = document.getElementById('room_type_id')?.value;
         const availableSpan = document.getElementById('available-count');
 
-        checkinInput.setAttribute('min', today);
-        checkoutInput.setAttribute('min', today);
+        // Set min date
+        if (checkinInput) checkinInput.setAttribute('min', today);
+        if (checkoutInput) checkoutInput.setAttribute('min', today);
 
-        checkinInput.addEventListener('change', function () {
-            const checkinDate = new Date(this.value);
-            const minCheckout = new Date(checkinDate);
-            minCheckout.setDate(minCheckout.getDate() + 1);
-            const minCheckoutStr = minCheckout.toISOString().split('T')[0];
+        if (checkinInput) {
+            checkinInput.addEventListener('change', function () {
+                const checkinDate = new Date(this.value);
+                const minCheckout = new Date(checkinDate);
+                minCheckout.setDate(minCheckout.getDate() + 1);
+                const minCheckoutStr = minCheckout.toISOString().split('T')[0];
 
-            checkoutInput.setAttribute('min', minCheckoutStr);
-            if (checkoutInput.value && checkoutInput.value <= this.value) {
-                checkoutInput.value = '';
-            }
+                checkoutInput.setAttribute('min', minCheckoutStr);
+                if (checkoutInput.value && checkoutInput.value <= this.value) {
+                    checkoutInput.value = '';
+                }
 
-            fetchAvailability();
-        });
+                fetchAvailability();
+            });
+        }
 
-        checkoutInput.addEventListener('change', fetchAvailability);
+        if (checkoutInput) {
+            checkoutInput.addEventListener('change', fetchAvailability);
+        }
 
         function fetchAvailability() {
-            const checkIn = checkinInput.value;
-            const checkOut = checkoutInput.value;
+            const checkIn = checkinInput?.value;
+            const checkOut = checkoutInput?.value;
 
-            if (!checkIn || !checkOut) return;
+            if (!checkIn || !checkOut || !roomTypeId) return;
 
-            fetch({{ route('room_type.check_availability') }}?room_type_id=${roomTypeId}&check_in=${checkIn}&check_out=${checkOut})
+            fetch(`{{ route('room_type.check_availability') }}?room_type_id=${roomTypeId}&check_in=${checkIn}&check_out=${checkOut}`)
                 .then(res => res.json())
                 .then(data => {
                     if (data.status) {
@@ -310,14 +325,28 @@
                     availableSpan.classList.add('text-danger');
                 });
         }
+
+        // 🔄 Xử lý click ảnh phụ → đổi ảnh chính
+        const thumbnails = document.querySelectorAll('.room-thumbnail');
+        const mainImage = document.getElementById('mainRoomImage');
+
+        thumbnails.forEach(function (thumb) {
+            thumb.addEventListener('click', function () {
+                const newSrc = this.getAttribute('data-src') || this.src;
+                if (mainImage && newSrc) {
+                    mainImage.setAttribute('src', newSrc);
+                }
+
+                // Highlight ảnh đang chọn
+                thumbnails.forEach(t => t.classList.remove('border-primary'));
+                this.classList.add('border-primary');
+            });
+        });
+
+        // Hàm đặt phòng
+        window.addToBooking = function (id, name, price) {
+            alert(`Đặt phòng: ${name} (${price.toLocaleString()} VND)`);
+        }
     });
-
-    function changeMainImage(src) {
-        document.getElementById('mainRoomImage').src = src;
-    }
-
-    function addToBooking(id, name, price) {
-        alert(Đặt phòng: ${name} (${price.toLocaleString()} VND));
-        // Có thể thêm xử lý lưu vào localStorage hoặc cart
-    }
 </script>
+@endpush
