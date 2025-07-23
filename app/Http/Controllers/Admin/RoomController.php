@@ -20,7 +20,7 @@ class RoomController extends Controller
      */
     public function index()
     {
-        $rooms = Room::with('roomType')->orderBy('created_at', 'desc')->get();
+        $rooms = Room::with('roomType', 'reviews')->orderBy('created_at', 'desc')->get();
         return view('admin.bookingrooms.rooms.rooms', compact('rooms'));
     }
 public function map(Request $request)

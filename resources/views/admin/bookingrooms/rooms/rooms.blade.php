@@ -66,7 +66,7 @@
                                         <th>Loại phòng</th>
                                         <th>Hình ảnh phòng</th>
                                         <th>Giá phòng</th>
-                                        
+                                        <th>Đánh giá</th>
                                         <th>Trạng thái</th>
                                         
                                         <th>Thao tác</th>
@@ -95,7 +95,19 @@
                                                 @endif
                                             </td>
                                             <td>{{ number_format($room->price) }} VNĐ</td>
-                                            
+                                            @php
+                                                $avgRating = $room->reviews->avg('rating');
+                                                $totalReviews = $room->reviews->count();
+                                            @endphp
+                                            <td>
+                                                @if ($totalReviews > 0)
+                                                    ⭐ {{ number_format($avgRating, 1) }} / 5 <br>
+                                                    ({{ $totalReviews }} đánh giá)
+                                                @else
+                                                    <span class="text-muted">Chưa có</span>
+                                                @endif
+                                            </td>
+
                                             <td>
                                                 @if ($room->status == 1)
                                                     <span class="badge bg-success">Hoạt động</span>

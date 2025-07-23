@@ -124,7 +124,27 @@
 
 <!-- ĐÁNH GIÁ VÀ BÌNH LUẬN -->
 <h4 class="mb-3">Đánh giá phòng</h4>
+@php
+    $fullStars = floor($avgRating);
+    $halfStar = $avgRating - $fullStars >= 0.5;
+@endphp
 
+<div class="rating mb-3">
+    <strong>Đánh giá trung bình:</strong>
+    @for ($i = 1; $i <= $fullStars; $i++)
+        <i class="fas fa-star text-warning"></i>
+    @endfor
+
+    @if ($halfStar)
+        <i class="fas fa-star-half-alt text-warning"></i>
+    @endif
+
+    @for ($i = 1; $i <= (5 - $fullStars - ($halfStar ? 1 : 0)); $i++)
+        <i class="far fa-star text-warning"></i>
+    @endfor
+
+    <span>{{ number_format($avgRating, 1) }} / 5 ({{ $totalReviews }} đánh giá)</span>
+</div>
 <!-- Nếu user đã login và có thể bình luận -->
 @auth
     @if ($canReview)
@@ -248,6 +268,21 @@
                                     <div class="col-8">
                                         <div class="card-body py-2 px-3">
                                             <h6 class="card-title mb-1" style="font-size: 15px;">{{ $roomType->name }}</h6>
+                                            @if ($r->average_rating > 0)
+    <div class="mb-1">
+        @for ($i = 1; $i <= 5; $i++)
+            @if ($i <= floor($r->average_rating))
+                <i class="fas fa-star text-warning" style="font-size: 13px;"></i>
+            @elseif ($i - $r->average_rating <= 0.5)
+                <i class="fas fa-star-half-alt text-warning" style="font-size: 13px;"></i>
+            @else
+                <i class="far fa-star text-warning" style="font-size: 13px;"></i>
+            @endif
+        @endfor
+        <small class="text-muted">({{ number_format($r->average_rating, 1) }})</small>
+    </div>
+@endif
+
                                             <p class="card-text mb-1">
                                                 <strong class="text-danger" style="font-size: 14px;">{{ number_format($r->price, 0, ',', '.') }} VND</strong>
                                             </p>

@@ -60,9 +60,15 @@ public function indexRoom(Request $request)
     // Chỉ lấy 1 phòng đầu tiên cho mỗi RoomType
     $roomTypes = RoomType::with([
         'rooms' => function ($q) {
-            $q->where('status', 1)->limit(1)->with('images_room');
+            $q->where('status', 1)->limit(1)->with('images_room', 'reviews');
         }
     ])->get();
+
+    $roomTypes->map(function ($type) {
+        $allReviews = $type->rooms->flatMap->reviews;
+        $type->average_rating = $allReviews->avg('rating') ?? 0;
+        return $type;
+    });
 
     // Nhóm theo type (Deluxe, Standard,...)
     $groupedRoomTypes = $roomTypes->groupBy('type');
@@ -109,11 +115,8 @@ public function getAvailableRoomsCount($roomTypeId, $checkIn, $checkOut)
 
 public function showRoomType($id, Request $request)
 {
-    $roomType = RoomType::with([
-    'images',
-    'rooms' => function ($q) {
-        $q->with('images_room');
-    }])->findOrFail($id);
+    $roomType = RoomType::with(['images', 'rooms.images_room','rooms.reviews.user'])->findOrFail($id);
+
 
     $amenityIds = collect($roomType->amenities)->filter()->unique()->toArray();
     $allAmenities = Amenitie::whereIn('id', $amenityIds)->get();
@@ -132,7 +135,7 @@ public function showRoomType($id, Request $request)
     }
 
     // Nếu không có room_id hoặc không tìm được → lấy phòng đầu tiên
-    $room = $room ?? $roomType->rooms->first();
+    $room = $room ?? $roomType->rooms->first(fn($r) => $r->images_room->count() > 0);
 
     $reviews = $room
     ? Review::where('room_id', $room->id)
@@ -141,6 +144,11 @@ public function showRoomType($id, Request $request)
         ->latest()
         ->get()
     : collect();
+    $avgRating = $reviews->avg('rating');
+    $totalReviews = $reviews->count();
+
+    $allReviews = $roomType->rooms->flatMap->reviews;
+    $averageRating = $allReviews->avg('rating') ?? 0;
     $canReview = false;
     if (auth()->check()) {
         $canReview = Booking::where('user_id', auth()->id())
@@ -150,6 +158,10 @@ public function showRoomType($id, Request $request)
             })
             ->exists();
     }
+    foreach ($roomType->rooms as $roomItem) {
+        $visibleReviews = $roomItem->reviews->where('status', true);
+        $roomItem->average_rating = $visibleReviews->avg('rating') ?? 0;
+    }
         return view('client.room.detail', compact(
             'roomType',
             'allAmenities',
@@ -158,14 +170,17 @@ public function showRoomType($id, Request $request)
             'availableRoomsCount',
             'room',
             'reviews',
-            'canReview'
+            'canReview',
+            'avgRating',
+            'totalReviews',
+            'averageRating'
         ));
     }
 
 
 public function showRoom($id, Request $request)
 {
-    $room = Room::with(['images_room', 'roomType'])->findOrFail($id);
+    $room = Room::with(['images_room', 'roomType', 'reviews.user'])->findOrFail($id);
     
     $roomType = $room->roomType;
 
@@ -187,8 +202,10 @@ public function showRoom($id, Request $request)
     ->latest()
     ->get();
 
-
- 
+    $avgRating = $reviews->avg('rating');
+    $totalReviews = $reviews->count();
+    $allReviews = $roomType->rooms->flatMap->reviews;
+    $averageRating = $allReviews->avg('rating') ?? 0;
     $canReview = false;
     if (auth()->check()) {
         $canReview = Booking::where('user_id', auth()->id())
@@ -198,7 +215,10 @@ public function showRoom($id, Request $request)
             })
             ->exists();
     }
-
+    foreach ($roomType->rooms as $roomItem) {
+        $visibleReviews = $roomItem->reviews->where('status', true);
+        $roomItem->average_rating = $visibleReviews->avg('rating') ?? 0;
+    }
     return view('client.room.detail', compact(
         'room',
         'roomType',
@@ -207,7 +227,10 @@ public function showRoom($id, Request $request)
         'checkOut',
         'availableRoomsCount',
         'reviews',
-        'canReview' 
+        'canReview',
+        'avgRating',
+        'totalReviews',
+        'averageRating'
     ));
 }
 
