@@ -123,27 +123,47 @@
                     <p><em>Không có tiện nghi</em></p>
                     @endforelse
                 </div>
-                <hr class="my-4">
+<hr class="my-4">
 
-                <!-- ĐÁNH GIÁ VÀ BÌNH LUẬN -->
-                <h4 class="mb-3">Đánh giá phòng</h4>
+<!-- ĐÁNH GIÁ VÀ BÌNH LUẬN -->
+<h4 class="mb-3">Đánh giá phòng</h4>
+@php
+    $fullStars = floor($avgRating);
+    $halfStar = $avgRating - $fullStars >= 0.5;
+@endphp
 
-                <!-- Nếu user đã login và có thể bình luận -->
-                @auth
-                @if ($canReview)
-                <form action="{{ route('reviews.store') }}" method="POST" class="mb-4 border rounded p-3 shadow-sm bg-light">
-                    @csrf
-                    <input type="hidden" name="room_id" value="{{ $room->id }}">
+<div class="rating mb-3">
+    <strong>Đánh giá trung bình:</strong>
+    @for ($i = 1; $i <= $fullStars; $i++)
+        <i class="fas fa-star text-warning"></i>
+    @endfor
 
-                    <div class="mb-3">
-                        <label for="rating" class="form-label">Đánh giá sao</label>
-                        <select name="rating" id="rating" class="form-select" required>
-                            <option value="">Chọn số sao</option>
-                            @for ($i = 5; $i >= 1; $i--)
-                            <option value="{{ $i }}">{{ $i }} sao</option>
-                            @endfor
-                        </select>
-                    </div>
+    @if ($halfStar)
+        <i class="fas fa-star-half-alt text-warning"></i>
+    @endif
+
+    @for ($i = 1; $i <= (5 - $fullStars - ($halfStar ? 1 : 0)); $i++)
+        <i class="far fa-star text-warning"></i>
+    @endfor
+
+    <span>{{ number_format($avgRating, 1) }} / 5 ({{ $totalReviews }} đánh giá)</span>
+</div>
+<!-- Nếu user đã login và có thể bình luận -->
+@auth
+    @if ($canReview)
+        <form action="{{ route('reviews.store') }}" method="POST" class="mb-4 border rounded p-3 shadow-sm bg-light">
+            @csrf
+            <input type="hidden" name="room_id" value="{{ $room->id }}">
+
+            <div class="mb-3">
+                <label for="rating" class="form-label">Đánh giá sao</label>
+                <select name="rating" id="rating" class="form-select" required>
+                    <option value="">Chọn số sao</option>
+                    @for ($i = 5; $i >= 1; $i--)
+                        <option value="{{ $i }}">{{ $i }} sao</option>
+                    @endfor
+                </select>
+            </div>
 
                     <div class="mb-3">
                         <label for="comment" class="form-label">Bình luận</label>
@@ -253,24 +273,42 @@
                     <h5 class="mb-3">Danh sách phòng trong loại này</h5>
                     <div style="max-height: 500px; overflow-y: auto;">
                         @foreach ($roomType->rooms as $r)
-                        <div class="card mb-3" id="room-{{ $r->id }}">
-                            <div class="row g-0">
-                                <div class="col-4">
-                                    <a href="{{ route('room.detail', $r->id) }}">
-                                        <img src="{{ asset('storage/' . ($r->images_room->first()->image_path ?? 'default.jpg')) }}"
-                                            class="img-fluid rounded-start" alt="{{ $r->title }}">
-                                    </a>
-                                </div>
-                                <div class="col-8">
-                                    <div class="card-body py-2 px-3">
-                                        <h6 class="card-title mb-1" style="font-size: 15px;">{{ $roomType->name }}</h6>
-                                        <p class="card-text mb-1">
-                                            <strong class="text-danger" style="font-size: 14px;">{{ number_format($r->price, 0, ',', '.') }} VND</strong>
-                                        </p>
-                                        <button type="button" class="btn btn-sm btn-success" style="font-size: 13px;"
-                                            onclick="addToBooking({{ $r->id }}, '{{ $r->title }}', {{ $r->price }})">
-                                            Đặt phòng
-                                        </button>
+
+                            <div class="card mb-3" id="room-{{ $r->id }}">
+                                <div class="row g-0">
+                                    <div class="col-4">
+                                        <a href="{{ route('room.detail', $r->id) }}">
+                                            <img src="{{ asset('storage/' . ($r->images_room->first()->image_path ?? 'default.jpg')) }}"
+                                                class="img-fluid rounded-start" alt="{{ $r->title }}">
+                                        </a>
+                                    </div>
+                                    <div class="col-8">
+                                        <div class="card-body py-2 px-3">
+                                            <h6 class="card-title mb-1" style="font-size: 15px;">{{ $roomType->name }}</h6>
+                                            @if ($r->average_rating > 0)
+    <div class="mb-1">
+        @for ($i = 1; $i <= 5; $i++)
+            @if ($i <= floor($r->average_rating))
+                <i class="fas fa-star text-warning" style="font-size: 13px;"></i>
+            @elseif ($i - $r->average_rating <= 0.5)
+                <i class="fas fa-star-half-alt text-warning" style="font-size: 13px;"></i>
+            @else
+                <i class="far fa-star text-warning" style="font-size: 13px;"></i>
+            @endif
+        @endfor
+        <small class="text-muted">({{ number_format($r->average_rating, 1) }})</small>
+    </div>
+@endif
+
+                                            <p class="card-text mb-1">
+                                                <strong class="text-danger" style="font-size: 14px;">{{ number_format($r->price, 0, ',', '.') }} VND</strong>
+                                            </p>
+                                            <button type="button" class="btn btn-sm btn-success" style="font-size: 13px;"
+                                                    onclick="addToBooking({{ $r->id }}, '{{ $r->title }}', {{ $r->price }})">
+                                                Đặt phòng
+                                            </button>
+                                        </div>
+
                                     </div>
                                 </div>
                             </div>

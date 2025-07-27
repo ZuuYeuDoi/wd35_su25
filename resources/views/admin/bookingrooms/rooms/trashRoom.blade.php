@@ -61,8 +61,6 @@
                                     <th>Giá phòng</th>
                                     <th>Số người tối đa</th>
                                     <th>Trạng thái</th>
-                                    <th>Ngày tạo</th>
-                                    <th>Ngày cập nhật</th>
                                     <th>Thao tác</th>
                                 </tr>
                             </thead>
@@ -87,8 +85,6 @@
                                             <span class="badge bg-secondary">Không hoạt động</span>
                                         @endif
                                     </td>
-                                    <td>{{ $room->created_at->format('d/m/y') }}</td>
-                                    <td>{{ $room->updated_at->format('d/m/y') }}</td>
                                     <td>
                                         <form action="{{ route('room.restore', $room->id) }}" method="POST" style="display:inline-block;">
                                             @csrf
