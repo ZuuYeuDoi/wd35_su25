@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\User;
 
+use App\Events\NewOrderEvent;
 use App\Http\Controllers\Controller;
 use App\Models\BillServices;
 use App\Models\Booking;
@@ -118,12 +119,16 @@ class CartController extends Controller
 
                 if ($cartService && $cartService->service->type == 2) {
                     $service = $cartService->service;
-                    $service->quantity = max(0, $service->quantity - $qty); 
+                    $service->quantity = max(0, $service->quantity - $qty);
                     $service->save();
                 }
             }
 
             DB::commit();
+
+            // sự kiện thông báo
+            event(new NewOrderEvent($cart->id));
+
             return back()->with('success', 'Đặt món thành công!');
         } catch (\Exception $e) {
             DB::rollBack();

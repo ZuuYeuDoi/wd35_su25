@@ -6,62 +6,10 @@
             <h2 class="font-weight-bold text-6">Thống kê</h2>
         </header>
         <div class="row">
-            {{-- <div class="col-lg-6 mb-3">
-                <section class="card">
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-xl-8">
-                                <div class="chart-data-selector" id="salesSelectorWrapper">
-                                    <h2>
-                                        Doanh thu(năm):
-                                    </h2>
-                                    <div id="salesSelectorItems" class="chart-data-selector-items mt-3">
-                                        <!-- Flot: Sales Porto Admin -->
-                                        <div class="chart chart-sm" data-sales-rel="Porto Admin" id="flotDashSales1"
-                                            class="chart-active" style="height: 203px;">
-                                        </div>
-                                        <script>
-                                            var flotDashSales1Data = [{
-                                                data: [
-                                                    ["T1", 140],
-                                                    ["T2", 240],
-                                                    ["T3", 190],
-                                                    ["T4", 140],
-                                                    ["T5", 180],
-                                                    ["T6", 320],
-                                                    ["T7", 270],
-                                                    ["T8", 180],
-                                                    ["T9", 190],
-                                                    ["T10", 150],
-                                                    ["T11", 160],
-                                                    ["T12", 180],
-                                                ],
-                                                color: "pink"
-                                            }];
-                                            // See: js/examples/examples.dashboard.js for more settings.
-                                        </script>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-xl-4 text-center">
-                                <h2 class="card-title mt-3">Doanh thu tháng này</h2>
-                                <div class="liquid-meter-wrapper liquid-meter-sm mt-3">
-                                    <div class="liquid-meter">
-                                        <meter min="0" max="100" value="5" id="meterSales"></meter>
-                                    </div>
-                                    <div class="liquid-meter-selector mt-4 pt-1" id="meterSalesSel">
-                                        <a href="#" data-val="8" class="active">Mục tiêu mỗi tháng</a>
-                                        <a href="#" data-val="90">Mục tiêu năm nay</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-            </div> --}}
-            <div class="col-lg-6">
+
+            <div class="col-lg-12">
                 <div class="row mb-3">
-                    <div class="col-xl-6">
+                    <div class="col-xl-3">
                         <section class="card card-featured-left card-featured-secondary">
                             <div class="card-body">
                                 <div class="widget-summary">
@@ -69,7 +17,8 @@
                                         <div class="summary">
                                             <h4 class="title">Tổng Doanh Thu</h4>
                                             <div class="info">
-                                                <strong class="amount">$ 99999</strong>
+                                                <strong class="amount">{{ number_format($revenue, 0, ',', '.') }}
+                                                    VND</strong>
                                             </div>
                                         </div>
                                     </div>
@@ -77,7 +26,7 @@
                             </div>
                         </section>
                     </div>
-                    <div class="col-xl-6">
+                    <div class="col-xl-3">
                         <section class="card card-featured-left card-featured-secondary">
                             <div class="card-body">
                                 <div class="widget-summary">
@@ -85,7 +34,41 @@
                                         <div class="summary">
                                             <h4 class="title">Doanh thu Phòng</h4>
                                             <div class="info">
-                                                <strong class="amount">$ 99999</strong>
+                                                <strong class="amount">{{ number_format($room_revenue, 0, ',', '.') }}
+                                                    VND</strong>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                    <div class="col-xl-3">
+                        <section class="card card-featured-left card-featured-secondary">
+                            <div class="card-body">
+                                <div class="widget-summary">
+                                    <div class="widget-summary-col">
+                                        <div class="summary">
+                                            <h4 class="title">Doanh thu dịch vụ</h4>
+                                            <div class="info">
+                                                <strong class="amount">{{ number_format($service_revenue, 0, ',', '.') }}
+                                                    VND</strong>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                    <div class="col-xl-3">
+                        <section class="card card-featured-left card-featured-secondary">
+                            <div class="card-body">
+                                <div class="widget-summary">
+                                    <div class="widget-summary-col">
+                                        <div class="summary">
+                                            <h4 class="title">Số lượng khách hàng</h4>
+                                            <div class="info">
+                                                <strong class="amount">{{ $number_customer }}</strong>
                                             </div>
                                         </div>
                                     </div>
@@ -94,21 +77,20 @@
                         </section>
                     </div>
                 </div>
-                {{-- <div class="row">
-                    <div class="col-xl-6">
-                        <section class="card card-featured-left card-featured-tertiary mb-3">
+
+            </div>
+
+            <div class="col-lg-12">
+                <div class="row mb-3">
+                    <div class="col-xl-3">
+                        <section class="card card-featured-left card-featured-secondary">
                             <div class="card-body">
                                 <div class="widget-summary">
-                                    <div class="widget-summary-col widget-summary-col-icon">
-                                        <div class="summary-icon bg-primary">
-                                            <i class="fas fa-dollar-sign"></i>
-                                        </div>
-                                    </div>
                                     <div class="widget-summary-col">
                                         <div class="summary">
-                                            <h4 class="title">Doanh thu Sự kiện</h4>
+                                            <h4 class="title">Tổng số lượt đặt phòng</h4>
                                             <div class="info">
-                                                <strong class="amount">$ 99999</strong>
+                                                <strong class="amount">{{ $total_bookings }}</strong>
                                             </div>
                                         </div>
                                     </div>
@@ -116,20 +98,15 @@
                             </div>
                         </section>
                     </div>
-                    <div class="col-xl-6">
-                        <section class="card card-featured-left card-featured-quaternary">
+                    <div class="col-xl-3">
+                        <section class="card card-featured-left card-featured-secondary">
                             <div class="card-body">
                                 <div class="widget-summary">
-                                    <div class="widget-summary-col widget-summary-col-icon">
-                                        <div class="summary-icon bg-primary">
-                                            <i class="fas fa-user"></i>
-                                        </div>
-                                    </div>
                                     <div class="widget-summary-col">
                                         <div class="summary">
-                                            <h4 class="title">Lượng Khách ghé</h4>
+                                            <h4 class="title">Đã trả phòng</h4>
                                             <div class="info">
-                                                <strong class="amount">3765</strong>
+                                                <strong class="amount">{{ $total_check_out }}</strong>
                                             </div>
                                         </div>
                                     </div>
@@ -137,7 +114,63 @@
                             </div>
                         </section>
                     </div>
-                </div> --}}
+                    <div class="col-xl-3">
+                        <section class="card card-featured-left card-featured-secondary">
+                            <div class="card-body">
+                                <div class="widget-summary">
+                                    <div class="widget-summary-col">
+                                        <div class="summary">
+                                            <h4 class="title">Đã nhận phòng</h4>
+                                            <div class="info">
+                                                <strong class="amount">{{ $total_check_in }}</strong>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                    <div class="col-xl-3">
+                        <section class="card card-featured-left card-featured-secondary">
+                            <div class="card-body">
+                                <div class="widget-summary">
+                                    <div class="widget-summary-col">
+                                        <div class="summary">
+                                            <h4 class="title">Chờ xác nhận</h4>
+                                            <div class="info">
+                                                <strong class="amount">{{ $total_confirm }}</strong>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+
+            </div>
+
+            <form method="GET" class="mt-3 search-year">
+                <select name="year" id="year" class="form-select w-auto d-inline-block"
+                    onchange="this.form.submit()">
+                    @for ($y = now()->year; $y >= 2020; $y--)
+                        <option value="{{ $y }}" {{ $year == $y ? 'selected' : '' }}>{{ $y }}
+                        </option>
+                    @endfor
+                </select>
+            </form>
+
+            <canvas id="revenueChart" height="300"></canvas>
+
+            <div class="customer-chart">
+                <div class="">
+                    <h4 class="mt-5 ">Số lượng khách theo từng tháng năm {{ $year }}</h4>
+                    <canvas id="customerMonthChart" class="canvas"></canvas>
+                </div>
+                <div class="">
+                    <h4 class="mt-5 ">Số lượng khách theo từng năm</h4>
+                    <canvas id="customerYearChart" class="canvas"></canvas>
+                </div>
             </div>
         </div>
     </section>
@@ -152,6 +185,22 @@
     <link rel="stylesheet" href="{{ asset('vendor/dropzone/dropzone.css') }}" />
     <link rel="stylesheet" href="{{ asset('vendor/bootstrap-markdown/css/bootstrap-markdown.min.css') }}" />
     <link rel="stylesheet" href="{{ asset('vendor/pnotify/pnotify.custom.css') }}" />
+    <style>
+        .customer-chart {
+            display: grid;
+            gap: 20px;
+            grid-template-columns: 1fr 1fr;
+            align-items: center;
+        }
+
+        .canvas {
+            width: 400px !important;
+            height: 400px !important;
+        }
+        .search-year{
+            margin-bottom: 15px;
+        }
+    </style>
 @endsection
 
 @section('script')
@@ -222,4 +271,108 @@
     <script src="{{ asset('assets/js/examples/examples.dashboard.js') }}"></script>
     <script src="{{ asset('js/examples/examples.header.menu.js') }}"></script>
     <script src="{{ asset('js/examples/examples.ecommerce.form.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const ctx = document.getElementById('revenueChart').getContext('2d');
+        const revenueChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: [
+                    'Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4',
+                    'Tháng 5', 'Tháng 6', 'Tháng 7', 'Tháng 8',
+                    'Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12',
+                    'Tổng cả năm'
+                ],
+                datasets: [{
+                    label: 'Doanh thu theo tháng (VND)',
+                    data: {!! json_encode(array_merge($revenueData, [$revenue])) !!},
+                    backgroundColor: [
+                        ...Array(12).fill('rgba(54, 162, 235, 0.7)'), 
+                        'rgba(255, 99, 132, 0.7)' 
+                    ],
+                    borderColor: [
+                        ...Array(12).fill('rgba(54, 162, 235, 1)'),
+                        'rgba(255, 99, 132, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return new Intl.NumberFormat('vi-VN').format(value) + ' đ';
+                            }
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return new Intl.NumberFormat('vi-VN').format(context.raw) + ' đ';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Biểu đồ tròn: khách theo tháng
+        const customerMonthChart = new Chart(document.getElementById('customerMonthChart'), {
+            type: 'pie',
+            data: {
+                labels: [
+                    'Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6',
+                    'Tháng 7', 'Tháng 8', 'Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12'
+                ],
+                datasets: [{
+                    data: {!! json_encode($customersByMonth) !!},
+                    backgroundColor: [
+                        '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0',
+                        '#9966FF', '#FF9F40', '#E7E9ED', '#84FF63',
+                        '#63B8FF', '#FFA07A', '#20B2AA', '#D2691E'
+                    ]
+                }]
+            },
+            options: {
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+
+        // Biểu đồ tròn: khách theo năm
+        const customerYearChart = new Chart(document.getElementById('customerYearChart'), {
+            type: 'pie',
+            data: {
+                labels: {!! json_encode($years) !!},
+                datasets: [{
+                    data: {!! json_encode($customersByYear) !!},
+                    backgroundColor: [
+                        '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0',
+                        '#9966FF', '#FF9F40', '#E7E9ED'
+                    ]
+                }]
+            },
+            options: {
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+    </script>
+
 @endsection

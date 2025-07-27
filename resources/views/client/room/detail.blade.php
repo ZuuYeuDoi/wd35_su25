@@ -1,7 +1,8 @@
 @extends('client.index')
 @push('css')
 <style>
-    html, body {
+    html,
+    body {
         height: auto !important;
         min-height: 100vh !important;
         overflow: visible !important;
@@ -21,19 +22,21 @@
     section.pt-120.pb-120 {
         padding-bottom: 200px !important;
     }
+
     .review-scroll-container {
         max-height: 500px;
         overflow-y: auto;
         border: 1px solid #ddd;
     }
+
     small.text-muted {
         margin-left: 4px;
         font-size: 13px;
     }
-    .room-thumbnail.border-primary {
-    border: 2px solid #007bff !important;
-}
 
+    .room-thumbnail.border-primary {
+        border: 2px solid #007bff !important;
+    }
 </style>
 @endpush
 
@@ -65,18 +68,18 @@
                 </div>
                 <!-- ALBUM ẢNH NHỎ -->
                 @if ($room->images_room->count() > 1)
-                    <div class="d-flex justify-content-center flex-wrap gap-2 mb-4">
-                        @foreach ($room->images_room as $image)
-                            <img src="{{ asset('storage/' . $image->image_path) }}"
-                                data-src="{{ asset('storage/' . $image->image_path) }}"
-                                class="img-thumbnail room-thumbnail"
-                                style="width: 90px; height: 90px; object-fit: cover; cursor: pointer;">
-                        @endforeach
-                    </div>
+                <div class="d-flex justify-content-center flex-wrap gap-2 mb-4">
+                    @foreach ($room->images_room as $image)
+                    <img src="{{ asset('storage/' . $image->image_path) }}"
+                        data-src="{{ asset('storage/' . $image->image_path) }}"
+                        class="img-thumbnail room-thumbnail"
+                        style="width: 90px; height: 90px; object-fit: cover; cursor: pointer;">
+                    @endforeach
+                </div>
                 @endif
-            @else
+                @else
                 <div class="alert alert-warning">Không có ảnh phòng nào được đăng.</div>
-            @endif
+                @endif
 
                 <!-- MÔ TẢ LOẠI PHÒNG -->
                 <h3 class="mb-4 fw-semibold" style="font-size: 26px;">Mô tả loại phòng</h3>
@@ -86,38 +89,38 @@
 
 
                 @if ($room)
-                    <h3 class="mb-4 fw-semibold mt-5" style="font-size: 26px;">Thông tin chi tiết một phòng</h3>
+                <h3 class="mb-4 fw-semibold mt-5" style="font-size: 26px;">Thông tin chi tiết một phòng</h3>
 
-                    <div class="border rounded p-4 mt-2" style="background-color: #fffefc; border: 1px solid #e7dccc;">
-                        <div class="row text-center">
-                            <div class="col-12 col-md-4 mb-2">
-                                <small class="text-muted">Tên phòng</small>
-                                <div class="fw-bold">{{ $room->title }}</div>
-                            </div>
-                            <div class="col-12 col-md-4 mb-2">
-                                <small class="text-muted">Loại phòng</small>
-                                <div class="fw-bold">{{ $room->roomType->name ?? 'Chưa có loại' }}</div>
-                            </div>
-                            <div class="col-12 col-md-4 mb-2">
-                                <small class="text-muted">Giá</small>
-                                <div class="fw-bold text-danger">{{ number_format($room->price, 0, ',', '.') }} VND</div>
-                            </div>
+                <div class="border rounded p-4 mt-2" style="background-color: #fffefc; border: 1px solid #e7dccc;">
+                    <div class="row text-center">
+                        <div class="col-12 col-md-4 mb-2">
+                            <small class="text-muted">Tên phòng</small>
+                            <div class="fw-bold">{{ $room->title }}</div>
+                        </div>
+                        <div class="col-12 col-md-4 mb-2">
+                            <small class="text-muted">Loại phòng</small>
+                            <div class="fw-bold">{{ $room->roomType->name ?? 'Chưa có loại' }}</div>
+                        </div>
+                        <div class="col-12 col-md-4 mb-2">
+                            <small class="text-muted">Giá</small>
+                            <div class="fw-bold text-danger">{{ number_format($room->price, 0, ',', '.') }} VND</div>
                         </div>
                     </div>
+                </div>
                 @endif
 
                 <h4 class="mt-4">Tiện nghi</h4>
                 <div class="row">
                     @forelse ($allAmenities as $amenity)
-                        <div class="col-md-4 col-6 mb-3">
-                            <div class="d-flex align-items-center">
-                                <img src="{{ asset('storage/' . $amenity->image) }}"
-                                     class="me-2 rounded" width="30" height="30">
-                                <span>{{ $amenity->name }}</span>
-                            </div>
+                    <div class="col-md-4 col-6 mb-3">
+                        <div class="d-flex align-items-center">
+                            <img src="{{ asset('storage/' . $amenity->image) }}"
+                                class="me-2 rounded" width="30" height="30">
+                            <span>{{ $amenity->name }}</span>
                         </div>
+                    </div>
                     @empty
-                        <p><em>Không có tiện nghi</em></p>
+                    <p><em>Không có tiện nghi</em></p>
                     @endforelse
                 </div>
 <hr class="my-4">
@@ -162,53 +165,53 @@
                 </select>
             </div>
 
-            <div class="mb-3">
-                <label for="comment" class="form-label">Bình luận</label>
-                <textarea name="comment" id="comment" rows="3" class="form-control" placeholder="Viết cảm nhận của bạn..." required></textarea>
-            </div>
-
-            <button type="submit" class="btn btn-primary">Gửi đánh giá</button>
-        </form>
-    @else
-        <div class="alert alert-warning">
-            Bạn chỉ có thể đánh giá khi đã đặt và trả phòng này.
-        </div>
-    @endif
-@endauth
-
-@guest
-    <div class="alert alert-info">
-        Vui lòng <a href="{{ route('login') }}">đăng nhập</a> để viết đánh giá.
-    </div>
-@endguest
-
-<!-- DANH SÁCH BÌNH LUẬN -->
-
-    <div class="mt-4">
-        <h5 class="mb-3">Bình luận từ khách hàng</h5>
-    <div class="review-scroll-container bg-white rounded shadow-sm p-3">
-            @forelse ($reviews as $review)
-                <div class="border rounded p-3 mb-3 bg-light">
-                    <div class="d-flex justify-content-between align-items-start mb-1">
-                        <div style="font-size: 14px;">
-                            <strong>{{ $review->user->name }}</strong>
-                            <small class="text-muted">({{ $review->created_at->format('d/m/Y') }})</small>
-                        </div>
-                        <div class="text-warning" style="font-size: 14px;">
-                            @for ($i = 1; $i <= 5; $i++)
-                                <i class="fas fa-star{{ $i <= $review->rating ? '' : '-o' }}"></i>
-                            @endfor
-                        </div>
+                    <div class="mb-3">
+                        <label for="comment" class="form-label">Bình luận</label>
+                        <textarea name="comment" id="comment" rows="3" class="form-control" placeholder="Viết cảm nhận của bạn..." required></textarea>
                     </div>
 
-                    <p class="mb-0" style="font-size: 15px;">{{ $review->comment }}</p>
+                    <button type="submit" class="btn btn-primary">Gửi đánh giá</button>
+                </form>
+                @else
+                <div class="alert alert-warning">
+                    Bạn chỉ có thể đánh giá khi đã đặt và trả phòng này.
                 </div>
-            @empty
-                <p class="text-muted">Chưa có đánh giá nào cho phòng này.</p>
-            @endforelse
-        </div>
-    </div>
-</div>
+                @endif
+                @endauth
+
+                @guest
+                <div class="alert alert-info">
+                    Vui lòng <a href="{{ route('login') }}">đăng nhập</a> để viết đánh giá.
+                </div>
+                @endguest
+
+                <!-- DANH SÁCH BÌNH LUẬN -->
+
+                <div class="mt-4">
+                    <h5 class="mb-3">Bình luận từ khách hàng</h5>
+                    <div class="review-scroll-container bg-white rounded shadow-sm p-3">
+                        @forelse ($reviews as $review)
+                        <div class="border rounded p-3 mb-3 bg-light">
+                            <div class="d-flex justify-content-between align-items-start mb-1">
+                                <div style="font-size: 14px;">
+                                    <strong>{{ $review->user->name }}</strong>
+                                    <small class="text-muted">({{ $review->created_at->format('d/m/Y') }})</small>
+                                </div>
+                                <div class="text-warning" style="font-size: 14px;">
+                                    @for ($i = 1; $i <= 5; $i++)
+                                        <i class="fas fa-star{{ $i <= $review->rating ? '' : '-o' }}"></i>
+                                        @endfor
+                                </div>
+                            </div>
+
+                            <p class="mb-0" style="font-size: 15px;">{{ $review->comment }}</p>
+                        </div>
+                        @empty
+                        <p class="text-muted">Chưa có đánh giá nào cho phòng này.</p>
+                        @endforelse
+                    </div>
+                </div>
+            </div>
 
             <!-- RIGHT -->
             <div class="col-lg-4">
@@ -221,13 +224,26 @@
 
                         <div class="mb-3">
                             <label>Ngày nhận phòng</label>
-                            <input type="date" id="checkin" name="check_in" class="form-control" value="{{ $checkIn }}" min="{{ date('Y-m-d') }}" required>
+                            <input type="date"
+                                id="checkin"
+                                name="check_in"
+                                class="form-control"
+                                value="{{ \Carbon\Carbon::tomorrow()->format('Y-m-d') }}"
+                                min="{{ \Carbon\Carbon::tomorrow()->format('Y-m-d') }}"
+                                required>
                         </div>
 
                         <div class="mb-3">
                             <label>Ngày trả phòng</label>
-                            <input type="date" id="checkout" name="check_out" class="form-control" value="{{ $checkOut }}" min="{{ $checkIn }}" required>
+                            <input type="date"
+                                id="checkout"
+                                name="check_out"
+                                class="form-control"
+                                value="{{ \Carbon\Carbon::tomorrow()->addDay()->format('Y-m-d') }}"
+                                min="{{ \Carbon\Carbon::tomorrow()->addDay()->format('Y-m-d') }}"
+                                required>
                         </div>
+
 
                         <div class="mb-3">
                             <label>Số lượng phòng</label>
@@ -257,6 +273,7 @@
                     <h5 class="mb-3">Danh sách phòng trong loại này</h5>
                     <div style="max-height: 500px; overflow-y: auto;">
                         @foreach ($roomType->rooms as $r)
+
                             <div class="card mb-3" id="room-{{ $r->id }}">
                                 <div class="row g-0">
                                     <div class="col-4">
@@ -291,9 +308,11 @@
                                                 Đặt phòng
                                             </button>
                                         </div>
+
                                     </div>
                                 </div>
                             </div>
+                        </div>
                         @endforeach
                     </div>
                 </div>
@@ -306,19 +325,28 @@
 
 @push('js')
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const today = new Date().toISOString().split('T')[0];
+    document.addEventListener("DOMContentLoaded", function() {
+        // Lấy ngày mai (check-in)
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        const checkinMin = tomorrow.toISOString().split('T')[0];
+
+        // Lấy ngày kia (check-out mặc định ít nhất sau check-in 1 ngày)
+        const dayAfterTomorrow = new Date();
+        dayAfterTomorrow.setDate(dayAfterTomorrow.getDate() + 2);
+        const checkoutMin = dayAfterTomorrow.toISOString().split('T')[0];
+
         const checkinInput = document.getElementById('checkin');
         const checkoutInput = document.getElementById('checkout');
         const roomTypeId = document.getElementById('room_type_id')?.value;
         const availableSpan = document.getElementById('available-count');
 
         // Set min date
-        if (checkinInput) checkinInput.setAttribute('min', today);
-        if (checkoutInput) checkoutInput.setAttribute('min', today);
+        if (checkinInput) checkinInput.setAttribute('min', checkinMin);
+        if (checkoutInput) checkoutInput.setAttribute('min', checkoutMin);
 
         if (checkinInput) {
-            checkinInput.addEventListener('change', function () {
+            checkinInput.addEventListener('change', function() {
                 const checkinDate = new Date(this.value);
                 const minCheckout = new Date(checkinDate);
                 minCheckout.setDate(minCheckout.getDate() + 1);
@@ -365,8 +393,8 @@
         const thumbnails = document.querySelectorAll('.room-thumbnail');
         const mainImage = document.getElementById('mainRoomImage');
 
-        thumbnails.forEach(function (thumb) {
-            thumb.addEventListener('click', function () {
+        thumbnails.forEach(function(thumb) {
+            thumb.addEventListener('click', function() {
                 const newSrc = this.getAttribute('data-src') || this.src;
                 if (mainImage && newSrc) {
                     mainImage.setAttribute('src', newSrc);
@@ -379,10 +407,9 @@
         });
 
         // Hàm đặt phòng
-        window.addToBooking = function (id, name, price) {
+        window.addToBooking = function(id, name, price) {
             alert(`Đặt phòng: ${name} (${price.toLocaleString()} VND)`);
         }
     });
 </script>
 @endpush
-
