@@ -141,44 +141,18 @@
                 </div>
             </li>
             <li>
-                <a href="#" class="dropdown-toggle notification-icon" data-bs-toggle="dropdown">
+                <a href="#" id="notificationToggle" class="dropdown-toggle notification-icon" data-bs-toggle="dropdown">
                     <i class="bx bx-bell"></i>
-                    <span class="badge">3</span>
+                    <span class="badge" id="notification-count">0</span>
                 </a>
                 <div class="dropdown-menu notification-menu">
                     <div class="notification-title">
-                        <span class="float-end badge badge-default">3</span>
-                        Alerts
+                        <span class="float-end badge badge-default" id="notification-count">0</span>
+                        Thông báo
                     </div>
                     <div class="content">
-                        <ul>
-                            <li>
-                                <a href="#" class="clearfix">
-                                    <div class="image">
-                                        <i class="fas fa-thumbs-down bg-danger text-light"></i>
-                                    </div>
-                                    <span class="title">Server is Down!</span>
-                                    <span class="message">Just now</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#" class="clearfix">
-                                    <div class="image">
-                                        <i class="bx bx-lock bg-warning text-light"></i>
-                                    </div>
-                                    <span class="title">User Locked</span>
-                                    <span class="message">15 minutes ago</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#" class="clearfix">
-                                    <div class="image">
-                                        <i class="fas fa-signal bg-success text-light"></i>
-                                    </div>
-                                    <span class="title">Connection Restaured</span>
-                                    <span class="message">10/10/2023</span>
-                                </a>
-                            </li>
+                        <ul id="notification-list">
+                            <!-- Các thông báo sẽ được đẩy vào đây -->
                         </ul>
                         <hr />
                         <div class="text-end">
@@ -196,12 +170,12 @@
                         data-lock-picture="{{ asset('assets/img/%21logged-user.jpg') }}" />
                 </figure>
                 <div class="profile-info" data-lock-name="John Doe" data-lock-email="johndoe@okler.com">
-                    <span class="name">{{ Auth::user()->name ?? ''}}</span>
+                    <span class="name">{{ Auth::user()->name ?? '' }}</span>
                     <span class="role">Quản trị viên</span>
                 </div>
                 <i class="fa custom-caret"></i>
             </a>
-            <div class="dropdown-menu">
+            <div class="dropdown-menu notification-menu" id="notificationDropdown">
                 <ul class="list-unstyled mb-2">
                     <li class="divider"></li>
                     <li>
