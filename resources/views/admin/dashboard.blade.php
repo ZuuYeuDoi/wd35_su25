@@ -287,8 +287,8 @@
                     label: 'Doanh thu theo tháng (VND)',
                     data: {!! json_encode(array_merge($revenueData, [$revenue])) !!},
                     backgroundColor: [
-                        ...Array(12).fill('rgba(54, 162, 235, 0.7)'), 
-                        'rgba(255, 99, 132, 0.7)' 
+                        ...Array(12).fill('rgba(54, 162, 235, 0.7)'),
+                        'rgba(255, 99, 132, 0.7)'
                     ],
                     borderColor: [
                         ...Array(12).fill('rgba(54, 162, 235, 1)'),
