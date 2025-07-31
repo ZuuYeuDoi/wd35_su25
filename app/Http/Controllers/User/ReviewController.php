@@ -25,7 +25,7 @@ class ReviewController extends Controller
 
 
     $hasBooked = Booking::where('user_id', $userId)
-        ->where('status', 4)
+        ->where('status','>=', 3)
         ->whereHas('rooms', function ($q) use ($roomId) {
             $q->where('rooms.id', $roomId);
         })

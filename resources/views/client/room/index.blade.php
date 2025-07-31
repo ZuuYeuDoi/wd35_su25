@@ -84,64 +84,46 @@
                     <h3 class="room-type-title">{{ $type }}</h3>
                     <div class="row">
                         @foreach ($roomTypes as $roomType)
-                            <div class="room-block col-lg-6 col-md-6">
-                                <div class="inner-box wow fadeIn">
-                                    <div class="image-box">
-                                        @php
-                                            // Lấy ảnh đầu tiên từ album room_type
-                                            if ($roomType->images->first()?->image_path) {
-                                                $image = asset('storage/' . $roomType->images->first()->image_path);
-                                            } else {
-                                                $image = asset('client/images/no-image.png');
-                                            }
-                                            $bed = $roomType->bed_type ?? 'Không rõ';
-                                            $roomTypeUrl = route('room_type.detail', $roomType->id);
-                                        @endphp
-                                        <a href="{{ $roomTypeUrl }}">
-                                            <img src="{{ $image }}" alt="Room Type Image">
-                                        </a>
-                                    </div>
-                                    <div class="content-box">
-                                        <h6 class="title">{{ $roomType->name }}</h6>
-                                        @if ($roomType->average_rating)
+                            @foreach ($roomType->rooms as $room)
+                                <div class="room-block col-lg-6 col-md-6">
+                                    <div class="inner-box wow fadeIn">
+                                        <div class="image-box">
                                             @php
-                                                // Làm tròn xuống 1 chữ số thập phân
-                                                $roundedRating = floor($roomType->average_rating * 10) / 10;
-                                                $fullStars = floor($roundedRating);
+                                                $image = $room->images_room->first()?->image_path
+                                                    ? asset('storage/' . $room->images_room->first()->image_path)
+                                                    : asset('client/images/no-image.png');
+                                                $bed = $roomType->bed_type ?? 'Không rõ';
+                                                $roomTypeUrl = route('room_type.detail', $roomType->id);
                                             @endphp
+                                            <a href="{{ $roomTypeUrl }}">
+                                                <img src="{{ $image }}" alt="Room Image">
+                                            </a>
+                                        </div>
 
-                                            <div class="mb-1">
-                                                @for ($i = 0; $i < $fullStars; $i++)
-                                                    <i class="fas fa-star text-warning"></i>
-                                                @endfor
+                                        <div class="content-box">
+                                            <h6 class="title">{{ $roomType->name }}</h6>
+                                            <span class="price">{{ number_format($roomType->room_type_price, 0, ',', '.') }} VND / đêm</span>
+                                            <span class="price"><i class="fal fa-bed me-2"></i>{{ $bed }}</span>
+                                        </div>
 
-                                                @for ($i = $fullStars; $i < 5; $i++)
-                                                    <i class="far fa-star text-warning"></i>
-                                                @endfor
-
-                                                <span style="font-size: 13px;">({{ number_format($roundedRating, 1) }} / 5)</span>
-                                            </div>
-                                        @endif
-                                        <span class="price">{{ number_format($roomType->room_type_price, 0, ',', '.') }} VND / đêm</span>
-                                        <span class="price"><i class="fal fa-bed me-2"></i>{{ $bed }}</span>
-                                    </div>
-
-                                    <div class="box-caption">
-                                        <a href="{{ $roomTypeUrl }}" class="book-btn">Đặt phòng</a>
-                                        <ul class="bx-links">
-                                            @foreach ($roomType->amenities ?? [] as $amenityId)
-                                                @if ($allAmenities->has($amenityId))
-                                                    <li>{{ $allAmenities[$amenityId]->name }}</li>
-                                                @endif
-                                            @endforeach
-                                        </ul>
+                                        <div class="box-caption">
+                                            <a href="{{ $roomTypeUrl }}" class="book-btn">Đặt phòng</a>
+                                            <ul class="bx-links">
+                                                @foreach ($roomType->amenities ?? [] as $amenityId)
+                                                    @if ($allAmenities->has($amenityId))
+                                                        <li>{{ $allAmenities[$amenityId]->name }}</li>
+                                                    @endif
+                                                @endforeach
+                                            </ul>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
+                            @endforeach
                         @endforeach
                     </div>
                 </div>
             @endforeach
+
         </div>
     </div>
 </section>

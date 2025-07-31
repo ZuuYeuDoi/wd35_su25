@@ -60,7 +60,7 @@ public function indexRoom(Request $request)
     // Chỉ lấy 1 phòng đầu tiên cho mỗi RoomType
     $roomTypes = RoomType::with([
         'rooms' => function ($q) {
-            $q->where('status', 1)->limit(1)->with('images_room', 'reviews');
+            $q->where('status', 1)->limit(2)->with('images_room', 'reviews');
         }
     ])->get();
 
@@ -152,7 +152,7 @@ public function showRoomType($id, Request $request)
     $canReview = false;
     if (auth()->check()) {
         $canReview = Booking::where('user_id', auth()->id())
-            ->where('status', 4) 
+            ->where('status','>=', 3) 
             ->whereHas('rooms', function ($q) use ($room) {
                 $q->where('rooms.id', $room->id);
             })
@@ -209,7 +209,7 @@ public function showRoom($id, Request $request)
     $canReview = false;
     if (auth()->check()) {
         $canReview = Booking::where('user_id', auth()->id())
-            ->where('status', 4) 
+            ->where('status','>=', 3) 
             ->whereHas('rooms', function ($q) use ($room) {
                 $q->where('rooms.id', $room->id);
             })

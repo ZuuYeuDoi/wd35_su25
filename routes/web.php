@@ -2,6 +2,7 @@
 
 
 
+use App\Http\Controllers\Admin\DashboardController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\User\CartController;
@@ -103,6 +104,9 @@ Route::get('/admin/info', function () {
 
 
 Route::prefix('admin')->group(function () {
+    Route::controller(DashboardController::class)->group(function () {
+        Route::get('', 'index')->name('dashboard.index');
+    });
 
     Route::controller(RoomController::class)->group(function () {
         Route::get('rooms', 'index')->name('room.index');

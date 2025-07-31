@@ -160,7 +160,8 @@
                     </div>
 
                     <button type="submit" class="btn btn-primary mt-3">Cập nhật</button>
-                    <a href="{{ route('room_types.update', $roomType->id) }}" class="btn btn-secondary mt-3">Quay lại</a>
+                    <a href="{{ route('room_types.index') }}" class="btn btn-secondary mt-3">Quay lại</a>
+
                 </form>
             </div>
         </div>
