@@ -25,6 +25,19 @@
             border-top-right-radius: 8px;
             display: block;
         }
+        .image-box {
+            width: 100%;
+            height: 250px; /* hoặc 200px nếu bạn muốn nhỏ hơn */
+            overflow: hidden;
+            border-radius: 10px;
+        }
+
+        .image-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 10px;
+        }
     </style>
 @endpush
 
@@ -202,56 +215,64 @@
     <!--Emd About Section -->
 
     <!-- Room-section two -->
-    <section class="room-service-section pt-120 pb-60">
-        <div class="auto-container">
-            <div class="sec-title text-center">
-                <span class="sub-title">DỊCH VỤ KHÁCH HÀNG</span>
-                <h2>Đặt phòng và <br />thư giãn trong sự sang trọng</h2>
-            </div>
-            <div class="row">
-                
-                    @foreach ($groupedRoomTypes as $type => $roomTypes)
-                        <div class="room-type-section">
-                            <h3 class="room-type-title">{{ $type }}</h3>
-                            <div class="row">
-                                @foreach ($roomTypes as $roomType)
-                                    <div class="room-block col-lg-6 col-md-6">
-                                        <div class="inner-box wow fadeIn">
-                                            <div class="image-box">
-                                                @php
-                                                    $image = $roomType->image ? asset('storage/' . $roomType->image) : asset('client/images/no-image.png');
-                                                    $bed = $roomType->bed_type ?? 'Không rõ';
-                                                    $roomTypeUrl = route('room_type.detail', $roomType->id);
-                                                @endphp
-                                                <a href="{{ $roomTypeUrl }}">
-                                                    <img src="{{ $image }}" alt="Room Type Image">
-                                                </a>
-                                            </div>
+<section class="room-service-section pt-120 pb-60">
+    <div class="auto-container">
+        <div class="sec-title text-center">
+            <span class="sub-title">DỊCH VỤ KHÁCH HÀNG</span>
+            <h2>Đặt phòng và <br />thư giãn trong sự sang trọng</h2>
+        </div>
+        <div class="row">
 
-                                            <div class="content-box">
-                                                <h6 class="title">{{ $roomType->name }}</h6>
-                                                <span class="price">{{ number_format($roomType->room_type_price, 0, ',', '.') }} VND / đêm</span>
-                                                <span class="price"><i class="fal fa-bed me-2"></i>{{ $bed }}</span>
-                                            </div>
+            @foreach ($groupedRoomTypes as $type => $roomTypes)
+                <div class="room-type-section mb-5">
+                    <h3 class="room-type-title mb-4">{{ $type }}</h3>
+                    <div class="row">
+                        @foreach ($roomTypes as $roomType)
+                            @foreach ($roomType->rooms->take(2) as $room)
+                                <div class="room-block col-lg-6 col-md-6">
+                                    <div class="inner-box wow fadeIn">
+                                        <div class="image-box">
+                                            @php
+                                                $image = $room->images_room->first()?->image_path
+                                                    ? asset('storage/' . $room->images_room->first()->image_path)
+                                                    : asset('client/images/no-image.png');
+                                                $bed = $roomType->bed_type ?? 'Không rõ';
+                                                $roomDetailUrl = route('room_type.detail', $roomType->id);
+                                            @endphp
+                                            <a href="{{ $roomDetailUrl }}">
+                                                <img src="{{ $image }}" alt="Room Image">
+                                            </a>
+                                        </div>
 
-                                            <div class="box-caption">
-                                                <a href="{{ $roomTypeUrl }}" class="book-btn">Đặt phòng</a>
-                                                <ul class="bx-links">
-                                                    @foreach ($roomType->amenities ?? [] as $amenityId)
-                                                        @if ($allAmenities->has($amenityId))
-                                                            <li>{{ $allAmenities[$amenityId]->name }}</li>
-                                                        @endif
-                                                    @endforeach
-                                                </ul>
-                                            </div>
+                                        <div class="content-box">
+                                            <h6 class="title">{{ $roomType->name }}</h6>
+                                            <span class="price">{{ number_format($roomType->room_type_price, 0, ',', '.') }} VND / đêm</span>
+                                            <span class="price"><i class="fal fa-bed me-2"></i>{{ $bed }}</span>
+                                        </div>
+
+                                        <div class="box-caption">
+                                            <a href="{{ $roomDetailUrl }}" class="book-btn">Đặt phòng</a>
+                                            <ul class="bx-links">
+                                                @foreach ($roomType->amenities ?? [] as $amenityId)
+                                                    @if ($allAmenities->has($amenityId))
+                                                        <li>{{ $allAmenities[$amenityId]->name }}</li>
+                                                    @endif
+                                                @endforeach
+                                            </ul>
                                         </div>
                                     </div>
-                                @endforeach
-                            </div>
-                        </div>
-                    @endforeach
-            </div>
-    </section>
+                                </div>
+                            @endforeach
+                        @endforeach
+                    </div>
+                </div>
+            @endforeach
+
+        </div>
+    </div>
+</section>
+
+
 
     <!-- End Room section -->
 
