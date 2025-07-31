@@ -172,7 +172,7 @@ public function confirmPayment($id)
         }
 
         // Update booking + phòng
-        $booking->status = 3;
+        $booking->status = 4;
         $booking->save();
 
         foreach ($booking->bookingRooms as $bookingRoom) {
