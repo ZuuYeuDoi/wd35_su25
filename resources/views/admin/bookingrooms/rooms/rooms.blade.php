@@ -66,7 +66,7 @@
                                         <th>Loại phòng</th>
                                         <th>Hình ảnh phòng</th>
                                         <th>Giá phòng</th>
-                                        
+                                        <th>Đánh giá</th>
                                         <th>Trạng thái</th>
                                         
                                         <th>Thao tác</th>
@@ -78,8 +78,16 @@
                                             <td><input type="checkbox" name="checkboxRow1"
                                                     class="checkbox-style-1 p-relative top-2" /></td>
                                             <td>{{ $room->id }}</td>
-                                            <td>{{ $room->title }}</td>
-                                            <td>{{ $room->roomType->name ?? 'chưa có' }}</td>
+                                            <td>
+                                                <a href="{{ route('room.show', $room->id) }}" class="text-dark fw-semibold">
+                                                    {{ $room->title }}
+                                                </a>
+                                            </td>
+                                            <td>
+                                                <a href="{{ route('room.show', $room->id) }}" class="text-dark fw-semibold">
+                                                    {{ $room->roomType->name ?? 'chưa có' }}
+                                                </a>
+                                            </td>
                                             <td>
                                                 @if ($room->image_room)
                                                     <img src="{{ asset('storage/' . $room->image_room) }}"
@@ -87,7 +95,19 @@
                                                 @endif
                                             </td>
                                             <td>{{ number_format($room->price) }} VNĐ</td>
-                                            
+                                            @php
+                                                $avgRating = $room->reviews->avg('rating');
+                                                $totalReviews = $room->reviews->count();
+                                            @endphp
+                                            <td>
+                                                @if ($totalReviews > 0)
+                                                    ⭐ {{ number_format($avgRating, 1) }} / 5 <br>
+                                                    ({{ $totalReviews }} đánh giá)
+                                                @else
+                                                    <span class="text-muted">Chưa có</span>
+                                                @endif
+                                            </td>
+
                                             <td>
                                                 @if ($room->status == 1)
                                                     <span class="badge bg-success">Hoạt động</span>
@@ -96,17 +116,15 @@
                                                 @endif
                                             </td>
                                          
-                                            <td>
-                                                <a href="{{ route('room.show', $room->id) }}"
-                                                    class="btn btn-sm btn-info">Chi tiết</a>
-                                                <a href="{{ route('room.edit', $room->id) }}"
-                                                    class="btn btn-sm btn-warning">Sửa</a>
-                                                <form action="{{ route('room.destroy', $room->id) }}" method="POST"
-                                                    onsubmit="return confirm('Bạn có chắc muốn xóa?')">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="btn btn-danger">Xóa</button>
-                                                </form>
+                                            <td>                                           
+                                                <div class="d-flex gap-1 align-items-center">
+                                                    <a href="{{ route('room.edit', $room->id) }}" class="btn btn-sm btn-warning px-2 py-1">Sửa</a>
+                                                    <form action="{{ route('room.destroy', $room->id) }}" method="POST" onsubmit="return confirm('Bạn có chắc muốn xóa?')">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" class="btn btn-sm btn-danger px-2 py-1">Xóa</button>
+                                                    </form>
+                                                </div>
                                             </td>
                                         </tr>
                                     @endforeach

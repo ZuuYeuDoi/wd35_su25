@@ -187,6 +187,94 @@
 
     {{-- CKEditor --}}
     <script src="https://cdn.ckeditor.com/4.22.1/standard/ckeditor.js"></script>
+
+    <script src="https://js.pusher.com/7.2/pusher.min.js"></script>
+    <script>
+        Pusher.logToConsole = true;
+
+        const pusher = new Pusher("b91cd41b8bd56ced440f", {
+            cluster: "ap1"
+        });
+        const channels = [{
+                name: "admin-booking",
+                event: "new-booking"
+            },
+            {
+                name: "admin-orders",
+                event: "new-order"
+            }
+        ];
+
+        const list = document.getElementById("notification-list");
+        const toggle = document.getElementById("notificationToggle");
+        const dropdown = document.getElementById("notificationDropdown");
+
+        const showDropdown = () => {
+            if (toggle && dropdown) {
+                const dropdownInstance = bootstrap.Dropdown.getOrCreateInstance(toggle);
+                dropdownInstance.show();
+            }
+        };
+
+        const updateCount = (count = 1) => {
+            document.querySelectorAll("#notification-count").forEach(el => {
+                el.textContent = parseInt(el.textContent) + count;
+            });
+        };
+
+        const limitNotifications = (max = 5) => {
+            while (list.children.length > max) {
+                list.removeChild(list.lastChild);
+            }
+        };
+
+        const createNotificationItem = (iconClass, bgClass, html) => {
+            const item = document.createElement("li");
+            item.classList.add("notification-item", "new");
+            item.innerHTML = `
+            <div class="notification-icon ${bgClass}">
+                <i class="${iconClass} text-white"></i>
+            </div>
+            <div class="notification-content">
+                ${html}
+                <br><small class="text-muted">Vừa xong</small>
+            </div>
+        `;
+            return item;
+        };
+
+        channels.forEach(({
+            name,
+            event
+        }) => {
+            const channel = pusher.subscribe(name);
+            channel.bind(event, data => {
+                if (event === "new-booking") {
+                    const html =
+                        `<strong>${data.booking.name}</strong> đã đặt phòng <strong>${data.booking.room}</strong>`;
+                    list.prepend(createNotificationItem("fas fa-bell", "bg-primary", html));
+                    updateCount();
+                    limitNotifications();
+                    showDropdown();
+                }
+
+                if (event === "new-order") {
+                    const user = data.order.user;
+                    const services = data.order.services;
+
+                    services.forEach(service => {
+                        const html =
+                            `<strong>${user}</strong> đã gọi món <strong>${service.name}</strong> x <strong>${service.quantity}</strong>`;
+                        list.prepend(createNotificationItem("fas fa-utensils", "bg-success", html));
+                    });
+                    updateCount(services.length);
+                    limitNotifications();
+                    showDropdown();
+                }
+            });
+        });
+    </script>
+
     @stack('js')
 </body>
 

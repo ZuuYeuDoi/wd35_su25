@@ -101,9 +101,27 @@
                                             <img src="{{ $image }}" alt="Room Type Image">
                                         </a>
                                     </div>
-
                                     <div class="content-box">
                                         <h6 class="title">{{ $roomType->name }}</h6>
+                                        @if ($roomType->average_rating)
+                                            @php
+                                                // Làm tròn xuống 1 chữ số thập phân
+                                                $roundedRating = floor($roomType->average_rating * 10) / 10;
+                                                $fullStars = floor($roundedRating);
+                                            @endphp
+
+                                            <div class="mb-1">
+                                                @for ($i = 0; $i < $fullStars; $i++)
+                                                    <i class="fas fa-star text-warning"></i>
+                                                @endfor
+
+                                                @for ($i = $fullStars; $i < 5; $i++)
+                                                    <i class="far fa-star text-warning"></i>
+                                                @endfor
+
+                                                <span style="font-size: 13px;">({{ number_format($roundedRating, 1) }} / 5)</span>
+                                            </div>
+                                        @endif
                                         <span class="price">{{ number_format($roomType->room_type_price, 0, ',', '.') }} VND / đêm</span>
                                         <span class="price"><i class="fal fa-bed me-2"></i>{{ $bed }}</span>
                                     </div>
