@@ -272,8 +272,7 @@
                 <div class="mt-5">
                     <h5 class="mb-3">Danh sách phòng trong loại này</h5>
                     <div style="max-height: 500px; overflow-y: auto;">
-                        @foreach ($roomType->rooms as $r)
-
+                        @foreach ($roomType->rooms->take(4) as $r) {{-- 🟢 chỉ lấy 4 phòng đầu --}}
                             <div class="card mb-3" id="room-{{ $r->id }}">
                                 <div class="row g-0">
                                     <div class="col-4">
@@ -286,19 +285,19 @@
                                         <div class="card-body py-2 px-3">
                                             <h6 class="card-title mb-1" style="font-size: 15px;">{{ $roomType->name }}</h6>
                                             @if ($r->average_rating > 0)
-    <div class="mb-1">
-        @for ($i = 1; $i <= 5; $i++)
-            @if ($i <= floor($r->average_rating))
-                <i class="fas fa-star text-warning" style="font-size: 13px;"></i>
-            @elseif ($i - $r->average_rating <= 0.5)
-                <i class="fas fa-star-half-alt text-warning" style="font-size: 13px;"></i>
-            @else
-                <i class="far fa-star text-warning" style="font-size: 13px;"></i>
-            @endif
-        @endfor
-        <small class="text-muted">({{ number_format($r->average_rating, 1) }})</small>
-    </div>
-@endif
+                                                <div class="mb-1">
+                                                    @for ($i = 1; $i <= 5; $i++)
+                                                        @if ($i <= floor($r->average_rating))
+                                                            <i class="fas fa-star text-warning" style="font-size: 13px;"></i>
+                                                        @elseif ($i - $r->average_rating <= 0.5)
+                                                            <i class="fas fa-star-half-alt text-warning" style="font-size: 13px;"></i>
+                                                        @else
+                                                            <i class="far fa-star text-warning" style="font-size: 13px;"></i>
+                                                        @endif
+                                                    @endfor
+                                                    <small class="text-muted">({{ number_format($r->average_rating, 1) }})</small>
+                                                </div>
+                                            @endif
 
                                             <p class="card-text mb-1">
                                                 <strong class="text-danger" style="font-size: 14px;">{{ number_format($r->price, 0, ',', '.') }} VND</strong>
@@ -308,14 +307,13 @@
                                                 Đặt phòng
                                             </button>
                                         </div>
-
                                     </div>
                                 </div>
                             </div>
-                        </div>
                         @endforeach
                     </div>
                 </div>
+
             </div>
 
         </div>

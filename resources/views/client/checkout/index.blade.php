@@ -153,12 +153,12 @@
                             <div class="payment-option active" data-method="vnpay">
                                 <img src="{{ asset('client/images/payments/vnpay.png') }}" alt="VNPAY">
                             </div>
-                            <div class="payment-option" data-method="momo">
+                            <!-- <div class="payment-option" data-method="momo">
                                 <img src="{{ asset('client/images/payments/momo.png') }}" alt="MoMo">
                             </div>
                             <div class="payment-option" data-method="visa">
                                 <img src="{{ asset('client/images/payments/visa.png') }}" alt="Visa">
-                            </div>
+                            </div> -->
                         </div>
 
                         <input type="hidden" name="method" id="selected-method" value="vnpay">

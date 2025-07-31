@@ -62,7 +62,8 @@
     <div class="col-lg-12">
         <div class="card card-modern">
             <div class="card-body">
-                <form action="{{ route('room_types.update', $roomType->id) }}" method="POST" enctype="multipart/form-data">
+                <form action="{{ url('room_types/update/' . $roomType->id) }}" method="POST" enctype="multipart/form-data">
+
                     @csrf
                     @method('PUT')
 
@@ -159,7 +160,7 @@
                         </div>
                     </div>
 
-                    <button type="submit" class="btn btn-primary mt-3">Cập nhật</button>
+                    <button type="submit" class="btn btn-primary">Cập nhật</button>
                     <a href="{{ route('room_types.index') }}" class="btn btn-secondary mt-3">Quay lại</a>
 
                 </form>
