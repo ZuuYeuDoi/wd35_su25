@@ -24,6 +24,7 @@ use App\Http\Controllers\Admin\RoomTypeController;
 
 use App\Http\Controllers\Admin\BookingRoomController;
 use App\Http\Controllers\Admin\CartController as AdminCartController;
+use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\User\ServiceController as UserServiceController;
 
 
@@ -94,15 +95,18 @@ Route::get('/room-detail', function () {
 });
 
 
-Route::get('/admin', function () {
-    return view('admin.dashboard');
-});
+// Route::get('/admin', function () {
+//     return view('admin.dashboard');
+// });
 Route::get('/admin/info', function () {
     return view('admin.infoHotel');
 });
 
 
 Route::prefix('admin')->group(function () {
+    Route::controller(DashboardController::class)->group(function () {
+        Route::get('', 'index')->name('dashboard.index');
+    });
 
     Route::controller(RoomController::class)->group(function () {
         Route::get('rooms', 'index')->name('room.index');

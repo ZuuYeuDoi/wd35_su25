@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Bill;
 use App\Models\Booking;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
@@ -56,6 +57,15 @@ class DashboardController extends Controller
         $years = $yearlyCustomers->keys()->toArray();
         $customersByYear = $yearlyCustomers->values()->toArray();
 
+        $topCustomer = Booking::select('user_id', DB::raw('SUM(total_amount) as total_spent'), DB::raw('COUNT(*) as booking_count'))
+            ->where('status', 3)
+            ->whereYear('created_at', $year)
+            ->groupBy('user_id')
+            ->orderByDesc('total_spent')
+            ->limit(10)
+            ->with('user:id,name,email,phone')
+            ->get();
+
         return view('admin.dashboard', compact(
             'revenue',
             'room_revenue',
@@ -69,7 +79,8 @@ class DashboardController extends Controller
             'customersByMonth',
             'customersByYear',
             'years',
-            'year'
+            'year',
+            'topCustomer',
         ));
     }
 }
