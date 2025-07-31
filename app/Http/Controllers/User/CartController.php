@@ -7,7 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\BillServices;
 use App\Models\Booking;
 use App\Models\Cart;
-use App\Models\CartService;
+use App\Models\CartServiceItem;
 use App\Models\Service;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -40,7 +40,7 @@ class CartController extends Controller
             $cart->save();
         }
 
-        $cartService = CartService::where('cart_id', $cart->id)
+        $cartService = CartServiceItem::where('cart_id', $cart->id)
             ->where('service_id', $service->id)
             ->first();
 
@@ -59,7 +59,7 @@ class CartController extends Controller
                 return redirect()->back()->with('error', 'Số lượng vượt quá tồn kho. Còn lại: ' . $service->quantity);
             }
 
-            CartService::create([
+            CartServiceItem::create([
                 'cart_id'    => $cart->id,
                 'service_id' => $service->id,
                 'quantity'   => $request->quantity,
@@ -71,16 +71,16 @@ class CartController extends Controller
 
     public function index()
     {
-        $cart = Cart::with('services')
+        $cart = Cart::with('cartServiceItems')
             ->where('status', 'active')
-            ->with('services.service')
+            ->with('cartServiceItems.service')
             ->first();
         return view('client.cart.index', compact('cart'));
     }
 
     public function remove($id)
     {
-        $cartItem = CartService::findOrFail($id);
+        $cartItem = CartServiceItem::findOrFail($id);
         $cartItem->delete();
         return back()->with('success', 'Đã xóa sản phẩm khỏi giỏ hàng.');
     }
@@ -89,7 +89,7 @@ class CartController extends Controller
     {
         $quantities = $request->input('quantities', []);
         foreach ($quantities as $cartServiceId => $newQty) {
-            $cartItem = CartService::find($cartServiceId);
+            $cartItem = CartServiceItem::find($cartServiceId);
             if ($cartItem) {
                 $max = $cartItem->service->quantity;
                 $fixedQty = max(1, min((int)$newQty, $max));
@@ -115,7 +115,7 @@ class CartController extends Controller
             $cart->save();
 
             foreach ($quantities as $cartServiceId => $qty) {
-                $cartService = CartService::with('service')->find($cartServiceId);
+                $cartService = CartServiceItem::with('service')->find($cartServiceId);
 
                 if ($cartService && $cartService->service->type == 2) {
                     $service = $cartService->service;

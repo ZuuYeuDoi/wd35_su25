@@ -123,13 +123,23 @@ class RoomTypeController extends Controller
 
         return redirect()->route('room_types.index')->with('success', 'Xóa loại phòng thành công');
     }
+public function deleteImage($id)
+{
+    $image = RoomImage::findOrFail($id);
 
-    public function deleteImage($id)
-    {
-        $image = RoomImage::findOrFail($id);
-        Storage::disk('public')->delete($image->image_path);
-        $image->delete();
+    // Xóa file trên ổ đĩa
+    Storage::disk('public')->delete($image->image_path);
 
-        return back()->with('success', 'Xóa ảnh thành công');
+    // Xóa bản ghi trong DB
+    $image->delete();
+
+    // Trả về JSON nếu là request AJAX
+    if (request()->expectsJson()) {
+        return response()->json(['message' => 'Xóa ảnh thành công']);
     }
+
+    // Ngược lại, fallback về redirect
+    return back()->with('success', 'Xóa ảnh thành công');
+}
+
 }

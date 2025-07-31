@@ -56,6 +56,11 @@ class BookingRoomController extends Controller
         }
 
         $bookings = $query->paginate(10);
+        $bookings->getCollection()->transform(function ($booking) {
+        $guestName = optional($booking->bookingRooms->first())->guest_name;
+        $booking->display_customer_name = $guestName ?: optional($booking->user)->name ?: '---';
+        return $booking;
+    });
 
         return view('admin.bookingrooms.orders.index', compact('bookings'));
     }

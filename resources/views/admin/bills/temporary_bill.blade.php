@@ -26,7 +26,6 @@
             </div>
         </div>
 
-
         {{-- Bảng hóa đơn --}}
         <div class="table-responsive mb-4">
             <table class="table table-bordered align-middle">
@@ -43,9 +42,11 @@
                     @php
                         use Carbon\Carbon;
                         $nights = Carbon::parse($booking->check_in_date)->diffInDays(Carbon::parse($booking->check_out_date));
-                        if ($nights == 0) $nights = 1; // Nếu check-in = check-out cùng ngày thì tính ít nhất 1 đêm
+                        if ($nights == 0) $nights = 1;
                     @endphp
                     @php $total = 0; $i = 1; @endphp
+
+                    {{-- Phòng --}}
                     @foreach ($booking->bookingRooms as $bookingRoom)
                         @php
                             $room = $bookingRoom->room;
@@ -61,30 +62,31 @@
                             <td>{{ number_format($roomTotal, 0, ',', '.') }}đ</td>
                         </tr>
                     @endforeach
-                    @if ($cart && $cart->cartServiceItems)
-                        @foreach ($cart->cartServiceItems as $item)
+
+                    {{-- Dịch vụ từ tất cả cart --}}
+                    @if ($groupedItems->count())
+                        @foreach ($groupedItems as $item)
                             @php
                                 $service = $item->service;
-                                $serviceTotal = $service->price * $item->quantity;
-                                $total += $serviceTotal;
                             @endphp
                             <tr>
                                 <td>{{ $i++ }}</td>
                                 <td>{{ $service->name }}</td>
                                 <td>{{ $item->quantity }}</td>
-                                <td>{{ number_format($service->price, 0, ',', '.') }}đ</td>
-                                <td>{{ number_format($serviceTotal, 0, ',', '.') }}đ</td>
+                                <td>{{ number_format($item->unit_price, 0, ',', '.') }}đ</td>
+                                <td>{{ number_format($item->total_price, 0, ',', '.') }}đ</td>
                             </tr>
                         @endforeach
                     @endif
+
+
+                    {{-- Phụ phí --}}
                     @if ($booking->feeIncurreds->count())
                         <tr class="table-secondary">
                             <td colspan="5" class="fw-bold">Phụ phí phát sinh</td>
                         </tr>
                         @foreach ($booking->feeIncurreds as $fee)
-                            @php
-                                $total += $fee->amount;
-                            @endphp
+                            @php $total += $fee->amount; @endphp
                             <tr>
                                 <td>{{ $i++ }}</td>
                                 <td>{{ $fee->name }}</td>
@@ -102,7 +104,6 @@
                         <td class="fw-bold text-danger">{{ number_format($total, 0, ',', '.') }}đ</td>
                     </tr>
                 </tfoot>
-
             </table>
         </div>
     </div>
@@ -132,7 +133,7 @@
                                 data-service-name="{{ $service->name }}"
                                 data-service-price="{{ $service->price }}">
                                 Xác nhận
-                        </button>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -140,21 +141,19 @@
         </div>
     </div>
 
-
     <div class="alert alert-info rounded-3">
         Đây là hóa đơn tạm tính, chưa phải hóa đơn xuất chính thức. Mọi thông tin sẽ được xác nhận khi thanh toán.
     </div>
-    <div class="text-end">
-        <form action="{{ route('bills.confirm', $booking->id) }}" method="POST" onsubmit="return confirm('Xác nhận thanh toán đơn này?');">
-        @csrf
-        @method('PUT')
-        <button type="submit" class="btn btn-primary rounded-pill px-4">Xác nhận & Thanh toán</button>
-</form>
 
+    <div class="text-end">
+        <form action="{{ route('bills.confirm', $booking->id) }}" method="POST"
+              onsubmit="return confirm('Xác nhận thanh toán đơn này?');">
+            @csrf
+            @method('PUT')
+            <button type="submit" class="btn btn-primary rounded-pill px-4">Xác nhận & Thanh toán</button>
+        </form>
     </div>
 </section>
-
-
 @endsection
 
 @section('script')
@@ -189,52 +188,71 @@
                 const quantity = parseInt(serviceBox.querySelector('input[type="number"]').value);
 
                 fetch("{{ route('cart.add') }}", {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json',
-                        'X-CSRF-TOKEN': "{{ csrf_token() }}"
-                    },
-                    body: JSON.stringify({
-                        booking_id: {{ $booking->id }},
-                        service_id: serviceId,
-                        quantity: quantity
-                    })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        // Thêm vào table view
-                        const tbody = document.querySelector('table tbody');
-                        const totalCell = document.querySelector('tfoot td.text-danger');
-                        const newRow = document.createElement('tr');
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'X-CSRF-TOKEN': "{{ csrf_token() }}"
+    },
+    body: JSON.stringify({
+        booking_id: {{ $booking->id }},
+        service_id: serviceId,
+        quantity: quantity
+    })
+})
+.then(response => response.json())
+.then(data => {
+    if (data.success) {
+        const tbody = document.querySelector('table tbody');
+        const totalCell = document.querySelector('tfoot td.text-danger');
+        const totalPrice = servicePrice * quantity;
 
-                        const currentIndex = tbody.querySelectorAll('tr').length + 1;
-                        const totalPrice = servicePrice * quantity;
+        // 🔍 Kiểm tra xem dịch vụ đã có trong bảng chưa
+        let existingRow = Array.from(tbody.querySelectorAll('tr')).find(tr => {
+            return tr.querySelector('td:nth-child(2)')?.innerText.trim() === serviceName;
+        });
 
-                        newRow.innerHTML = `
-                            <td>${currentIndex}</td>
-                            <td>${serviceName}</td>
-                            <td>${quantity}</td>
-                            <td>${servicePrice.toLocaleString()}đ</td>
-                            <td>${totalPrice.toLocaleString()}đ</td>
-                        `;
-                        tbody.appendChild(newRow);
+        if (existingRow) {
+            // ✅ Nếu có -> cộng dồn số lượng và thành tiền
+            let qtyCell = existingRow.querySelector('td:nth-child(3)');
+            let priceCell = existingRow.querySelector('td:nth-child(5)');
 
-                        // Cập nhật tổng tiền
-                        const currentTotal = parseInt(totalCell.textContent.replace(/\D/g, '')) || 0;
-                        totalCell.textContent = (currentTotal + totalPrice).toLocaleString() + 'đ';
+            let currentQty = parseInt(qtyCell.innerText) || 0;
+            let newQty = currentQty + quantity;
+            qtyCell.innerText = newQty;
 
-                        // Ẩn lại box sau khi chọn xong
-                        serviceBox.querySelector('.quantity-box').classList.add('d-none');
-                    } else {
-                        alert(data.message || 'Thêm dịch vụ thất bại!');
-                    }
-                })
-                .catch(error => {
-                    console.error(error);
-                    alert('Có lỗi xảy ra!');
-                });
+            let newTotal = servicePrice * newQty;
+            priceCell.innerText = newTotal.toLocaleString() + 'đ';
+        } else {
+            // ❌ Nếu chưa có -> thêm dòng mới
+            const newRow = document.createElement('tr');
+            const currentIndex = tbody.querySelectorAll('tr').length + 1;
+
+            newRow.innerHTML = `
+                <td>${currentIndex}</td>
+                <td>${serviceName}</td>
+                <td>${quantity}</td>
+                <td>${servicePrice.toLocaleString()}đ</td>
+                <td>${totalPrice.toLocaleString()}đ</td>
+            `;
+            tbody.appendChild(newRow);
+        }
+
+        // ✅ Cập nhật tổng cộng
+        const currentTotal = parseInt(totalCell.textContent.replace(/\D/g, '')) || 0;
+        totalCell.textContent = (currentTotal + totalPrice).toLocaleString() + 'đ';
+
+        // Ẩn box sau khi thêm
+        serviceBox.querySelector('.quantity-box').classList.add('d-none');
+    } else {
+        alert(data.message || 'Thêm dịch vụ thất bại!');
+    }
+})
+.catch(error => {
+    console.error(error);
+    alert('Có lỗi xảy ra!');
+});
+
             });
         });
     });

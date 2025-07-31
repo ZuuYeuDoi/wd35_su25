@@ -1,8 +1,6 @@
 <?php
-
 namespace App\Models;
 
-use App\Models\CartService;
 use Illuminate\Database\Eloquent\Model;
 
 class Cart extends Model
@@ -18,15 +16,11 @@ class Cart extends Model
         return $this->belongsTo(Booking::class, 'booking_id');
     }
 
-    public function services()
-    {
-        return $this->hasMany(CartService::class, 'cart_id');
-    }
-
     public function cartServiceItems()
     {
-        return $this->hasMany(CartServiceItem::class);
+        return $this->hasMany(CartServiceItem::class, 'cart_id');
     }
+
     public function user()
     {
         return $this->belongsTo(User::class);
