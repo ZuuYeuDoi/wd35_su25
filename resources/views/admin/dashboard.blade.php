@@ -6,6 +6,14 @@
             <h2 class="font-weight-bold text-6">Thống kê</h2>
         </header>
         <div class="row">
+            <form method="GET" class="mt-3 search-year">
+                <select name="year" id="year" class="form-select w-auto d-inline-block" onchange="this.form.submit()">
+                    @for ($y = now()->year; $y >= 2020; $y--)
+                        <option value="{{ $y }}" {{ $year == $y ? 'selected' : '' }}>{{ $y }}
+                        </option>
+                    @endfor
+                </select>
+            </form>
 
             <div class="col-lg-12">
                 <div class="row mb-3">
@@ -150,16 +158,6 @@
 
             </div>
 
-            <form method="GET" class="mt-3 search-year">
-                <select name="year" id="year" class="form-select w-auto d-inline-block"
-                    onchange="this.form.submit()">
-                    @for ($y = now()->year; $y >= 2020; $y--)
-                        <option value="{{ $y }}" {{ $year == $y ? 'selected' : '' }}>{{ $y }}
-                        </option>
-                    @endfor
-                </select>
-            </form>
-
             <canvas id="revenueChart" height="300"></canvas>
 
             <div class="customer-chart">
@@ -170,6 +168,95 @@
                 <div class="">
                     <h4 class="mt-5 ">Số lượng khách theo từng năm</h4>
                     <canvas id="customerYearChart" class="canvas"></canvas>
+                </div>
+            </div>
+
+            <!-- Top 10 Khách hàng tiềm năng -->
+            <div class="row mt-5 top-customers-table">
+                <div class="col-12">
+                    <section class="card">
+                        <header class="card-header">
+                            <h2 class="card-title">Top 10 Khách hàng tiềm năng năm {{ $year }}</h2>
+                        </header>
+                        <div class="card-body">
+                            <div class="row mb-3">
+                                <div class="col-md-4">
+                                    <div class="alert alert-info">
+                                        <strong>Tổng doanh thu từ top 10 ({{ $year }}):</strong><br>
+                                        <span class="h5 text-primary">
+                                            {{ number_format($topCustomer->sum('total_spent'), 0, ',', '.') }} VND
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="alert alert-success">
+                                        <strong>Tổng số lần đặt phòng ({{ $year }}):</strong><br>
+                                        <span class="h5 text-success">
+                                            {{ $topCustomer->sum('booking_count') }} lần
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="alert alert-warning">
+                                        <strong>Khách hàng tiềm năng nhất ({{ $year }}):</strong><br>
+                                        <span class="h5 text-warning">
+                                            {{ $topCustomer->first()->user->name ?? 'N/A' }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-striped table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Tên khách hàng</th>
+                                            <th>Email</th>
+                                            <th>Số điện thoại</th>
+                                            <th>Tổng chi tiêu</th>
+                                            <th>Số lần đặt phòng</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @forelse($topCustomer as $index => $customer)
+                                            <tr>
+                                                <td>
+                                                    @if ($index < 3)
+                                                        <span class="badge badge-warning">{{ $index + 1 }}</span>
+                                                    @else
+                                                        <span class="badge badge-secondary">{{ $index + 1 }}</span>
+                                                    @endif
+                                                </td>
+                                                <td>
+                                                    <strong>{{ $customer->user->name ?? 'Khách hàng' }}</strong>
+                                                    @if ($index < 3)
+                                                        <i class="fas fa-crown text-warning ml-1"
+                                                            title="Top {{ $index + 1 }}"></i>
+                                                    @endif
+                                                </td>
+                                                <td>{{ $customer->user->email ?? 'N/A' }}</td>
+                                                <td>{{ $customer->user->phone ?? 'N/A' }}</td>
+                                                <td>
+                                                    <span class="badge badge-success">
+                                                        {{ number_format($customer->total_spent, 0, ',', '.') }} VND
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <span class="badge badge-info">
+                                                        {{ $customer->booking_count ?? 0 }} lần
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        @empty
+                                            <tr>
+                                                <td colspan="6" class="text-center">Không có dữ liệu khách hàng</td>
+                                            </tr>
+                                        @endforelse
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </section>
                 </div>
             </div>
         </div>
@@ -197,8 +284,65 @@
             width: 400px !important;
             height: 400px !important;
         }
-        .search-year{
+
+        .search-year {
             margin-bottom: 15px;
+        }
+
+        .top-customers-table {
+            margin-top: 30px;
+        }
+
+        .top-customers-table .card {
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+
+        .top-customers-table .card-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 10px 10px 0 0;
+        }
+
+        .top-customers-table .table th {
+            background-color: #f8f9fa;
+            border-top: none;
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .top-customers-table .badge-success {
+            background-color: #28a745;
+            color: white;
+            font-weight: 500;
+        }
+
+        .top-customers-table .badge-info {
+            background-color: #17a2b8;
+            color: white;
+            font-weight: 500;
+        }
+
+        .top-customers-table .badge-warning {
+            background-color: #ffc107;
+            color: #212529;
+            font-weight: 600;
+        }
+
+        .top-customers-table .badge-secondary {
+            background-color: #6c757d;
+            color: white;
+            font-weight: 500;
+        }
+
+        .top-customers-table .fa-crown {
+            font-size: 14px;
+        }
+
+        .top-customers-table .table-hover tbody tr:hover {
+            background-color: #f8f9fa;
+            transform: translateY(-1px);
+            transition: all 0.2s ease;
         }
     </style>
 @endsection
@@ -287,8 +431,8 @@
                     label: 'Doanh thu theo tháng (VND)',
                     data: {!! json_encode(array_merge($revenueData, [$revenue])) !!},
                     backgroundColor: [
-                        ...Array(12).fill('rgba(54, 162, 235, 0.7)'), 
-                        'rgba(255, 99, 132, 0.7)' 
+                        ...Array(12).fill('rgba(54, 162, 235, 0.7)'),
+                        'rgba(255, 99, 132, 0.7)'
                     ],
                     borderColor: [
                         ...Array(12).fill('rgba(54, 162, 235, 1)'),
