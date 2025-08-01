@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class CartServiceItem extends Model
 {
-    protected $table = 'cart_service_items'; // Tên bảng
+    protected $table = 'cart_service_items'; 
 
     protected $fillable = [
         'cart_id',

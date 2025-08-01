@@ -55,4 +55,10 @@ public function reviews()
 {
     return $this->hasMany(\App\Models\Review::class)->where('status', true);
 }
+
+public function bookingRooms()
+{
+    return $this->hasMany(BookingRoom::class);
+}
+
 }

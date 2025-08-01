@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\DashboardController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\User\CartController;
+use App\Http\Controllers\User\HomeController;
 
 use App\Http\Controllers\User\UserController;
 use App\Http\Controllers\Admin\BillController;
@@ -14,16 +15,18 @@ use App\Http\Controllers\User\AboutController;
 use App\Http\Controllers\Admin\InforController;
 use App\Http\Controllers\User\ReviewController;
 
-use App\Http\Controllers\Payment\PaymentController;
-use App\Http\Controllers\User\HomeController;
-
-
 use App\Http\Controllers\User\BookingController;
 use App\Http\Controllers\Admin\ServiceController;
+
+
 use App\Http\Controllers\Admin\AmenitieController;
 use App\Http\Controllers\Admin\RoomTypeController;
+use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Payment\PaymentController;
 
 use App\Http\Controllers\Admin\BookingRoomController;
+use App\Http\Controllers\Admin\AdminBookingController;
+// use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\CartController as AdminCartController;
 use App\Http\Controllers\User\ServiceController as UserServiceController;
 
@@ -80,7 +83,6 @@ Route::post('/reviews', [ReviewController::class, 'store'])->middleware('auth')-
 
 
 
-
 Route::controller(AboutController::class)->group(function () {
     Route::get('/about', 'index')->name('about');
 });
@@ -102,8 +104,16 @@ Route::get('/admin/info', function () {
     return view('admin.infoHotel');
 });
 
+Route::get('/admin/bookings/create', [AdminBookingController::class, 'create'])->name('admin.bookings.create');
+Route::post('/admin/bookings/store', [AdminBookingController::class, 'store'])->name('admin.bookings.store');
+
+
+
 
 Route::prefix('admin')->group(function () {
+    Route::controller(DashboardController::class)->group(function () {
+        Route::get('', 'index')->name('dashboard.index');
+    });
 
     Route::controller(DashboardController::class)->group(function () {
         Route::get('', 'index')->name('dashboard.index');

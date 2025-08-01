@@ -48,6 +48,9 @@
                                     {{-- Nút submit --}}
                                     <div class="col-md-auto">
                                         <button class="btn btn-primary" type="submit">Lọc đơn</button>
+                                         <a href="{{ route('admin.bookings.create') }}" class="btn btn-success ms-2">
+                                                <i class="fas fa-plus-circle"></i> Tạo đặt phòng
+                                            </a>
                                     </div>
                                 </div>
                             </form>
@@ -96,7 +99,13 @@
 
                                     <tr>
                                         <td><strong>{{ $booking->id }}</strong></a></td>
-                                        <td>{{ $booking->user->name ?? '---' }}</td>
+                                        <td>
+                                            {{
+                                                $booking?->bookingRooms->first()?->guest_name
+                                                ?? $booking?->user?->name
+                                                ?? '---'
+                                            }}
+                                        </td>
                                         <td>{{ $checkIn->format('d/m/Y') }} lúc 14:00</td>
                                         <td>{{ $checkOut->format('d/m/Y') }} lúc 12:00</td>
                                         <td><span class="badge bg-info">{{ $stayType }}</span></td>
@@ -111,14 +120,23 @@
                                             @endif
                                         </td>
                                        <td class="d-flex flex-row flex-wrap gap-2">
-                                            <a href="{{ route('room_order.show', $booking->id) }}" class="btn btn-sm btn-warning">Chi tiết</a>
+                                            
 
                                             @switch($booking->status)
+                                                @case(1)
+                                                        <a href="{{ route('room_order.show', $booking->id) }}" class="btn btn-sm btn-warning">Chi tiết</a>
+                                                        @break
                                                 @case(2)
+                                                    <a href="{{ route('room_order.show', $booking->id) }}" class="btn btn-sm btn-warning">Chi tiết</a>
                                                     <a href="{{ route('bills.temporary', $booking->id) }}" class="btn btn-sm btn-success">Hóa đơn tạm tính</a>
                                                     @break
-
                                                 @case(3)
+                                                    @if ($booking->finalBill)
+                                                        <a href="{{ route('bills.final', $booking->finalBill->id) }}" class="btn btn-sm btn-primary">Xem hóa đơn</a>
+                                                    @endif
+                                                    @break
+
+                                                @case(4)
                                                     @if ($booking->finalBill)
                                                         <a href="{{ route('bills.final', $booking->finalBill->id) }}" class="btn btn-sm btn-primary">Xem hóa đơn</a>
                                                     @endif

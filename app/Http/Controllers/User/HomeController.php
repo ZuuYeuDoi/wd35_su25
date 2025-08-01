@@ -151,21 +151,21 @@ class HomeController extends Controller
         $avgRating = $reviews->avg('rating');
         $totalReviews = $reviews->count();
 
-        $allReviews = $roomType->rooms->flatMap->reviews;
-        $averageRating = $allReviews->avg('rating') ?? 0;
-        $canReview = false;
-        if (auth()->check()) {
-            $canReview = Booking::where('user_id', auth()->id())
-                ->where('status', 4)
-                ->whereHas('rooms', function ($q) use ($room) {
-                    $q->where('rooms.id', $room->id);
-                })
-                ->exists();
-        }
-        foreach ($roomType->rooms as $roomItem) {
-            $visibleReviews = $roomItem->reviews->where('status', true);
-            $roomItem->average_rating = $visibleReviews->avg('rating') ?? 0;
-        }
+    $allReviews = $roomType->rooms->flatMap->reviews;
+    $averageRating = $allReviews->avg('rating') ?? 0;
+    $canReview = false;
+    if (auth()->check()) {
+        $canReview = Booking::where('user_id', auth()->id())
+            ->where('status', 4)
+            ->whereHas('rooms', function ($q) use ($room) {
+                $q->where('rooms.id', $room->id);
+            })
+            ->exists();
+    }
+    foreach ($roomType->rooms as $roomItem) {
+        $visibleReviews = $roomItem->reviews->where('status', true);
+        $roomItem->average_rating = $visibleReviews->avg('rating') ?? 0;
+    }
         return view('client.room.detail', compact(
             'roomType',
             'allAmenities',
@@ -206,37 +206,37 @@ class HomeController extends Controller
             ->latest()
             ->get();
 
-        $avgRating = $reviews->avg('rating');
-        $totalReviews = $reviews->count();
-        $allReviews = $roomType->rooms->flatMap->reviews;
-        $averageRating = $allReviews->avg('rating') ?? 0;
-        $canReview = false;
-        if (auth()->check()) {
-            $canReview = Booking::where('user_id', auth()->id())
-                ->where('status', 4)
-                ->whereHas('rooms', function ($q) use ($room) {
-                    $q->where('rooms.id', $room->id);
-                })
-                ->exists();
-        }
-        foreach ($roomType->rooms as $roomItem) {
-            $visibleReviews = $roomItem->reviews->where('status', true);
-            $roomItem->average_rating = $visibleReviews->avg('rating') ?? 0;
-        }
-        return view('client.room.detail', compact(
-            'room',
-            'roomType',
-            'allAmenities',
-            'checkIn',
-            'checkOut',
-            'availableRoomsCount',
-            'reviews',
-            'canReview',
-            'avgRating',
-            'totalReviews',
-            'averageRating'
-        ));
+    $avgRating = $reviews->avg('rating');
+    $totalReviews = $reviews->count();
+    $allReviews = $roomType->rooms->flatMap->reviews;
+    $averageRating = $allReviews->avg('rating') ?? 0;
+    $canReview = false;
+    if (auth()->check()) {
+        $canReview = Booking::where('user_id', auth()->id())
+            ->where('status', 4)
+            ->whereHas('rooms', function ($q) use ($room) {
+                $q->where('rooms.id', $room->id);
+            })
+            ->exists();
     }
+    foreach ($roomType->rooms as $roomItem) {
+        $visibleReviews = $roomItem->reviews->where('status', true);
+        $roomItem->average_rating = $visibleReviews->avg('rating') ?? 0;
+    }
+    return view('client.room.detail', compact(
+        'room',
+        'roomType',
+        'allAmenities',
+        'checkIn',
+        'checkOut',
+        'availableRoomsCount',
+        'reviews',
+        'canReview',
+        'avgRating',
+        'totalReviews',
+        'averageRating'
+    ));
+}
 
 
 

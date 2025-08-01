@@ -65,7 +65,7 @@
             <div class="section-content">
                 <div class="row">
                     <div class="col-md-12">
-                        @if ($cart && $cart->services->count())
+                        @if ($cart && $cart->cartServiceItems->count())
                             <form action="{{ route('cart.update') }}" method="POST" id="cartForm">
                                 @csrf
                                 <table class="table table-striped table-bordered tbl-shopping-cart">
@@ -80,7 +80,7 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach ($cart->services as $item)
+                                        @foreach ($cart->cartServiceItems as $item)
                                             @php
                                                 $inputId = 'qty-' . $item->id;
                                                 $maxQty = $item->service->quantity;
@@ -131,7 +131,7 @@
                             <form action="{{ route('cart.orderUser') }}" method="POST" class="mt-3">
                                 @csrf
                                 <input type="hidden" name="cart_id" value="{{ $cart->id }}">
-                                @foreach ($cart->services as $item)
+                                @foreach ($cart->cartServiceItems as $item)
                                     <input type="hidden" name="quantities[{{ $item->id }}]"
                                         id="order-qty-{{ $item->id }}" value="{{ $item->quantity }}">
                                 @endforeach
