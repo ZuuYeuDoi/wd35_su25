@@ -62,7 +62,7 @@
     <div class="col-lg-12">
         <div class="card card-modern">
             <div class="card-body">
-                <form action="{{ url('room_types/update/' . $roomType->id) }}" method="POST" enctype="multipart/form-data">
+                <form action="{{ route('room_types.update', $roomType->id) }}" method="POST" enctype="multipart/form-data">
 
                     @csrf
                     @method('PUT')
@@ -117,16 +117,14 @@
 
                             @if ($roomType->images->count())
                                 <div class="d-flex flex-wrap gap-2 mt-2">
-                                    @foreach ($roomType->images as $img)
-                                        <div style="position:relative;">
+                                   @foreach ($roomType->images as $img)
+                                        <div style="position:relative;" id="img-{{ $img->id }}">
                                             <img src="{{ asset('storage/' . $img->image_path) }}" width="100" height="70" style="object-fit:cover;">
-                                            <form action="{{ route('room_types.image.delete', $img->id) }}" method="POST" onsubmit="return confirm('Xóa ảnh này?')" style="position:absolute;top:0;right:0;">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button class="btn btn-sm btn-danger">x</button>
-                                            </form>
+                                            <button type="button" class="btn btn-sm btn-danger delete-image"
+                                                    data-id="{{ $img->id }}" style="position:absolute;top:0;right:0;">x</button>
                                         </div>
                                     @endforeach
+
                                 </div>
                             @endif
 
@@ -168,4 +166,36 @@
         </div>
     </div>
 </section>
+@endsection
+
+@section('script')
+<script>
+    document.querySelectorAll('.delete-image').forEach(btn => {
+        btn.addEventListener('click', function () {
+            if (!confirm('Bạn có chắc chắn muốn xóa ảnh này?')) return;
+
+            const imageId = this.dataset.id;
+
+            fetch(`/admin/room_types/image/${imageId}/delete`, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json'
+                }
+            })
+            .then(res => {
+                if (res.ok) {
+                    document.getElementById('img-' + imageId).remove();
+                    toastr.success('Đã xóa ảnh thành công');
+                } else {
+                    toastr.error('Không thể xóa ảnh');
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                toastr.error('Đã có lỗi xảy ra');
+            });
+        });
+    });
+</script>
 @endsection
