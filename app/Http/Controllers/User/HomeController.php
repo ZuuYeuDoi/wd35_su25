@@ -100,7 +100,7 @@ public function getAvailableRoomsCount($roomTypeId, $checkIn, $checkOut)
                   ->orWhereBetween('check_out_date', [$checkIn, $checkOut])
                   ->orWhere(function ($query2) use ($checkIn, $checkOut) {
                       $query2->where('check_in_date', '<', $checkIn)
-                             ->where('check_out_date', '>', $checkOut);
+                             ->where('check_out_date', '>=', $checkOut);
                   });
         })
         ->pluck('room_id');
