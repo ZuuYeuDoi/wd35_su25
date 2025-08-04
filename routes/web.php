@@ -35,6 +35,23 @@ Route::get('/register', fn() => view('auth.register'))->name('register');
 Auth::routes(['verify' => true]);
 
 
+Route::post('/booking/add-to-cart', [BookingController::class, 'addToCart'])->name('booking.addToCart');
+Route::get('/booking/cart', [BookingController::class, 'viewCart'])->name('booking.cart.view');
+Route::post('/booking/cart/store', [BookingController::class, 'storeCartBooking'])->name('booking.cart.store');
+Route::get('/booking/cart/remove/{index}', [BookingController::class, 'removeCartItem'])->name('booking.cart.remove');
+Route::post('/booking/cart/checkout', [BookingController::class, 'showFinalCheckout'])->name('booking.cart.checkout');
+
+// Hiển thị gợi ý tour
+Route::get('/tours', [BookingController::class, 'suggestTours'])->name('booking.tour.suggest');
+
+// Xử lý lọc tour
+Route::get('/tours/search', [BookingController::class, 'searchTours'])->name('booking.tour.search');
+
+// Thêm 1 tour (gồm nhiều loại phòng) vào cart
+Route::post('/tours/add-to-cart', [BookingController::class, 'addTourToCart'])->name('booking.tour.addToCart');
+
+
+
 // ---------------- USER ROUTES ----------------
 Route::middleware(['auth', 'checkRole:3'])->group(function () {
     Route::get('/profile', [UserController::class, 'showProfile'])->name('user.profile');
