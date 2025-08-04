@@ -218,7 +218,7 @@
                 <div class="p-4 bg-light rounded shadow-sm">
                     <h5 class="mb-3">Đặt phòng</h5>
 
-                    <form action="{{ route('booking.checkout') }}" method="POST">
+                    <form action="{{ route('booking.addToCart') }}" method="POST">
                         @csrf
                         <input type="hidden" name="room_type_id" id="room_type_id" value="{{ $roomType->id }}">
 
@@ -259,12 +259,17 @@
                             <label>Trẻ em</label>
                             <input type="number" name="children" class="form-control" value="0" min="0" required>
                         </div>
-
+                        
                         <p class="mt-2 text-muted">
                             Số phòng còn trống: <span class="fw-bold text-success" id="available-count">{{ $availableRoomsCount }}</span>
                         </p>
 
-                        <button type="submit" class="btn btn-primary w-100">Tiếp tục đặt phòng</button>
+                         <button type="submit" name="action" value="add" class="btn btn-secondary w-100 mb-2">
+                            + Đặt thêm loại phòng khác
+                        </button>
+                        <button type="submit" name="action" value="checkout" class="btn btn-primary w-100">
+                            Tiếp tục đặt phòng
+                        </button>
                     </form>
                 </div>
 
