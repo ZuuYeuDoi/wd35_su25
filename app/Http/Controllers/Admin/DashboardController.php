@@ -12,6 +12,9 @@ class DashboardController extends Controller
 {
     public function index(Request $request)
     {
+        if (auth()->user()->role_id != 1) {
+        abort(403, 'Bạn không có quyền truy cập');
+    }
         $year = $request->input('year', now()->year);
 
         $revenue = Bill::whereYear('created_at', $year)->sum('final_amount');
