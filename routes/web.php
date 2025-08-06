@@ -208,6 +208,7 @@ Route::prefix('admin')->group(function () {
         Route::put('/bills/{id}/confirm', [BillController::class, 'confirmPayment'])->name('bills.confirm');
         Route::get('/bills/{id}/final', [BillController::class, 'final'])->name('bills.final');
         Route::get('/bills/{id}/show', [BillController::class, 'show'])->name('bills.show');
+        Route::post('/fees/store', [BillController::class, 'store'])->name('fees.store');
     });
 
     // cart dịch vụ
