@@ -45,7 +45,7 @@
                                <ul class="nav nav-children">
                                    <li>
                                        <a class="nav-link" href="{{ route('room.index') }}">
-                                           Danh sách Phòng
+                                           Danh sách Phòng ({{$countRooms ?? '0'}})
                                        </a>
                                    </li>
                                    <li>
