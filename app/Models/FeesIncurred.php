@@ -14,6 +14,7 @@ class FeesIncurred extends Model
     protected $fillable = [
         'booking_id',
         'name',
+        'image',
         'description',
         'price',
     ];
