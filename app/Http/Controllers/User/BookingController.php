@@ -244,13 +244,59 @@ public function removeCartItem($index)
 
     return view('client.checkout.index', compact('summary', 'total', 'deposit', 'checkIn', 'checkOut', 'user', 'totalAdults', 'totalChildren'));
 }
-
-public function suggestTours()
+public function suggestTours(Request $request)
 {
-     $roomTypes = RoomType::whereHas('rooms', function ($query) {
-        $query->where('status', 1);
-    })->get();
-    return view('client.tours.index', compact('roomTypes'));
+    // Chỉ load danh sách loại phòng có phòng đang active
+    $roomTypes = RoomType::whereHas('rooms', function ($q) {
+        $q->where('status', 1);
+    })->with(['rooms.images_room'])->get();
+
+    // Không hiển thị tour gợi ý ở lần đầu (chưa tìm)
+    // Phần "danh sách loại phòng" ở dưới chỉ show availability khi có input ngày
+    $checkIn  = $request->input('check_in');
+    $checkOut = $request->input('check_out');
+    $adults   = $request->input('adults');
+    $children = $request->input('children');
+
+    // Chuẩn bị data cho phần danh sách loại phòng (availability)
+    $roomTypesList = $roomTypes->map(function ($rt) use ($checkIn, $checkOut) {
+        // Ảnh đại diện
+        $firstRoom  = $rt->rooms->first();
+        $firstImage = $firstRoom?->images_room->first()?->image_path;
+        $imageUrl   = $firstImage ? asset('storage/'.$firstImage) : asset('client/images/no-image.png');
+
+        // Nếu chưa có input ngày, chưa tính availability
+        $availableCount = null;
+        if ($checkIn && $checkOut) {
+            $available = $this->getAvailableRooms($rt->id, Carbon::parse($checkIn), Carbon::parse($checkOut));
+            $availableCount = $available->count();
+        }
+
+        return [
+            'id'              => $rt->id,
+            'name'            => $rt->name,
+            'type'            => $rt->type,
+            'price'           => $rt->room_type_price,
+            'bed_type'        => $rt->bed_type,
+            'amenities'       => $rt->amenities ?? [], // là mảng id tiện ích
+            'image_url'       => $imageUrl,
+            'available_count' => $availableCount,      // null nếu chưa có ngày
+        ];
+    });
+
+    return view('client.tours.index', [
+        'roomTypes'     => $roomTypes,      // dùng cho dropdown chọn hạng
+        'roomTypesList' => $roomTypesList,  // danh sách hiển thị dưới cùng
+        // Không có $combinations ở lần đầu -> ẩn phần "tour gợi ý"
+        'allAmenities'  => Amenitie::all()->keyBy('id'),
+        'check_in'      => $checkIn,
+        'check_out'     => $checkOut,
+        'adults'        => $adults,
+        'children'      => $children,
+        'nights'        => null,
+        'preferred'     => null,
+        'combinations'  => null,
+    ]);
 }
 
 public function searchTours(Request $request)
@@ -258,89 +304,113 @@ public function searchTours(Request $request)
     $request->validate([
         'check_in'            => 'required|date|after_or_equal:today',
         'check_out'           => 'required|date|after:check_in',
-        'preferred_room_type' => 'required|exists:room_types,type', // ✅ sửa lại để kiểm tra theo type
+        'preferred_room_type' => 'required|exists:room_types,type',
         'adults'              => 'required|integer|min:1',
         'children'            => 'required|integer|min:0',
     ]);
 
-    $checkIn = Carbon::parse($request->check_in);
+    $checkIn  = Carbon::parse($request->check_in);
     $checkOut = Carbon::parse($request->check_out);
-    $nights = max($checkIn->diffInDays($checkOut), 1);
-
-    // ✅ Tìm theo type
-    $preferredType = RoomType::where('type', $request->preferred_room_type)->firstOrFail();
-
-    $allRoomTypes = RoomType::whereHas('rooms', fn($q) => $q->where('status', 1))->with('rooms')->get();
-
+    $nights   = max($checkIn->diffInDays($checkOut), 1);
     $totalPeople = $request->adults + $request->children;
 
-    $result = [];
+    $preferredType = RoomType::where('type', $request->preferred_room_type)->firstOrFail();
 
+    // Tất cả loại phòng còn phòng hoạt động
+    $allRoomTypes = RoomType::whereHas('rooms', fn($q) => $q->where('status', 1))
+        ->with(['rooms.images_room'])
+        ->get();
+
+    // 1) Build danh sách tour gợi ý (chỉ hiện sau khi bấm tìm)
+    $result = [];
     foreach ($allRoomTypes as $roomType) {
         $availableRooms = $this->getAvailableRooms($roomType->id, $checkIn, $checkOut);
-
         if ($availableRooms->isEmpty()) continue;
 
         $capacity = ($roomType->max_adult ?? 2) + ($roomType->max_children ?? 0);
         if ($capacity <= 0) $capacity = 1;
 
-        $roomsNeeded = ceil($totalPeople / $capacity);
+        $roomsNeeded = (int) ceil($totalPeople / $capacity);
         if ($availableRooms->count() < $roomsNeeded) continue;
 
-        $subTotal = $roomsNeeded * $roomType->room_type_price * $nights;
+        $subTotal = $roomsNeeded * ($roomType->room_type_price ?? 0) * $nights;
 
         $result[] = [
-            'room_type' => $roomType,
-            'rooms_needed' => $roomsNeeded,
-            'sub_total' => $subTotal,
-            'services' => $roomType->services ?? [],
+            'room_type'     => $roomType,
+            'rooms_needed'  => $roomsNeeded,
+            'sub_total'     => $subTotal,
+            'available_cnt' => $availableRooms->count(),
+            'services'      => $roomType->services ?? [],
         ];
     }
 
+    // 2) Build danh sách tất cả loại phòng (để load phía dưới) có kèm available
+    $roomTypesList = $allRoomTypes->map(function ($rt) use ($checkIn, $checkOut) {
+        $firstRoom  = $rt->rooms->first();
+        $firstImage = $firstRoom?->images_room->first()?->image_path;
+        $imageUrl   = $firstImage ? asset('storage/'.$firstImage) : asset('client/images/no-image.png');
+        $available  = $this->getAvailableRooms($rt->id, $checkIn, $checkOut);
+
+        return [
+            'id'              => $rt->id,
+            'name'            => $rt->name,
+            'type'            => $rt->type,
+            'price'           => $rt->room_type_price,
+            'bed_type'        => $rt->bed_type,
+            'amenities'       => $rt->amenities ?? [],
+            'image_url'       => $imageUrl,
+            'available_count' => $available->count(),
+        ];
+    });
+
     return view('client.tours.index', [
-        'roomTypes'    => RoomType::whereHas('rooms', fn($q) => $q->where('status', 1))->get(),
-        'preferred'    => $preferredType,
-        'combinations' => $result,
-        'check_in'     => $request->check_in,
-        'check_out'    => $request->check_out,
-        'adults'       => $request->adults,
-        'children'     => $request->children,
-        'nights'       => $nights,
-        'allAmenities' => Amenitie::all()->keyBy('id'),
+        'roomTypes'     => $allRoomTypes,       // cho dropdown
+        'preferred'     => $preferredType,
+        'combinations'  => $result,             // hiển thị phần tour gợi ý
+        'roomTypesList' => $roomTypesList,      // danh sách tất cả loại phòng
+        'check_in'      => $request->check_in,
+        'check_out'     => $request->check_out,
+        'adults'        => $request->adults,
+        'children'      => $request->children,
+        'nights'        => $nights,
+        'allAmenities'  => Amenitie::all()->keyBy('id'),
     ]);
 }
 
-
-
 public function addTourToCart(Request $request)
 {
+    // Có thể nhận từ 2 nguồn:
+    // - Phần "tour gợi ý": gửi rooms[index][room_type_id] + rooms[index][qty]
+    // - Phần "danh sách loại phòng": gửi rooms[0][...]
     $request->validate([
-        'check_in' => 'required|date',
+        'check_in'  => 'required|date',
         'check_out' => 'required|date|after:check_in',
-        'adults' => 'required|integer|min:1',
-        'children' => 'required|integer|min:0',
-        'rooms' => 'required|array',
+        'adults'    => 'required|integer|min:1',
+        'children'  => 'required|integer|min:0',
+        'rooms'     => 'required|array|min:1',
         'rooms.*.room_type_id' => 'required|exists:room_types,id',
-        'rooms.*.qty' => 'required|integer|min:1',
+        'rooms.*.qty'          => 'required|integer|min:1',
     ]);
 
-    $cart = [];
+    $cart = session('booking_cart', []);
 
     foreach ($request->rooms as $roomData) {
         $cart[] = [
-            'room_type_id'    => $roomData['room_type_id'],
-            'number_of_rooms' => $roomData['qty'],
+            'room_type_id'    => (int) $roomData['room_type_id'],
+            'number_of_rooms' => (int) $roomData['qty'],
             'check_in'        => $request->check_in,
             'check_out'       => $request->check_out,
-            'adults'          => $request->adults,
-            'children'        => $request->children,
+            'adults'          => (int) $request->adults,
+            'children'        => (int) $request->children,
         ];
     }
 
     session(['booking_cart' => $cart]);
 
-    return redirect()->route('booking.cart.view')->with('success', 'Đã thêm tour vào giỏ đặt phòng.');
+    return redirect()->route('booking.cart.view')
+        ->with('success', 'Đã thêm vào giỏ đặt phòng.');
 }
+
 
 
 }
