@@ -8,43 +8,18 @@
             margin-bottom: 30px;
             border-radius: 8px;
         }
-
-        .room-block {
-            margin-bottom: 30px;
-        }
-
+        .room-block { margin-bottom: 30px; }
         .image-box img {
-            width: 100%;
-            height: 230px;
-            object-fit: cover;
-            border-radius: 8px;
+            width: 100%; height: 230px; object-fit: cover; border-radius: 8px;
         }
-
-        .content-box .title {
-            font-size: 18px;
-            font-weight: bold;
-        }
-
-        .price {
-            font-size: 14px;
-            color: #555;
-            display: block;
-        }
-
-        .box-caption {
-            margin-top: 10px;
-        }
-
-        .bx-links {
-            list-style: none;
-            padding-left: 0;
-            font-size: 13px;
-        }
-
-        .bx-links li::before {
-            content: "✔ ";
-            color: #d4a762;
-        }
+        .content-box .title { font-size: 18px; font-weight: bold; }
+        .price { font-size: 14px; color: #555; display: block; }
+        .box-caption { margin-top: 10px; }
+        .bx-links { list-style: none; padding-left: 0; font-size: 13px; }
+        .bx-links li::before { content: "✔ "; color: #d4a762; }
+        .muted { color: #888; font-style: italic; }
+        .badge-amenity { display: inline-block; padding: 2px 8px; border: 1px solid #eee; border-radius: 12px; margin: 2px 4px; font-size: 12px;}
+        .title-divider { border-top: 1px solid #eee; margin: 24px 0; }
     </style>
 @endpush
 
@@ -65,103 +40,195 @@
 <section class="rooms-section pb-100">
     <div class="auto-container">
 
-        {{-- Form tìm kiếm --}}
+        {{-- 1) Form lọc --}}
         <h4 class="mb-4">Tìm tour phù hợp</h4>
-        <form action="{{ route('booking.tour.search') }}" method="get" class="row">
-            <div class="col-md-3 mb-3">
+        <form action="{{ route('booking.tour.search') }}" method="get" class="row g-3">
+            <div class="col-md-3">
                 <label>Ngày nhận phòng</label>
-                <input type="date" name="check_in" class="form-control" value="{{ old('check_in', now()->toDateString()) }}" required>
+                <input type="date" name="check_in" class="form-control"
+                       value="{{ old('check_in', $check_in ?? now()->toDateString()) }}" required>
             </div>
-            <div class="col-md-3 mb-3">
+            <div class="col-md-3">
                 <label>Ngày trả phòng</label>
-                <input type="date" name="check_out" class="form-control" value="{{ old('check_out', now()->addDay()->toDateString()) }}" required>
+                <input type="date" name="check_out" class="form-control"
+                       value="{{ old('check_out', $check_out ?? now()->addDay()->toDateString()) }}" required>
             </div>
-            <div class="col-md-3 mb-3">
+            <div class="col-md-3">
                 <label>Hạng phòng mong muốn</label>
                 <select name="preferred_room_type" class="form-control" required>
                     <option value="">-- Chọn hạng phòng --</option>
-                    @foreach ($roomTypes->type as $Typ)
-                        <option value="{{ $roomType->type }}">{{ $roomType->name }}</option>
-                    @endforeach
+                    @forelse ($roomTypes as $rt)
+                        <option value="{{ $rt->type }}" 
+                            {{ (isset($preferred) && $preferred && $preferred->type === $rt->type) ? 'selected' : '' }}>
+                            {{ $rt->type }}
+                        </option>
+                    @empty
+                        <option value="">Không có hạng phòng nào</option>
+                    @endforelse
                 </select>
+
             </div>
-            <div class="col-md-2 mb-3">
+            <div class="col-md-2">
                 <label>Người lớn</label>
-                <input type="number" name="adults" min="1" value="{{ old('adults', 1) }}" class="form-control" required>
+                <input type="number" name="adults" min="1"
+                       value="{{ old('adults', $adults ?? 1) }}" class="form-control" required>
             </div>
-            <div class="col-md-2 mb-3">
+            <div class="col-md-2">
                 <label>Trẻ em</label>
-                <input type="number" name="children" min="0" value="0" class="form-control" required>
+                <input type="number" name="children" min="0"
+                       value="{{ old('children', $children ?? 0) }}" class="form-control" required>
             </div>
-            <div class="col-md-1 mb-3 align-self-end">
-                <button type="submit" class="btn btn-primary">Tìm tour</button>
+            <div class="col-md-2 align-self-end">
+                <button type="submit" class="btn btn-primary w-100">Tìm tour</button>
             </div>
         </form>
 
-        {{-- Kết quả gợi ý --}}
-        @isset($combinations)
-            <div class="tour-summary mt-5">
-                <p><strong>Thời gian:</strong> {{ $check_in }} → {{ $check_out }} ({{ $nights }} đêm)</p>
-                <p><strong>Số khách:</strong> {{ $adults }} người lớn, {{ $children }} trẻ em</p>
-                <p><strong>Hạng phòng mong muốn:</strong> {{ $preferred->name }}</p>
-            </div>
+        {{-- 2) Phần tour gợi ý (chỉ hiện khi có $combinations) --}}
+@if(!empty($combinations))
+    <div class="tour-summary mt-5">
+        <p><strong>Thời gian:</strong> {{ $check_in }} → {{ $check_out }} ({{ $nights }} đêm)</p>
+        <p><strong>Số khách:</strong> {{ $adults }} người lớn, {{ $children }} trẻ em</p>
+        <p><strong>Hạng phòng mong muốn:</strong> {{ $preferred?->name }}</p>
+    </div>
 
-            <form action="{{ route('booking.tour.addToCart') }}" method="post">
-                @csrf
-                <input type="hidden" name="check_in" value="{{ $check_in }}">
-                <input type="hidden" name="check_out" value="{{ $check_out }}">
-                <input type="hidden" name="adults" value="{{ $adults }}">
-                <input type="hidden" name="children" value="{{ $children }}">
+    <form action="{{ route('booking.tour.addToCart') }}" method="post" class="mb-5">
+        @csrf
+        <input type="hidden" name="check_in" value="{{ $check_in }}">
+        <input type="hidden" name="check_out" value="{{ $check_out }}">
+        <input type="hidden" name="adults" value="{{ $adults }}">
+        <input type="hidden" name="children" value="{{ $children }}">
 
-                <div class="row">
-                    @forelse($combinations as $index => $combo)
-                        <div class="room-block col-lg-6 col-md-6">
-                            <div class="inner-box">
-                                <div class="image-box">
-                                    @php
-                                        $roomType = $combo['room_type'];
-                                        $image = $roomType->rooms->first()?->images_room->first()?->image_path
-                                            ? asset('storage/' . $roomType->rooms->first()->images_room->first()->image_path)
-                                            : asset('client/images/no-image.png');
-                                    @endphp
-                                    <img src="{{ $image }}" alt="Room Image">
-                                </div>
+        <div class="list-group">
+            @foreach($combinations as $index => $combo)
+                @php
+                    $roomType = $combo['room_type'];
+                    $firstRoom  = $roomType->rooms->first();
+                    $firstImage = $firstRoom?->images_room->first()?->image_path;
+                    $image = $firstImage ? asset('storage/'.$firstImage) : asset('client/images/no-image.png');
+                    $availableCnt = $combo['available_cnt'] ?? 0;
+                @endphp
+                <div class="list-group-item py-3">
+                    <div class="d-flex">
+                        <div style="flex:0 0 200px;">
+                            <img src="{{ $image }}" class="img-fluid rounded" alt="Room Image">
+                        </div>
+                        <div class="flex-fill ps-3">
+                            <h6 class="mb-1">{{ $roomType->name }}</h6>
+                            <span class="d-block">{{ number_format($roomType->room_type_price) }} VND / đêm</span>
+                            <span class="d-block">Giường: {{ $roomType->bed_type ?? 'Không rõ' }}</span>
+                            <p class="mt-2">Phòng trống: <strong>{{ $availableCnt }}</strong></p>
 
-                                <div class="content-box mt-3">
-                                    <h6 class="title">{{ $roomType->name }}</h6>
-                                    <span class="price">{{ number_format($roomType->room_type_price) }} VND / đêm</span>
-                                    <span class="price">Giường: {{ $roomType->bed_type ?? 'Không rõ' }}</span>
-                                    <p class="mt-2">Số phòng đề xuất: <strong>{{ $combo['rooms_needed'] }}</strong></p>
-                                    <p>Tạm tính: <strong>{{ number_format($combo['sub_total']) }} VND</strong></p>
-                                </div>
+                            <div class="mb-2">
+                                <label class="me-2">Số phòng gợi ý:</label>
+                                <input type="number"
+                                       name="rooms[{{ $index }}][qty]"
+                                       min="1"
+                                       max="{{ $availableCnt }}"
+                                       value="{{ $combo['rooms_needed'] }}"
+                                       class="form-control d-inline-block"
+                                       style="width:100px;">
+                            </div>
 
-                                <div class="box-caption">
-                                    <input type="hidden" name="rooms[{{ $index }}][room_type_id]" value="{{ $roomType->id }}">
-                                    <input type="hidden" name="rooms[{{ $index }}][qty]" value="{{ $combo['rooms_needed'] }}">
-                                    <ul class="bx-links">
-                                        @foreach ($roomType->amenities ?? [] as $amenityId)
-                                            @if ($allAmenities->has($amenityId))
-                                                <li>{{ $allAmenities[$amenityId]->name }}</li>
-                                            @endif
-                                        @endforeach
-                                    </ul>
-                                </div>
+                            <p class="mb-2">Tạm tính: <strong>{{ number_format($combo['sub_total']) }} VND</strong></p>
+
+                            <input type="hidden" name="rooms[{{ $index }}][room_type_id]" value="{{ $roomType->id }}">
+                            <div>
+                                @foreach ($roomType->amenities ?? [] as $amenityId)
+                                    @if (!empty($allAmenities[$amenityId]))
+                                        <span class="badge bg-light text-dark me-1">{{ $allAmenities[$amenityId]->name }}</span>
+                                    @endif
+                                @endforeach
                             </div>
                         </div>
-                    @empty
-                        <div class="col-12 text-center mt-4">
-                            <p>Không tìm thấy tour phù hợp.</p>
-                        </div>
-                    @endforelse
-                </div>
-
-                @if(count($combinations))
-                    <div class="text-center mt-4">
-                        <button type="submit" class="btn btn-success">Đặt tour ngay</button>
                     </div>
-                @endif
-            </form>
-        @endisset
+                </div>
+            @endforeach
+        </div>
+
+        @if(count($combinations))
+            <div class="text-center mt-4">
+                <button type="submit" class="btn btn-success">Thêm toàn bộ gợi ý vào giỏ</button>
+            </div>
+        @endif
+    </form>
+@endif
+
+<hr class="title-divider">
+
+{{-- 3) Danh sách tất cả loại phòng --}}
+<h4 class="mb-3">Tất cả loại phòng</h4>
+<p class="muted mb-3">
+    @if(!empty($check_in) && !empty($check_out))
+        Phòng trống được tính theo khoảng: <strong>{{ $check_in }}</strong> → <strong>{{ $check_out }}</strong>.
+    @else
+        Hãy nhập ngày nhận/trả phòng để xem số phòng còn trống.
+    @endif
+</p>
+
+<div class="list-group">
+    @foreach($roomTypesList as $rt)
+        <div class="list-group-item py-3">
+            <div class="d-flex">
+                <div style="flex:0 0 200px;">
+                    <img src="{{ $rt['image_url'] }}" class="img-fluid rounded" alt="{{ $rt['name'] }}">
+                </div>
+                <div class="flex-fill ps-3">
+                    <h6 class="mb-1">{{ $rt['name'] }}</h6>
+                    <span class="d-block">{{ number_format($rt['price'] ?? 0) }} VND / đêm</span>
+                    <span class="d-block">Giường: {{ $rt['bed_type'] ?? 'Không rõ' }}</span>
+
+                    <div class="mt-2">
+                        @if(isset($rt['available_count']))
+                            <span>Phòng trống: <strong>{{ $rt['available_count'] }}</strong></span>
+                        @else
+                            <span class="muted">Phòng trống: — (chưa chọn ngày)</span>
+                        @endif
+                    </div>
+
+                    <div class="mt-2">
+                        @if(!empty($rt['amenities']))
+                            @foreach($rt['amenities'] as $aid)
+                                @if(!empty($allAmenities[$aid]))
+                                    <span class="badge bg-light text-dark me-1">{{ $allAmenities[$aid]->name }}</span>
+                                @endif
+                            @endforeach
+                        @else
+                            <span class="muted">Chưa có tiện ích</span>
+                        @endif
+                    </div>
+
+                    {{-- Form thêm trực tiếp loại phòng vào tour --}}
+                    <form action="{{ route('booking.tour.addToCart') }}" method="post" class="mt-3">
+                        @csrf
+                        <input type="hidden" name="check_in"  value="{{ $check_in }}">
+                        <input type="hidden" name="check_out" value="{{ $check_out }}">
+                        <input type="hidden" name="adults"   value="{{ $adults ?? 1 }}">
+                        <input type="hidden" name="children" value="{{ $children ?? 0 }}">
+
+                        <input type="hidden" name="rooms[0][room_type_id]" value="{{ $rt['id'] }}">
+                        <div class="d-flex gap-2 align-items-center">
+                            <label class="me-2">Số phòng:</label>
+                            <input type="number" name="rooms[0][qty]" class="form-control"
+                                   style="max-width: 120px"
+                                   min="1"
+                                   @if(isset($rt['available_count'])) max="{{ max(1, $rt['available_count']) }}" @endif
+                                   value="1">
+                            <button type="submit" class="btn btn-outline-success"
+                                    @if(empty($check_in) || empty($check_out)) disabled @endif>
+                                Thêm vào tour
+                            </button>
+                        </div>
+                        @if(empty($check_in) || empty($check_out))
+                            <small class="muted d-block mt-1">Vui lòng chọn ngày để thêm vào tour.</small>
+                        @endif
+                    </form>
+                </div>
+            </div>
+        </div>
+    @endforeach
+</div>
+
+
     </div>
 </section>
 

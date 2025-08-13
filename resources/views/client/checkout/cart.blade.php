@@ -34,8 +34,8 @@
                             <th>Ngày trả</th>
                             <th>Số đêm</th>
                             <th>Số lượng</th>
-                            <th>Người lớn</th>
-                            <th>Trẻ em</th>
+                            {{-- <th>Người lớn</th>
+                            <th>Trẻ em</th> --}}
                             <th class="text-end">Thành tiền</th>
                             <th></th>
                         </tr>
@@ -58,8 +58,8 @@
                                 <td>{{ $item['check_out'] }}</td>
                                 <td>{{ $item['nights'] ?? \Carbon\Carbon::parse($item['check_in'])->diffInDays($item['check_out']) }}</td>
                                 <td>{{ $item['qty'] }}</td>
-                                <td>{{ $item['adults'] }}</td>
-                                <td>{{ $item['children'] }}</td>
+                                {{-- <td>{{ $item['adults'] }}</td>
+                                <td>{{ $item['children'] }}</td> --}}
                                 <td class="text-end text-danger fw-bold">
                                     {{ number_format($item['sub_total'], 0, ',', '.') }} VND
                                 </td>
