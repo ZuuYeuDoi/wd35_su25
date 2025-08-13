@@ -61,78 +61,93 @@
 
                 </div>
 
-                <table class="table table-bordered text-center">
-                    <thead class="bg-light">
-                        <tr class="text-dark">
-                            <th>#</th>
-                            <th>Dịch vụ / Sản phẩm</th>
-                            <th>Mô tả</th>
-                            <th>Đơn giá</th>
-                            <th>Số lượng</th>
-                            <th>Thành tiền</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @php $i = 1; @endphp
+                {{-- Bảng phòng --}}
+<table class="table table-bordered text-center mb-4">
+    <thead class="bg-light">
+        <tr class="text-dark">
+            <th>#</th>
+            <th>Dịch vụ / Sản phẩm</th>
+            <th>Mô tả</th>
+            <th>Đơn giá</th>
+            <th>Số lượng</th>
+            <th>Thành tiền</th>
+        </tr>
+    </thead>
+    <tbody>
+        @php $i = 1; @endphp
+        @foreach ($bill->rooms as $room)
+            <tr>
+                <td>{{ $i++ }}</td>
+                <td class="text-start">Thuê phòng</td>
+                <td>{{ $room->room_name }}</td>
+                <td>{{ number_format($room->price_per_night) }}đ</td>
+                <td>
+                    @if($room->in_day)
+                        trong ngày
+                    @else
+                        {{ $room->nights }} đêm
+                    @endif
+                </td>
+                <td>{{ number_format($room->total_price) }}đ</td>
+            </tr>
+        @endforeach
+    </tbody>
+</table>
 
-                        {{-- Phòng đã đặt --}}
-                            @foreach ($bill->rooms as $room)
-                                <tr>
-                                    <td>{{ $i++ }}</td>
-                                    <td class="text-start">Thuê phòng</td>
-                                    <td>{{ $room->room_name }}</td>
-                                    <td>{{ number_format($room->price_per_night) }}đ</td>
-                                    <td>
-                                        @if($room->in_day)
-                                            trong ngày
-                                        @else
-                                            {{ $room->nights }} đêm
-                                        @endif
-                                    </td>
-                                    <td>{{ number_format($room->total_price) }}đ</td>
-                                </tr>
-                            @endforeach
+{{-- Bảng dịch vụ --}}
+<table id="service-table" class="table table-bordered text-center mb-4">
+    <thead class="bg-light">
+        <tr class="text-dark">
+            <th>#</th>
+            <th>Dịch vụ</th>
+            <th>Mô tả</th>
+            <th>Đơn giá</th>
+            <th>Số lượng</th>
+            <th>Thành tiền</th>
+        </tr>
+    </thead>
+    <tbody>
+        @php $i = 1; @endphp
+        @foreach ($groupedServices as $service)
+            <tr>
+                <td>{{ $i++ }}</td>
+                <td class="text-start">{{ $service->service_name }}</td>
+                <td>-</td>
+                <td>{{ number_format($service->unit_price, 0, ',', '.') }}đ</td>
+                <td>{{ $service->quantity }}</td>
+                <td>{{ number_format($service->total_price, 0, ',', '.') }}đ</td>
+            </tr>
+        @endforeach
+    </tbody>
+</table>
 
+{{-- Bảng phụ thu --}}
+<table class="table table-bordered text-center">
+    <thead class="bg-light">
+        <tr class="text-dark">
+            <th>#</th>
+            <th>Phụ thu</th>
+            <th>Mô tả</th>
+            <th>Đơn giá</th>
+            <th>Số lượng</th>
+            <th>Thành tiền</th>
+        </tr>
+    </thead>
+    <tbody>
+        @php $i = 1; @endphp
+        @foreach ($bill->fees as $fee)
+            <tr>
+                <td>{{ $i++ }}</td>
+                <td class="text-start">{{ $fee->fee_name }}</td>
+                <td>{{ $fee->description ?? '-' }}</td>
+                <td>{{ number_format($fee->amount) }}đ</td>
+                <td>1</td>
+                <td>{{ number_format($fee->amount) }}đ</td>
+            </tr>
+        @endforeach
+    </tbody>
+</table>
 
-                        {{-- Dịch vụ đã dùng --}}
-                       @php
-                            $groupedServices = $bill->services->groupBy('service_name')->map(function($items) {
-                                return (object)[
-                                    'service_name' => $items->first()->service_name,
-                                    'unit_price'   => $items->first()->unit_price,
-                                    'quantity'     => $items->sum('quantity'),
-                                    'total_price'  => $items->sum('total_price'),
-                                ];
-                            });
-                            $i = 1;
-                        @endphp
-
-                        {{-- Dịch vụ đã dùng (gộp theo tên) --}}
-                        @foreach ($groupedServices as $service)
-                            <tr>
-                                <td>{{ $i++ }}</td>
-                                <td class="text-start">{{ $service->service_name }}</td>
-                                <td>-</td>
-                                <td>{{ number_format($service->unit_price, 0, ',', '.') }}đ</td>
-                                <td>{{ $service->quantity }}</td>
-                                <td>{{ number_format($service->total_price, 0, ',', '.') }}đ</td>
-                            </tr>
-                        @endforeach
-
-
-                        {{-- Phụ thu --}}
-                        @foreach ($bill->fees as $fee)
-                            <tr>
-                                <td>{{ $i++ }}</td>
-                                <td class="text-start">{{ $fee->fee_name }}</td>
-                                <td>{{ $fee->description ?? '-' }}</td>
-                                <td>{{ number_format($fee->amount) }}đ</td>
-                                <td>1</td>
-                                <td>{{ number_format($fee->amount) }}đ</td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
 
                 <div class="row justify-content-end mt-4">
                     <div class="col-md-6">

@@ -48,92 +48,84 @@
             </div>
 
             {{-- Bảng hóa đơn --}}
-            <div class="table-responsive mb-4">
-                <table class="table table-bordered align-middle">
-                    <thead class="table-secondary">
-                        <tr>
-                            <th>#</th>
-                            <th>Dịch vụ / Sản phẩm</th>
-                            <th>Số lượng</th>
-                            <th>Đơn giá</th>
-                            <th>Thành tiền</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @php
-                            use Carbon\Carbon;
-                            $nights = Carbon::parse($booking->check_in_date)->diffInDays(
-                                Carbon::parse($booking->check_out_date),
-                            );
-                            if ($nights == 0) {
-                                $nights = 1;
-                            }
-                        @endphp
-                        @php
-                            $total = 0;
-                            $i = 1;
-                        @endphp
+            {{-- Bảng phòng --}}
+<div class="table-responsive mb-4">
+    <table class="table table-bordered align-middle">
+        <thead class="table-secondary">
+            <tr>
+                <th>#</th>
+                <th>Phòng</th>
+                <th>Số lượng</th>
+                <th>Đơn giá</th>
+                <th>Thành tiền</th>
+            </tr>
+        </thead>
+        <tbody>
+            @php
+                use Carbon\Carbon;
+                $nights = Carbon::parse($booking->check_in_date)->diffInDays(Carbon::parse($booking->check_out_date));
+                if ($nights == 0) $nights = 1;
+                $total = 0;
+                $i = 1;
+            @endphp
 
-                        {{-- Phòng --}}
-                        @foreach ($booking->bookingRooms as $bookingRoom)
-                            @php
-                                $room = $bookingRoom->room;
-                                $roomPrice = $room->price;
-                                $roomTotal = $roomPrice * $nights;
-                                $total += $roomTotal;
-                            @endphp
-                            <tr>
-                                <td>{{ $i++ }}</td>
-                                <td>{{ $room->title }} ({{ $room->roomType->name }})</td>
-                                <td>{{ $nights }} đêm</td>
-                                <td>{{ number_format($roomPrice, 0, ',', '.') }}đ / đêm</td>
-                                <td>{{ number_format($roomTotal, 0, ',', '.') }}đ</td>
-                            </tr>
-                        @endforeach
+            @foreach ($booking->bookingRooms as $bookingRoom)
+                @php
+                    $room = $bookingRoom->room;
+                    $roomPrice = $room->price;
+                    $roomTotal = $roomPrice * $nights;
+                    $total += $roomTotal;
+                @endphp
+                <tr>
+                    <td>{{ $i++ }}</td>
+                    <td>{{ $room->title }} ({{ $room->roomType->name }})</td>
+                    <td>{{ $nights }} đêm</td>
+                    <td>{{ number_format($roomPrice, 0, ',', '.') }}đ / đêm</td>
+                    <td>{{ number_format($roomTotal, 0, ',', '.') }}đ</td>
+                </tr>
+            @endforeach
+        </tbody>
+    </table>
+</div>
 
-                        {{-- Dịch vụ từ tất cả cart --}}
-                        @if ($groupedItems->count())
-                            @foreach ($groupedItems as $item)
-                                @php
-                                    $service = $item->service;
-                                @endphp
-                                <tr>
-                                    <td>{{ $i++ }}</td>
-                                    <td>{{ $service->name }}</td>
-                                    <td>{{ $item->quantity }}</td>
-                                    <td>{{ number_format($item->unit_price, 0, ',', '.') }}đ</td>
-                                    <td>{{ number_format($item->total_price, 0, ',', '.') }}đ</td>
-                                </tr>
-                            @endforeach
-                        @endif
+{{-- Bảng dịch vụ --}}
+@if ($groupedItems->count())
+<div class="table-responsive mb-4">
+    <table id="service-table" class="table table-bordered align-middle">
+        <thead class="table-secondary">
+            <tr>
+                <th>#</th>
+                <th>Dịch vụ</th>
+                <th>Số lượng</th>
+                <th>Đơn giá</th>
+                <th>Thành tiền</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach ($groupedItems as $item)
+                @php
+                    $service = $item->service;
+                    $total += $item->total_price;
+                @endphp
+                <tr>
+                    <td>{{ $loop->iteration }}</td>
+                    <td>{{ $service->name }}</td>
+                    <td>{{ $item->quantity }}</td>
+                    <td>{{ number_format($item->unit_price, 0, ',', '.') }}đ</td>
+                    <td>{{ number_format($item->total_price, 0, ',', '.') }}đ</td>
+                </tr>
+            @endforeach
+        </tbody>
+    </table>
+</div>
+@endif
+
+{{-- Tổng cộng --}}
+<div class="text-end fw-bold mb-4">
+    Tổng cộng: <span id="total-price" class="text-danger">{{ number_format($total, 0, ',', '.') }}đ</span>
+</div>
 
 
-                        {{-- Phụ phí --}}
-                        {{-- @if ($booking->feeIncurreds->count())
-                            <tr class="table-secondary">
-                                <td colspan="5" class="fw-bold">Phụ phí phát sinh</td>
-                            </tr>
-                            @foreach ($booking->feeIncurreds as $fee)
-                                @php $total += $fee->amount; @endphp
-                                <tr>
-                                    <td>{{ $i++ }}</td>
-                                    <td>{{ $fee->name }}</td>
-                                    <td>1 lần</td>
-                                    <td>{{ number_format($fee->amount, 0, ',', '.') }}đ</td>
-                                    <td>{{ number_format($fee->amount, 0, ',', '.') }}đ</td>
-                                </tr>
-                            @endforeach
-                        @endif --}}
-
-                    </tbody>
-                    <tfoot>
-                        <tr>
-                            <td colspan="4" class="text-end fw-bold">Tổng cộng</td>
-                            <td class="fw-bold text-danger">{{ number_format($total, 0, ',', '.') }}đ</td>
-                        </tr>
-                    </tfoot>
-                </table>
-            </div>
             <div class="table-responsive mb-4">
                 <table class="table table-bordered align-middle">
                     <thead class="table-secondary">
@@ -310,63 +302,54 @@
                         .then(response => response.json())
                         .then(data => {
                             if (data.success) {
-                                const tbody = document.querySelector('table tbody');
-                                const totalCell = document.querySelector(
-                                    'tfoot td.text-danger');
-                                const totalPrice = servicePrice * quantity;
+                    const serviceTable = document.querySelector('#service-table tbody');
+                    const totalPriceEl = document.querySelector('#total-price');
+                    const totalPriceValue = parseInt(totalPriceEl.textContent.replace(/\D/g, '')) || 0;
+                    const newServiceTotal = servicePrice * quantity;
 
-                                // 🔍 Kiểm tra xem dịch vụ đã có trong bảng chưa
-                                let existingRow = Array.from(tbody.querySelectorAll('tr')).find(
-                                    tr => {
-                                        return tr.querySelector('td:nth-child(2)')
-                                            ?.innerText.trim() === serviceName;
-                                    });
+                    // Kiểm tra xem dịch vụ đã tồn tại trong bảng chưa
+                    let existingRow = Array.from(serviceTable.querySelectorAll('tr')).find(tr => {
+                        return tr.querySelector('td:nth-child(2)')?.innerText.trim() === serviceName;
+                    });
 
-                                if (existingRow) {
-                                    // ✅ Nếu có -> cộng dồn số lượng và thành tiền
-                                    let qtyCell = existingRow.querySelector('td:nth-child(3)');
-                                    let priceCell = existingRow.querySelector(
-                                        'td:nth-child(5)');
+                    if (existingRow) {
+                        // Cộng dồn số lượng và thành tiền
+                        let qtyCell = existingRow.querySelector('td:nth-child(3)');
+                        let priceCell = existingRow.querySelector('td:nth-child(5)');
 
-                                    let currentQty = parseInt(qtyCell.innerText) || 0;
-                                    let newQty = currentQty + quantity;
-                                    qtyCell.innerText = newQty;
+                        let currentQty = parseInt(qtyCell.innerText) || 0;
+                        let newQty = currentQty + quantity;
+                        qtyCell.innerText = newQty;
 
-                                    let newTotal = servicePrice * newQty;
-                                    priceCell.innerText = newTotal.toLocaleString() + 'đ';
-                                } else {
-                                    // ❌ Nếu chưa có -> thêm dòng mới
-                                    const newRow = document.createElement('tr');
-                                    const currentIndex = tbody.querySelectorAll('tr').length +
-                                        1;
+                        let newTotal = servicePrice * newQty;
+                        priceCell.innerText = newTotal.toLocaleString() + 'đ';
+                    } else {
+                        // Thêm dòng mới
+                        const newRow = document.createElement('tr');
+                        const currentIndex = serviceTable.querySelectorAll('tr').length + 1;
+                        newRow.innerHTML = `
+                            <td>${currentIndex}</td>
+                            <td>${serviceName}</td>
+                            <td>${quantity}</td>
+                            <td>${servicePrice.toLocaleString()}đ</td>
+                            <td>${newServiceTotal.toLocaleString()}đ</td>
+                        `;
+                        serviceTable.appendChild(newRow);
+                    }
 
-                                    newRow.innerHTML = `
-                <td>${currentIndex}</td>
-                <td>${serviceName}</td>
-                <td>${quantity}</td>
-                <td>${servicePrice.toLocaleString()}đ</td>
-                <td>${totalPrice.toLocaleString()}đ</td>
-            `;
-                                    tbody.appendChild(newRow);
-                                }
+                    // Cập nhật tổng cộng
+                    totalPriceEl.textContent = (totalPriceValue + newServiceTotal).toLocaleString() + 'đ';
 
-                                // ✅ Cập nhật tổng cộng
-                                const currentTotal = parseInt(totalCell.textContent.replace(
-                                    /\D/g, '')) || 0;
-                                totalCell.textContent = (currentTotal + totalPrice)
-                                    .toLocaleString() + 'đ';
-
-                                // Ẩn box sau khi thêm
-                                serviceBox.querySelector('.quantity-box').classList.add(
-                                    'd-none');
-                            } else {
-                                alert(data.message || 'Thêm dịch vụ thất bại!');
-                            }
-                        })
-                        .catch(error => {
-                            console.error(error);
-                            alert('Có lỗi xảy ra!');
-                        });
+                    // Ẩn box sau khi thêm
+                    serviceBox.querySelector('.quantity-box').classList.add('d-none');
+                } else {
+                    alert(data.message || 'Thêm dịch vụ thất bại!');
+                }
+            })
+            .catch(error => {
+                console.error(error);
+                alert('Có lỗi xảy ra!');
+            });
 
                 });
             });

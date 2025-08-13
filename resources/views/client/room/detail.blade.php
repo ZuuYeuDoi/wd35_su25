@@ -37,6 +37,39 @@
     .room-thumbnail.border-primary {
         border: 2px solid #007bff !important;
     }
+    .star-rating {
+        direction: rtl;
+        font-size: 2rem;
+        display: inline-flex;
+    }
+
+    .star-rating input {
+        display: none;
+    }
+
+    .star-rating label {
+        color: #ccc;
+        cursor: pointer;
+        transition: color 0.2s;
+        padding: 0 2px;
+    }
+
+    .star-rating input:checked ~ label,
+    .star-rating label:hover,
+    .star-rating label:hover ~ label {
+        color: gold;
+    }
+    filter-rating .btn {
+        margin-right: 6px;
+        margin-bottom: 6px;
+        min-width: 60px;
+    }
+
+    .filter-rating .btn.active {
+        background-color: #0d6efd;
+        color: white;
+        border-color: #0d6efd;
+    }
 </style>
 @endpush
 
@@ -123,94 +156,112 @@
                     <p><em>Không có tiện nghi</em></p>
                     @endforelse
                 </div>
-<hr class="my-4">
+                <hr class="my-4">
 
-<!-- ĐÁNH GIÁ VÀ BÌNH LUẬN -->
-<h4 class="mb-3">Đánh giá phòng</h4>
-@php
-    $fullStars = floor($avgRating);
-    $halfStar = $avgRating - $fullStars >= 0.5;
-@endphp
+            <!-- ĐÁNH GIÁ VÀ BÌNH LUẬN -->
+                <!-- ĐÁNH GIÁ VÀ BÌNH LUẬN -->
+                <h4 class="mb-3">Đánh giá phòng</h4>
 
-<div class="rating mb-3">
-    <strong>Đánh giá trung bình:</strong>
-    @for ($i = 1; $i <= $fullStars; $i++)
-        <i class="fas fa-star text-warning"></i>
-    @endfor
+                @php
+                    $fullStars = floor($avgRating);
+                    $halfStar = $avgRating - $fullStars >= 0.5;
+                @endphp
 
-    @if ($halfStar)
-        <i class="fas fa-star-half-alt text-warning"></i>
-    @endif
-
-    @for ($i = 1; $i <= (5 - $fullStars - ($halfStar ? 1 : 0)); $i++)
-        <i class="far fa-star text-warning"></i>
-    @endfor
-
-    <span>{{ number_format($avgRating, 1) }} / 5 ({{ $totalReviews }} đánh giá)</span>
-</div>
-<!-- Nếu user đã login và có thể bình luận -->
-@auth
-    @if ($canReview)
-        <form action="{{ route('reviews.store') }}" method="POST" class="mb-4 border rounded p-3 shadow-sm bg-light">
-            @csrf
-            <input type="hidden" name="room_id" value="{{ $room->id }}">
-
-            <div class="mb-3">
-                <label for="rating" class="form-label">Đánh giá sao</label>
-                <select name="rating" id="rating" class="form-select" required>
-                    <option value="">Chọn số sao</option>
-                    @for ($i = 5; $i >= 1; $i--)
-                        <option value="{{ $i }}">{{ $i }} sao</option>
+                <div class="rating mb-3">
+                    <strong>Đánh giá trung bình:</strong>
+                    @for ($i = 1; $i <= $fullStars; $i++)
+                        <i class="fas fa-star text-warning"></i>
                     @endfor
-                </select>
-            </div>
 
-                    <div class="mb-3">
-                        <label for="comment" class="form-label">Bình luận</label>
-                        <textarea name="comment" id="comment" rows="3" class="form-control" placeholder="Viết cảm nhận của bạn..." required></textarea>
-                    </div>
+                    @if ($halfStar)
+                        <i class="fas fa-star-half-alt text-warning"></i>
+                    @endif
 
-                    <button type="submit" class="btn btn-primary">Gửi đánh giá</button>
-                </form>
-                @else
-                <div class="alert alert-warning">
-                    Bạn chỉ có thể đánh giá khi đã đặt và trả phòng này.
+                    @for ($i = 1; $i <= (5 - $fullStars - ($halfStar ? 1 : 0)); $i++)
+                        <i class="far fa-star text-warning"></i>
+                    @endfor
+
+                    <span>{{ number_format($avgRating, 1) }} / 5 ({{ $totalReviews }} đánh giá)</span>
                 </div>
-                @endif
-                @endauth
 
-                @guest
-                <div class="alert alert-info">
-                    Vui lòng <a href="{{ route('login') }}">đăng nhập</a> để viết đánh giá.
-                </div>
-                @endguest
+                <!-- Nếu user đã login và có thể bình luận -->
+                @auth
+                    @if ($canReview)
+                        <form action="{{ route('reviews.store') }}" method="POST" class="mb-4 border rounded p-3 shadow-sm bg-light">
+                            @csrf
+                            <input type="hidden" name="room_id" value="{{ $room->id }}">
 
-                <!-- DANH SÁCH BÌNH LUẬN -->
-
-                <div class="mt-4">
-                    <h5 class="mb-3">Bình luận từ khách hàng</h5>
-                    <div class="review-scroll-container bg-white rounded shadow-sm p-3">
-                        @forelse ($reviews as $review)
-                        <div class="border rounded p-3 mb-3 bg-light">
-                            <div class="d-flex justify-content-between align-items-start mb-1">
-                                <div style="font-size: 14px;">
-                                    <strong>{{ $review->user->name }}</strong>
-                                    <small class="text-muted">({{ $review->created_at->format('d/m/Y') }})</small>
-                                </div>
-                                <div class="text-warning" style="font-size: 14px;">
-                                    @for ($i = 1; $i <= 5; $i++)
-                                        <i class="fas fa-star{{ $i <= $review->rating ? '' : '-o' }}"></i>
-                                        @endfor
+                            <div class="mb-3">
+                                <label class="form-label">Đánh giá sao</label>
+                                <div class="star-rating">
+                                    @for ($i = 5; $i >= 1; $i--)
+                                        <input type="radio" name="rating" id="rating{{ $i }}" value="{{ $i }}" required>
+                                        <label for="rating{{ $i }}" title="{{ $i }} sao">&#9733;</label>
+                                    @endfor
                                 </div>
                             </div>
 
-                            <p class="mb-0" style="font-size: 15px;">{{ $review->comment }}</p>
+                            <div class="mb-3">
+                                <label for="comment" class="form-label">Bình luận</label>
+                                <textarea name="comment" id="comment" rows="3" class="form-control" placeholder="Viết cảm nhận của bạn..." required></textarea>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary">Gửi đánh giá</button>
+                        </form>
+                    @else
+                        <div class="alert alert-warning">
+                            Bạn chỉ có thể đánh giá khi đã đặt và trả phòng này.
                         </div>
+                    @endif
+                @endauth
+
+                @guest
+                    <div class="alert alert-info">
+                        Vui lòng <a href="{{ route('login') }}">đăng nhập</a> để viết đánh giá.
+                    </div>
+                @endguest
+
+                <!-- DANH SÁCH BÌNH LUẬN -->
+                <div class="mt-4">
+                    <h5 class="mb-3">Bình luận từ khách hàng</h5>
+
+                    <!-- Bộ lọc đánh giá -->
+                    <div class="mb-3">
+                        <strong>Lọc theo đánh giá:</strong>
+                        <div class="filter-rating mt-2">
+                            <button class="btn btn-sm btn-outline-primary filter-btn active" data-rating="all">Tất cả</button>
+                            @for ($i = 5; $i >= 1; $i--)
+                                <button class="btn btn-sm btn-outline-primary filter-btn" data-rating="{{ $i }}">
+                                    {{ $i }} sao
+                                </button>
+                            @endfor
+                        </div>
+                    </div>
+
+                    <!-- Danh sách đánh giá -->
+                    <div class="review-scroll-container bg-white rounded shadow-sm p-3">
+                        @forelse ($reviews as $review)
+                            <div class="border rounded p-3 mb-3 bg-light single-review" data-rating="{{ $review->rating }}">
+                                <div class="d-flex justify-content-between align-items-start mb-1">
+                                    <div style="font-size: 14px;">
+                                        <strong>{{ $review->user->name }}</strong>
+                                        <small class="text-muted">({{ $review->created_at->format('d/m/Y') }})</small>
+                                    </div>
+                                    <div class="text-warning" style="font-size: 14px;">
+                                        @for ($i = 1; $i <= 5; $i++)
+                                            <i class="fas fa-star{{ $i <= $review->rating ? '' : '-o' }}"></i>
+                                        @endfor
+                                    </div>
+                                </div>
+
+                                <p class="mb-0" style="font-size: 15px;">{{ $review->comment }}</p>
+                            </div>
                         @empty
-                        <p class="text-muted">Chưa có đánh giá nào cho phòng này.</p>
+                            <p class="text-muted">Chưa có đánh giá nào cho phòng này.</p>
                         @endforelse
                     </div>
                 </div>
+
             </div>
 
             <!-- RIGHT -->
@@ -413,6 +464,24 @@
         window.addToBooking = function(id, name, price) {
             alert(`Đặt phòng: ${name} (${price.toLocaleString()} VND)`);
         }
+        document.querySelectorAll('.filter-btn').forEach(button => {
+        button.addEventListener('click', () => {
+            // Active class
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+
+            const selectedRating = button.dataset.rating;
+            const reviews = document.querySelectorAll('.single-review');
+
+            reviews.forEach(review => {
+                if (selectedRating === 'all' || review.dataset.rating === selectedRating) {
+                    review.style.display = '';
+                } else {
+                    review.style.display = 'none';
+                }
+            });
+        });
+    });
     });
 </script>
 @endpush
