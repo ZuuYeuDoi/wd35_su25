@@ -35,12 +35,14 @@ public function store(Request $request)
     try {
         // Tìm 1 phòng trống phù hợp
         $room = Room::where('room_type_id', $request->room_type_id)
-            ->whereDoesntHave('bookingRooms', function ($q) use ($request) {
-                $q->where(function ($query) use ($request) {
-                    $query->whereBetween('check_in_date', [$request->check_in, $request->check_out])
-                          ->orWhereBetween('check_out_date', [$request->check_in, $request->check_out]);
-                });
-            })->first();
+        ->where('status', 1) // chỉ lấy phòng có trạng thái = 1
+        ->whereDoesntHave('bookingRooms', function ($q) use ($request) {
+            $q->where(function ($query) use ($request) {
+                $query->whereBetween('check_in_date', [$request->check_in, $request->check_out])
+                    ->orWhereBetween('check_out_date', [$request->check_in, $request->check_out]);
+            });
+        })
+        ->first();
 
             $checkIn = Carbon::parse($request->check_in . ' 12:00:00');
             $checkOut = Carbon::parse($request->check_out . ' 12:00:00');
