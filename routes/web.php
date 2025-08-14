@@ -2,6 +2,7 @@
 
 
 
+use App\Http\Controllers\Admin\DashboardController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\User\CartController;
@@ -20,7 +21,6 @@ use App\Http\Controllers\Admin\ServiceController;
 
 use App\Http\Controllers\Admin\AmenitieController;
 use App\Http\Controllers\Admin\RoomTypeController;
-use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Payment\PaymentController;
 
 use App\Http\Controllers\Admin\BookingRoomController;
@@ -130,6 +130,11 @@ Route::prefix('admin')->group(function () {
     Route::controller(DashboardController::class)->group(function () {
         Route::get('', 'index')->name('dashboard.index');
     });
+
+    Route::controller(DashboardController::class)->group(function () {
+        Route::get('', 'index')->name('dashboard.index');
+    });
+
 
     Route::controller(RoomController::class)->group(function () {
         Route::get('rooms', 'index')->name('room.index');
