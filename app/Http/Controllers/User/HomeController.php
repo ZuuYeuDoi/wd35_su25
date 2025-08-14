@@ -88,24 +88,9 @@ class HomeController extends Controller
 
         $allAmenities = Amenitie::whereIn('id', $amenityIds)->get()->keyBy('id');
 
-        // Tìm các phòng đã được đặt trong khoảng thời gian đó
-        $bookedRoomIds = BookingRoom::whereIn('room_id', $rooms)
-            ->where(function ($query) use ($checkIn, $checkOut) {
-                $query->whereBetween('check_in_date', [$checkIn, $checkOut])
-                    ->orWhereBetween('check_out_date', [$checkIn, $checkOut])
-                    ->orWhere(function ($query2) use ($checkIn, $checkOut) {
-                        $query2->where('check_in_date', '<', $checkIn)
-                            ->where('check_out_date', '>=', $checkOut);
-                    });
-            })
-            ->pluck('room_id');
-
-        // Trả về số lượng phòng còn trống
-        return Room::where('room_type_id', $roomTypeId)
-            ->where('status', 1)
-            ->whereNotIn('id', $bookedRoomIds)
-            ->count();
+        return view('client.room.index', compact('groupedRoomTypes', 'allAmenities'));
     }
+
 
     public function getAvailableRoomsCount($roomTypeId, $checkIn, $checkOut)
     {
@@ -171,7 +156,7 @@ class HomeController extends Controller
         $canReview = false;
         if (auth()->check()) {
             $canReview = Booking::where('user_id', auth()->id())
-                ->where('status', 4)
+                ->where('status', '>=', 3)
                 ->whereHas('rooms', function ($q) use ($room) {
                     $q->where('rooms.id', $room->id);
                 })
@@ -228,7 +213,7 @@ class HomeController extends Controller
         $canReview = false;
         if (auth()->check()) {
             $canReview = Booking::where('user_id', auth()->id())
-                ->where('status', 4)
+                ->where('status', '>=', 3)
                 ->whereHas('rooms', function ($q) use ($room) {
                     $q->where('rooms.id', $room->id);
                 })

@@ -21,7 +21,6 @@ use App\Http\Controllers\Admin\ServiceController;
 
 use App\Http\Controllers\Admin\AmenitieController;
 use App\Http\Controllers\Admin\RoomTypeController;
-use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Payment\PaymentController;
 
 use App\Http\Controllers\Admin\BookingRoomController;
