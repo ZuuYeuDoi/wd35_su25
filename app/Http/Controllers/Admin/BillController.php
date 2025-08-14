@@ -98,19 +98,22 @@ class BillController extends Controller
             $cartItems = $carts->flatMap(fn($cart) => $cart->cartServiceItems);
 
             // ✅ Gộp dịch vụ giống nhau
-            $groupedServices = $cartItems->groupBy('service_name')->map(function ($items) {
+            $groupedServices = $cartItems
+            ->groupBy(function ($item) {
+                return $item->service_id . '-' . $item->unit_price; // gộp theo ID + giá
+            })
+            ->map(function ($items) {
                 $first = $items->first();
                 $quantity = $items->sum('quantity');
-                $totalPrice = $first->unit_price * $quantity;
-
                 return (object)[
                     'service_id'   => $first->service_id,
-                    'service_name' => $first->service->name,
+                    'service_name' => $first->service->name ?? 'Dịch vụ không xác định',
                     'unit_price'   => $first->unit_price,
                     'quantity'     => $quantity,
-                    'total_price'  => $totalPrice,
+                    'total_price'  => $first->unit_price * $quantity,
                 ];
             });
+
 
             $roomAmount = 0;
             $serviceAmount = $groupedServices->sum('total_price');
@@ -219,11 +222,12 @@ class BillController extends Controller
     }
 
 
-    public function final($id)
+   public function final($id)
 {
     $bill = Bill::with(['rooms', 'services', 'fees', 'booking.bookingRooms'])
         ->findOrFail($id);
 
+    // ✅ Tính số ngày ở
     if ($bill->booking) {
         $checkIn = \Carbon\Carbon::parse($bill->booking->actual_check_in ?? $bill->booking->check_in_date);
         $checkOut = \Carbon\Carbon::parse($bill->booking->actual_check_out ?? $bill->booking->check_out_date);
@@ -233,6 +237,7 @@ class BillController extends Controller
         $bill->stay_days = $days > 0 ? $days : 0;
     }
 
+    // ✅ Tính giá phòng
     foreach ($bill->rooms as $room) {
         $room->nights = $bill->stay_days ?? $room->nights;
 
@@ -245,23 +250,13 @@ class BillController extends Controller
         }
     }
 
-    // ✅ Gom dịch vụ giống nhau để truyền sang view
-    $groupedServices = $bill->services
-        ->groupBy('service_id')
-        ->map(function ($items) {
-            $first = $items->first();
-            $quantity = $items->sum('quantity');
-            return (object)[
-                'service_id'   => $first->service_id,
-                'service_name' => $first->service_name,
-                'unit_price'   => $first->unit_price,
-                'quantity'     => $quantity,
-                'total_price'  => $first->unit_price * $quantity,
-            ];
-        });
+    // ❌ Không gộp dịch vụ — trả nguyên dữ liệu
+    $services = $bill->services;
 
-    return view('admin.bills.final_bill', compact('bill', 'groupedServices'));
+    return view('admin.bills.final_bill', compact('bill', 'services'));
 }
+
+
 
 
 
