@@ -220,38 +220,49 @@ class BillController extends Controller
 
 
     public function final($id)
-    {
-        $bill = Bill::with(['rooms', 'services', 'fees', 'booking.bookingRooms'])
-            ->findOrFail($id);
+{
+    $bill = Bill::with(['rooms', 'services', 'fees', 'booking.bookingRooms'])
+        ->findOrFail($id);
 
-        if ($bill->booking) {
-            $checkIn = \Carbon\Carbon::parse($bill->booking->actual_check_in ?? $bill->booking->check_in_date);
-            $checkOut = \Carbon\Carbon::parse($bill->booking->actual_check_out ?? $bill->booking->check_out_date);
+    if ($bill->booking) {
+        $checkIn = \Carbon\Carbon::parse($bill->booking->actual_check_in ?? $bill->booking->check_in_date);
+        $checkOut = \Carbon\Carbon::parse($bill->booking->actual_check_out ?? $bill->booking->check_out_date);
 
-            // Tính số ngày ở, làm tròn hợp lý (<0.5 xuống, >=0.5 lên)
-            $diff = $checkIn->floatDiffInDays($checkOut);
-            $days = ($diff - floor($diff)) < 0.5 ? floor($diff) : ceil($diff);
-
-            $bill->stay_days = $days > 0 ? $days : 0;
-        }
-
-        foreach ($bill->rooms as $room) {
-            // Gán số đêm cho phòng
-            $room->nights = $bill->stay_days ?? $room->nights;
-
-            if (($bill->stay_days ?? 0) < 1) {
-                // Nếu ở dưới 1 ngày: tính phí mặc định và đánh dấu "trong ngày"
-                $room->total_price = 200000;
-                $room->in_day = true;
-            } else {
-                // Nếu ở >= 1 ngày: tính theo giá/đêm * số đêm
-                $room->total_price = $room->price_per_night * $room->nights;
-                $room->in_day = false;
-            }
-        }
-
-        return view('admin.bills.final_bill', compact('bill'));
+        $diff = $checkIn->floatDiffInDays($checkOut);
+        $days = ($diff - floor($diff)) < 0.5 ? floor($diff) : ceil($diff);
+        $bill->stay_days = $days > 0 ? $days : 0;
     }
+
+    foreach ($bill->rooms as $room) {
+        $room->nights = $bill->stay_days ?? $room->nights;
+
+        if (($bill->stay_days ?? 0) < 1) {
+            $room->total_price = 200000;
+            $room->in_day = true;
+        } else {
+            $room->total_price = $room->price_per_night * $room->nights;
+            $room->in_day = false;
+        }
+    }
+
+    // ✅ Gom dịch vụ giống nhau để truyền sang view
+    $groupedServices = $bill->services
+        ->groupBy('service_id')
+        ->map(function ($items) {
+            $first = $items->first();
+            $quantity = $items->sum('quantity');
+            return (object)[
+                'service_id'   => $first->service_id,
+                'service_name' => $first->service_name,
+                'unit_price'   => $first->unit_price,
+                'quantity'     => $quantity,
+                'total_price'  => $first->unit_price * $quantity,
+            ];
+        });
+
+    return view('admin.bills.final_bill', compact('bill', 'groupedServices'));
+}
+
 
 
     public function index(Request $request)
