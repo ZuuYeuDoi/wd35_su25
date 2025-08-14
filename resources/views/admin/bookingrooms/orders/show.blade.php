@@ -166,28 +166,49 @@
             </div>
         </div>
 
+        
    <!-- Nút hành động -->
-        <div class="row action-buttons mt-4 d-flex flex-wrap gap-2">
-            @if ($booking->status == 1)
-                <div>
-                    <a href="{{ route('bills.temporary', $booking->id) }}" class="btn btn-secondary px-4 py-3">
-                        Nhận phòng
-                    </a>
-                </div>
-                <div>
-                    <form action="{{ route('room_order.cancel', $booking->id) }}" method="POST"
-                        onsubmit="return confirm('Bạn có chắc chắn muốn hủy đơn này?');">
-                        @csrf
-                        @method('PUT')
+       @php
+    use Carbon\Carbon;
+    $now = Carbon::now();
+    $checkInDate = Carbon::parse($booking->check_in_date);
+    $isSameDay = $now->isSameDay($checkInDate);
+    $isInTimeRange = $now->between(
+        $checkInDate->copy()->setTime(14, 0),
+        $checkInDate->copy()->setTime(18, 0)
+    );
+@endphp
 
-                        <div class="mb-2">
-                            <label for="note" class="form-label fw-bold">Lý do hủy đơn:</label>
-                            <textarea name="note" id="note" rows="2" class="form-control" placeholder="Nhập lý do..."></textarea>
-                        </div>
+@if ($booking->status == 1)
+    <div>
+        @if ($isSameDay && $isInTimeRange)
+            <a href="{{ route('bills.temporary', $booking->id) }}" class="btn btn-secondary px-4 py-3">
+                Nhận phòng
+            </a>
+        @else
+            <button class="btn btn-secondary px-4 py-3" disabled>
+                Nhận phòng (Chỉ từ 14h - 18h ngày {{ $checkInDate->format('d/m/Y') }})
+            </button>
+        @endif
+    </div>
+    <div>
+        <form action="{{ route('room_order.cancel', $booking->id) }}" method="POST"
+            onsubmit="return confirm('Bạn có chắc chắn muốn hủy đơn này?');">
+            @csrf
+            @method('PUT')
 
-                        <button type="submit" class="btn btn-danger px-4 py-3">Hủy đơn</button>
-                    </form>
-                </div>
+            <div class="mb-2">
+                <label for="note" class="form-label fw-bold">Lý do hủy đơn:</label>
+                <textarea name="note" id="note" rows="2" class="form-control" placeholder="Nhập lý do..."></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-danger px-4 py-3">Hủy đơn</button>
+        </form>
+    </div>
+
+
+
+
             @elseif ($booking->status == 2)
                 <div>
                     <a href="{{ route('bills.temporary', $booking->id) }}" class="btn btn-success px-4 py-3">

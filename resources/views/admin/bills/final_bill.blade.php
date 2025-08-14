@@ -67,7 +67,7 @@
         <tr class="text-dark">
             <th>#</th>
             <th>Dịch vụ / Sản phẩm</th>
-            <th>Mô tả</th>
+            <th>Số phòng</th>
             <th>Đơn giá</th>
             <th>Số lượng</th>
             <th>Thành tiền</th>
@@ -100,7 +100,6 @@
         <tr class="text-dark">
             <th>#</th>
             <th>Dịch vụ</th>
-            <th>Mô tả</th>
             <th>Đơn giá</th>
             <th>Số lượng</th>
             <th>Thành tiền</th>
@@ -108,11 +107,10 @@
     </thead>
     <tbody>
         @php $i = 1; @endphp
-        @foreach ($groupedServices as $service)
+        @foreach ($bill->services as $service)
             <tr>
                 <td>{{ $i++ }}</td>
                 <td class="text-start">{{ $service->service_name }}</td>
-                <td>-</td>
                 <td>{{ number_format($service->unit_price, 0, ',', '.') }}đ</td>
                 <td>{{ $service->quantity }}</td>
                 <td>{{ number_format($service->total_price, 0, ',', '.') }}đ</td>
@@ -120,6 +118,7 @@
         @endforeach
     </tbody>
 </table>
+
 
 {{-- Bảng phụ thu --}}
 <table class="table table-bordered text-center">

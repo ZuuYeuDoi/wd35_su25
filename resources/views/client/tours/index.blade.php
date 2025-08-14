@@ -87,53 +87,56 @@
 
         {{-- 1) Form lọc --}}
         <h4 class="mb-4">Tìm tour phù hợp</h4>
-        <form action="{{ route('booking.tour.search') }}" method="get" class="row g-3">
-            <div class="col-md-3">
-                <label>Ngày nhận phòng</label>
-                <input type="date" name="check_in" class="form-control"
-                       value="{{ old('check_in', $check_in ?? now()->toDateString()) }}" required>
-            </div>
-            <div class="col-md-3">
-                <label>Ngày trả phòng</label>
-                <input type="date" name="check_out" class="form-control"
-                       value="{{ old('check_out', $check_out ?? now()->addDay()->toDateString()) }}" required>
-            </div>
-            <div class="col-md-3">
-                <label>Hạng phòng mong muốn</label>
-                <select name="preferred_room_type" class="form-control" required>
-                    <option value="">-- Chọn hạng phòng --</option>
-                    @forelse ($roomTypes as $rt)
-                        <option value="{{ $rt->type }}" 
-                            {{ (isset($preferred) && $preferred && $preferred->type === $rt->type) ? 'selected' : '' }}>
-                            {{ $rt->type }}
-                        </option>
-                    @empty
-                        <option value="">Không có hạng phòng nào</option>
-                    @endforelse
-                </select>
+        {{-- Thông báo quy tắc --}}
+<div class="alert alert-warning py-2 mb-3" style="font-size:14px;">
+    <strong>Quy định:</strong> 
+    - 1 trẻ em cần có tối thiểu 1 người lớn đi cùng. 
+    - 1 người lớn đi cùng không quá 2 trẻ em. 
+    - Mỗi tour tối đa 30 người.
+</div>
 
-            </div>
-            <div class="col-md-2">
-                <label>Người lớn</label>
-                <input type="number" name="adults" min="1"
-                       value="{{ old('adults', $adults ?? 1) }}" class="form-control" required>
-            </div>
-            <div class="col-md-2">
-                <label>Trẻ em</label>
-                <input type="number" name="children" min="0"
-                       value="{{ old('children', $children ?? 0) }}" class="form-control" required>
-            </div>
-            <div class="col-md-2 align-self-end">
-                <button type="submit" class="btn btn-primary w-100">Tìm tour</button>
-            </div>
-        </form>
+<form action="{{ route('booking.tour.search') }}" method="get" class="row g-2 align-items-end" id="tourForm">
+    <div class="col-auto">
+        <label>Ngày nhận</label>
+        <input type="date" name="check_in" class="form-control"
+            value="{{ old('check_in', $check_in ?? now()->toDateString()) }}" required>
+    </div>
+    <div class="col-auto">
+        <label>Ngày trả</label>
+        <input type="date" name="check_out" class="form-control"
+            value="{{ old('check_out', $check_out ?? now()->addDay()->toDateString()) }}" required>
+    </div>
+    <div class="col-auto">
+        <label>Hạng phòng</label>
+        <select name="preferred_room_type" class="form-control" required>
+            <option value="">-- Chọn --</option>
+            @foreach($roomTypes as $rt)
+                <option value="{{ $rt->type }}" {{ isset($preferred) && $preferred && $preferred->type === $rt->type ? 'selected' : '' }}>
+                    {{ $rt->type }}
+                </option>
+            @endforeach
+        </select>
+    </div>
+    <div class="col-auto">
+        <label>Người lớn</label>
+        <input type="number" name="adults" id="adultsInput" min="1" value="{{ old('adults', $adults ?? 1) }}" class="form-control" required>
+    </div>
+    <div class="col-auto">
+        <label>Trẻ em</label>
+        <input type="number" name="children" id="childrenInput" min="0" value="{{ old('children', $children ?? 0) }}" class="form-control" required>
+    </div>
+    <div class="col-auto">
+        <button type="submit" class="btn btn-primary">Tìm tour</button>
+    </div>
+</form>
+
 
         {{-- 2) Phần tour gợi ý (chỉ hiện khi có $combinations) --}}
 @if(!empty($combinations))
     <div class="tour-summary mt-5">
         <p><strong>Thời gian:</strong> {{ $check_in }} → {{ $check_out }} ({{ $nights }} đêm)</p>
         <p><strong>Số khách:</strong> {{ $adults }} người lớn, {{ $children }} trẻ em</p>
-        <p><strong>Hạng phòng mong muốn:</strong> {{ $preferred?->name }}</p>
+        <p><strong>Hạng phòng mong muốn:</strong> {{ $preferred?->type }}</p>
     </div>
 
     <form action="{{ route('booking.tour.addToCart') }}" method="post" class="mb-5">
@@ -255,3 +258,58 @@
 </section>
 
 @endsection
+@push('js')
+<script>
+document.getElementById('tourForm').addEventListener('submit', function(e) {
+    let adults = parseInt(document.getElementById('adultsInput').value) || 0;
+    let children = parseInt(document.getElementById('childrenInput').value) || 0;
+    let total = adults + children;
+
+    // Quy tắc 1: 1 trẻ em cần có ít nhất 1 người lớn
+    if (children > 0 && adults < 1) {
+        alert("Phải có ít nhất 1 người lớn đi cùng trẻ em.");
+        e.preventDefault();
+        return false;
+    }
+
+    // Quy tắc 2: 1 người lớn không đi kèm quá 2 trẻ em
+    if (children > adults * 2) {
+        alert("Mỗi người lớn chỉ được đi kèm tối đa 2 trẻ em.");
+        e.preventDefault();
+        return false;
+    }
+
+    // Quy tắc 3: Tổng khách <= 30
+    if (total > 30) {
+        alert("Tổng số khách tối đa là 30 người.");
+        e.preventDefault();
+        return false;
+    }
+
+    // Quy tắc 4: Kiểm tra sức chứa
+    let totalCapacity = 0;
+
+    @foreach($roomTypesList as $rt)
+        @php
+            $nameLower = strtolower($rt['name']);
+            if (strpos($nameLower, 'single') !== false) {
+                $cap = 1;
+            } elseif (strpos($nameLower, 'triple') !== false) {
+                $cap = 3;
+            } elseif (strpos($nameLower, 'twin') !== false || strpos($nameLower, 'double') !== false) {
+                $cap = 2;
+            } else {
+                $cap = 2; // mặc định
+            }
+        @endphp
+        totalCapacity += {{ (int)($rt['available_count'] ?? 0) }} * {{ $cap }};
+    @endforeach
+
+    if (total > totalCapacity) {
+        alert("Hiện không đủ sức chứa cho số lượng khách này. Sức chứa tối đa hiện tại: " + totalCapacity + " người.");
+        e.preventDefault();
+        return false;
+    }
+});
+</script>
+@endpush

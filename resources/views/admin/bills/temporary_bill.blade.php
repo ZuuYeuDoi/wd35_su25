@@ -89,7 +89,6 @@
 </div>
 
 {{-- Bảng dịch vụ --}}
-@if ($groupedItems->count())
 <div class="table-responsive mb-4">
     <table id="service-table" class="table table-bordered align-middle">
         <thead class="table-secondary">
@@ -102,13 +101,14 @@
             </tr>
         </thead>
         <tbody>
+            @php $i = 1; @endphp
             @foreach ($groupedItems as $item)
                 @php
                     $service = $item->service;
                     $total += $item->total_price;
                 @endphp
                 <tr>
-                    <td>{{ $loop->iteration }}</td>
+                    <td>{{ $i++ }}</td>
                     <td>{{ $service->name }}</td>
                     <td>{{ $item->quantity }}</td>
                     <td>{{ number_format($item->unit_price, 0, ',', '.') }}đ</td>
@@ -118,7 +118,7 @@
         </tbody>
     </table>
 </div>
-@endif
+
 
 {{-- Tổng cộng --}}
 <div class="text-end fw-bold mb-4">
