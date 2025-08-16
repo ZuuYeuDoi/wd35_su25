@@ -16,6 +16,7 @@ use Illuminate\Support\Carbon;
 use App\Models\ManageStatusRoom;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Models\Amenitie;
 
 class BillController extends Controller
 {
@@ -73,9 +74,11 @@ class BillController extends Controller
             ];
         })->values();
 
+        $amenities = Amenitie::get();
+
         $costsIncurred = FeesIncurred::where('booking_id', $id)->get();
         // dd($booking);
-        return view('admin.bills.temporary_bill', compact('booking', 'services', 'groupedItems','costsIncurred'));
+        return view('admin.bills.temporary_bill', compact('booking', 'services', 'groupedItems', 'costsIncurred', 'amenities'));
     }
 
     public function confirmPayment($id)
@@ -99,20 +102,20 @@ class BillController extends Controller
 
             // ✅ Gộp dịch vụ giống nhau
             $groupedServices = $cartItems
-            ->groupBy(function ($item) {
-                return $item->service_id . '-' . $item->unit_price; // gộp theo ID + giá
-            })
-            ->map(function ($items) {
-                $first = $items->first();
-                $quantity = $items->sum('quantity');
-                return (object)[
-                    'service_id'   => $first->service_id,
-                    'service_name' => $first->service->name ?? 'Dịch vụ không xác định',
-                    'unit_price'   => $first->unit_price,
-                    'quantity'     => $quantity,
-                    'total_price'  => $first->unit_price * $quantity,
-                ];
-            });
+                ->groupBy(function ($item) {
+                    return $item->service_id . '-' . $item->unit_price; // gộp theo ID + giá
+                })
+                ->map(function ($items) {
+                    $first = $items->first();
+                    $quantity = $items->sum('quantity');
+                    return (object)[
+                        'service_id'   => $first->service_id,
+                        'service_name' => $first->service->name ?? 'Dịch vụ không xác định',
+                        'unit_price'   => $first->unit_price,
+                        'quantity'     => $quantity,
+                        'total_price'  => $first->unit_price * $quantity,
+                    ];
+                });
 
 
             $roomAmount = 0;
@@ -222,39 +225,39 @@ class BillController extends Controller
     }
 
 
-   public function final($id)
-{
-    $bill = Bill::with(['rooms', 'services', 'fees', 'booking.bookingRooms'])
-        ->findOrFail($id);
+    public function final($id)
+    {
+        $bill = Bill::with(['rooms', 'services', 'fees', 'booking.bookingRooms'])
+            ->findOrFail($id);
 
-    // ✅ Tính số ngày ở
-    if ($bill->booking) {
-        $checkIn = \Carbon\Carbon::parse($bill->booking->actual_check_in ?? $bill->booking->check_in_date);
-        $checkOut = \Carbon\Carbon::parse($bill->booking->actual_check_out ?? $bill->booking->check_out_date);
+        // ✅ Tính số ngày ở
+        if ($bill->booking) {
+            $checkIn = \Carbon\Carbon::parse($bill->booking->actual_check_in ?? $bill->booking->check_in_date);
+            $checkOut = \Carbon\Carbon::parse($bill->booking->actual_check_out ?? $bill->booking->check_out_date);
 
-        $diff = $checkIn->floatDiffInDays($checkOut);
-        $days = ($diff - floor($diff)) < 0.5 ? floor($diff) : ceil($diff);
-        $bill->stay_days = $days > 0 ? $days : 0;
-    }
-
-    // ✅ Tính giá phòng
-    foreach ($bill->rooms as $room) {
-        $room->nights = $bill->stay_days ?? $room->nights;
-
-        if (($bill->stay_days ?? 0) < 1) {
-            $room->total_price = 200000;
-            $room->in_day = true;
-        } else {
-            $room->total_price = $room->price_per_night * $room->nights;
-            $room->in_day = false;
+            $diff = $checkIn->floatDiffInDays($checkOut);
+            $days = ($diff - floor($diff)) < 0.5 ? floor($diff) : ceil($diff);
+            $bill->stay_days = $days > 0 ? $days : 0;
         }
+
+        // ✅ Tính giá phòng
+        foreach ($bill->rooms as $room) {
+            $room->nights = $bill->stay_days ?? $room->nights;
+
+            if (($bill->stay_days ?? 0) < 1) {
+                $room->total_price = 200000;
+                $room->in_day = true;
+            } else {
+                $room->total_price = $room->price_per_night * $room->nights;
+                $room->in_day = false;
+            }
+        }
+
+        // ❌ Không gộp dịch vụ — trả nguyên dữ liệu
+        $services = $bill->services;
+
+        return view('admin.bills.final_bill', compact('bill', 'services'));
     }
-
-    // ❌ Không gộp dịch vụ — trả nguyên dữ liệu
-    $services = $bill->services;
-
-    return view('admin.bills.final_bill', compact('bill', 'services'));
-}
 
 
 
@@ -296,9 +299,27 @@ class BillController extends Controller
         $request->validate([
             'booking_id'  => 'required|exists:bookings,id',
             'name'        => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'image'       => 'nullable|image|max:2048',
+            'description' => 'required|string',
+            'image'       => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'price'       => 'required|integer|min:0',
+        ], [
+            'booking_id.required' => 'Thiếu thông tin đơn đặt phòng.',
+            'booking_id.exists'   => 'Đơn đặt phòng không tồn tại.',
+
+            'name.required' => 'Vui lòng nhập tên chi phí.',
+            'name.string'   => 'Tên chi phí phải là chuỗi ký tự.',
+            'name.max'      => 'Tên chi phí không được vượt quá 255 ký tự.',
+
+            'description.required' => 'Mô tả không được để trống.',
+            'description.string' => 'Mô tả phải là chuỗi ký tự.',
+
+            'image.image'   => 'File tải lên phải là ảnh hợp lệ.',
+            'image.mimes'   => 'Ảnh chỉ được có định dạng: jpeg, png, jpg, gif, webp.',
+            'image.max'     => 'Ảnh không được vượt quá 2MB.',
+
+            'price.required' => 'Vui lòng nhập giá tiền.',
+            'price.integer'  => 'Giá tiền phải là số nguyên.',
+            'price.min'      => 'Giá tiền phải lớn hơn hoặc bằng 0.',
         ]);
 
         $data = $request->only(['booking_id', 'name', 'description', 'price']);
