@@ -11,14 +11,14 @@ class AmenitieController extends Controller
 {
     public function index()
     {
-        $amenities = Amenitie::orderByDesc('created_at')->get(); 
+        $amenities = Amenitie::orderByDesc('created_at')->get();
         return view('admin.bookingrooms.Amenities.index', compact('amenities'));
     }
 
     public function create()
     {
         $amenities = Amenitie::whereNull('deleted_at')->where('status', 1)->get();
-        return view('admin.bookingrooms.Amenities.create',compact('amenities'));
+        return view('admin.bookingrooms.Amenities.create', compact('amenities'));
     }
 
     public function store(Request $request)
@@ -27,6 +27,7 @@ class AmenitieController extends Controller
             'image' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:10240',
             'name' => 'required|string|max:255',
             'status' => 'required',
+            'price' => 'required|numeric',
             'description' => 'nullable|string',
         ], [
             'image.required' => 'Vui lòng chọn ảnh tiện ích.',
@@ -39,6 +40,8 @@ class AmenitieController extends Controller
             'status.required' => 'Vui lòng chọn trạng thái.',
             'status.in' => 'Trạng thái không hợp lệ.',
             'description.string' => 'Mô tả phải là chuỗi ký tự.',
+            'price.required' => 'Vui lòng nhập giá.',
+            'price.numeric'  => 'Giá phải là số.',
         ]);
 
         try {
@@ -50,6 +53,7 @@ class AmenitieController extends Controller
             Amenitie::create([
                 'name' => $request->name,
                 'status' => $request->status,
+                'price'       => $request->price,
                 'description' => $request->description,
                 'image' => $path,
             ]);
@@ -76,6 +80,7 @@ class AmenitieController extends Controller
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'name' => 'required|string|max:255',
             'status' => 'required',
+            'price' => 'required|numeric',
             'description' => 'nullable|string',
         ], [
             'image.image' => 'File phải là ảnh hợp lệ.',
@@ -86,6 +91,8 @@ class AmenitieController extends Controller
             'name.max' => 'Tên tiện ích không được vượt quá 255 ký tự.',
             'status.required' => 'Vui lòng chọn trạng thái.',
             'description.string' => 'Mô tả phải là chuỗi ký tự.',
+            'price.required' => 'Vui lòng nhập giá.',
+            'price.numeric'  => 'Giá phải là số.',
         ]);
 
         try {
@@ -94,6 +101,7 @@ class AmenitieController extends Controller
                 'name' => $request->name,
                 'status' => $request->status,
                 'description' => $request->description,
+                'price'       => $request->price,
             ];
 
             if ($request->hasFile('image')) {
@@ -111,37 +119,41 @@ class AmenitieController extends Controller
             return redirect()->back()->with('error', 'Cập nhật thất bại: ');
         }
     }
-    public function destroy($id){
-        try{
-        $amenitie = Amenitie::findOrFail($id);
-        $amenitie->delete();
-        return redirect()->route('amenitie.index')->with('success', 'Xóa tiện ích thành công (đã chuyển vào thùng rác)');
-        } catch (\Exception $e){
-             return redirect()->back()->with('error', 'Xóa thất bại');
+    public function destroy($id)
+    {
+        try {
+            $amenitie = Amenitie::findOrFail($id);
+            $amenitie->delete();
+            return redirect()->route('amenitie.index')->with('success', 'Xóa tiện ích thành công (đã chuyển vào thùng rác)');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Xóa thất bại');
         }
     }
-    public function trash(){
+    public function trash()
+    {
         $deletedUtilities = Amenitie::onlyTrashed()->orderByDesc('deleted_at')->get();
         return view('admin.bookingrooms.Amenities.trash', compact('deletedUtilities'));
     }
-    public function restore($id){
-        try{
+    public function restore($id)
+    {
+        try {
             $amenitie = Amenitie::onlyTrashed()->findOrFail($id);
             $amenitie->restore();
             return redirect()->route('amenitie.trash')->with('success', 'Khôi phục tiện ích thành công');
-        }catch (\Exception $e) {
+        } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Khôi phục thất bại');
         }
-    } 
-    public function forceDelete($id){
-        try{
+    }
+    public function forceDelete($id)
+    {
+        try {
             $amenitie = Amenitie::onlyTrashed()->findOrFail($id);
             if ($amenitie->image) {
                 Storage::disk('public')->delete($amenitie->image);
             }
             $amenitie->forceDelete();
             return redirect()->route('amenitie.trash')->with('success', 'Đã xóa vĩnh viễn tiện ích');
-        }catch (\Exception $e) {
+        } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Xóa vĩnh viễn thất bại');
         }
     }

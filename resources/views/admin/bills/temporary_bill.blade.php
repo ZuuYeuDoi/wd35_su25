@@ -89,6 +89,7 @@
 </div>
 
 {{-- Bảng dịch vụ --}}
+@if ($groupedItems->count())
 <div class="table-responsive mb-4">
     <table id="service-table" class="table table-bordered align-middle">
         <thead class="table-secondary">
@@ -101,14 +102,13 @@
             </tr>
         </thead>
         <tbody>
-            @php $i = 1; @endphp
             @foreach ($groupedItems as $item)
                 @php
                     $service = $item->service;
                     $total += $item->total_price;
                 @endphp
                 <tr>
-                    <td>{{ $i++ }}</td>
+                    <td>{{ $loop->iteration }}</td>
                     <td>{{ $service->name }}</td>
                     <td>{{ $item->quantity }}</td>
                     <td>{{ number_format($item->unit_price, 0, ',', '.') }}đ</td>
@@ -118,7 +118,7 @@
         </tbody>
     </table>
 </div>
-
+@endif
 
 {{-- Tổng cộng --}}
 <div class="text-end fw-bold mb-4">
@@ -143,7 +143,9 @@
                                 <td class="td-costs-incurred">
                                     <div class="costs-incurred">
                                         <div class="image">
-                                            <img src="{{ asset('storage/' . $item->image) }}" alt="Ảnh chi phí phát sinh">
+                                            @if(!empty($item->image))
+                                                <img src="{{ asset('storage/' . $item->image) }}" alt="Ảnh chi phí phát sinh" width="80">
+                                            @endif
                                         </div>
                                         <div class="name">{{ $item->name }}</div>
                                     </div>
@@ -224,31 +226,80 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
                     </div>
                     <div class="modal-body">
+                        
+                        <!-- Chọn tiện ích -->
+                        <div class="mb-3">
+                            <label class="form-label">Chọn tiện ích</label>
+                            <select id="amenitySelect" class="form-select">
+                                <option value="">-- Chọn tiện ích --</option>
+                                @foreach($amenities as $amenity)
+                                    <option value="{{ $amenity->id }}"
+                                        data-name="{{ $amenity->name }}"
+                                        data-price="{{ $amenity->price }}">
+                                        {{ $amenity->name }} ({{ number_format($amenity->price) }} đ)
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
                         <div class="mb-3">
                             <label class="form-label">Tên chi phí</label>
-                            <input type="text" class="form-control" name="name" required>
+                            <input type="text" 
+                                class="form-control @error('name') is-invalid @enderror" 
+                                name="name" id="feeName" 
+                                value="{{ old('name') }}" required>
+                            @error('name')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
+
                         <div class="mb-3">
                             <label class="form-label">Mô tả</label>
-                            <textarea class="form-control" name="description"></textarea>
+                            <textarea class="form-control @error('description') is-invalid @enderror" 
+                                    name="description">{{ old('description') }}</textarea>
+                            @error('description')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
+
                         <div class="mb-3">
                             <label class="form-label">Hình ảnh (tùy chọn)</label>
-                            <input type="file" class="form-control" name="image" accept="image/*">
+                            <input type="file" class="form-control @error('image') is-invalid @enderror" 
+                                name="image" accept="image/*">
+                            @error('image')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
+
                         <div class="mb-3">
                             <label class="form-label">Giá tiền</label>
-                            <input type="number" class="form-control" name="price" required min="0">
+                            <input type="number" 
+                                class="form-control @error('price') is-invalid @enderror" 
+                                name="price" id="feePrice" 
+                                value="{{ old('price') }}" required min="0">
+                            @error('price')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="submit" class="btn btn-primary">Thêm</button>
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                        <button type="submit" class="btn btn-success">Thêm</button>
                     </div>
                 </div>
             </form>
         </div>
     </div>
+
+    @if($errors->any())
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var feeModal = new bootstrap.Modal(document.getElementById('addFeeModal'));
+            feeModal.show();
+        });
+    </script>
+    @endif
+
 
 
 @endsection
@@ -355,5 +406,22 @@
             });
         });
     </script>
+    <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const amenitySelect = document.getElementById('amenitySelect');
+        const feeName = document.getElementById('feeName');
+        const feePrice = document.getElementById('feePrice');
+
+        amenitySelect.addEventListener('change', function() {
+            const selected = this.options[this.selectedIndex];
+            const name = selected.getAttribute('data-name');
+            const price = selected.getAttribute('data-price');
+
+            if (name) feeName.value = name;
+            if (price) feePrice.value = price;
+        });
+    });
+    </script>
+
 
 @endsection
