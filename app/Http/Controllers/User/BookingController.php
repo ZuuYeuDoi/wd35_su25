@@ -151,7 +151,7 @@ class BookingController extends Controller
         // dd($rooms);
 
         // ✅ Tính tiền đặt cọc = 10%
-        $deposit = round($grandTotal * 0.1);
+        $deposit = round($grandTotal * 0.5);
 
         $booking->update([
             'total_amount' => $grandTotal,
@@ -238,7 +238,7 @@ class BookingController extends Controller
         $checkIn = $cart[0]['check_in'];
         $checkOut = $cart[0]['check_out'];
         $total = $summary->sum('sub_total');
-        $deposit = round($total * 0.1);
+        $deposit = round($total * 0.5);
         $totalAdults = $summary->sum('adults');
         $totalChildren = $summary->sum('children');
 
