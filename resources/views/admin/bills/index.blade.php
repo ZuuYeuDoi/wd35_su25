@@ -28,6 +28,13 @@
                                 value="{{ request('customer_phone') }}" placeholder="Nhập SĐT...">
                         </div>
 
+                           <!-- Tìm theo cccd -->
+                        <div class="col-md-auto">
+                            <label for="customer_cccd" class="form-label fw-bold">CCCD</label>
+                            <input type="text" name="customer_cccd" id="customer_cccd" class="form-control"
+                                value="{{ request('customer_cccd') }}" placeholder="Nhập CCCD...">
+                        </div>
+
                         <!-- Lọc trạng thái -->
                         <div class="col-md-auto">
                             <label for="status" class="form-label fw-bold">Trạng thái</label>
@@ -57,6 +64,7 @@
                         <thead>
                             <tr>
                                 <th>Mã HĐ</th>
+                                <th>CCCD</th>
                                 <th>Khách hàng</th>
                                 <th>SĐT</th>
                                 <th>Ngày thanh toán</th>
@@ -69,6 +77,7 @@
                             @forelse($bills as $bill)
                             <tr>
                                 <td><strong>{{ $bill->bill_code }}</strong></td>
+                                <td>{{ $bill->customer_cccd }}</td>
                                 <td>{{ $bill->customer_name }}</td>
                                 <td>{{ $bill->customer_phone }}</td>
                                 <td>
