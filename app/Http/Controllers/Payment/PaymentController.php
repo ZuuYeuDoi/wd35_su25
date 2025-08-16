@@ -98,6 +98,7 @@ class PaymentController extends Controller
                 'bill_type'      => 'deposit',
                 'customer_name'  => $booking->user->name,
                 'customer_phone' => $booking->user->phone,
+                'customer_cccd' => $booking->user->cccd,
                 'final_amount'   => $request->vnp_Amount / 100,
                 'payment_method' => 'VNPAY',
                 'payment_date'   => now(),

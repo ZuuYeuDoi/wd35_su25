@@ -55,7 +55,7 @@
 
                     <div class="p-3 border rounded bg-light mt-3">
                         <div>Tổng tiền phòng: <strong>{{ number_format($total, 0, ',', '.') }} VND</strong></div>
-                        <div>Tiền cọc (10%): <strong class="text-danger">{{ number_format($deposit, 0, ',', '.') }} VND</strong></div>
+                        <div>Tiền cọc (50%): <strong class="text-danger">{{ number_format($deposit, 0, ',', '.') }} VND</strong></div>
                     </div>
                 </div>
             </div>

@@ -152,6 +152,7 @@ class BillController extends Controller
             $bill = Bill::create([
                 'customer_name'  => $booking->user->name,
                 'customer_phone' => $booking->user->phone,
+                'customer_cccd' => $booking->user->cccd,
                 'booking_id'     => $booking->id,
                 'bill_type'      => 'final',
                 'room_amount'    => $roomAmount,
@@ -273,6 +274,10 @@ class BillController extends Controller
 
         if ($request->filled('customer_phone')) {
             $query->where('customer_phone', 'like', '%' . $request->customer_phone . '%');
+        }
+
+        if ($request->filled('customer_cccd')) {
+            $query->where('customer_cccd', 'like', '%' . $request->customer_cccd . '%');
         }
 
         if ($request->filled('status')) {

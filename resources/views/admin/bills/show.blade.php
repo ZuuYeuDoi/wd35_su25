@@ -7,7 +7,9 @@
     <header class="page-header">
         <h2 class="font-weight-bold text-6">Chi tiết hóa đơn</h2>
     </header>
+@php
 
+@endphp
     <div class="row">
         <!-- Thông tin chung -->
         <div class="col-xl-4 mb-4 mb-xl-0">
@@ -16,14 +18,6 @@
                     <h2 class="card-title">Thông tin chung</h2>
                 </div>
                 <div class="card-body">
-                    <!-- Ngày tạo -->
-                    <div class="form-group mb-3">
-                        <label>Ngày tạo</label>
-                        <div class="d-flex">
-                            <input type="text" class="form-control me-1" value="{{ $bill->created_at->format('d-m-Y') }}" readonly>
-                            <input type="text" class="form-control text-center ms-1" style="width: 80px;" value="{{ $bill->created_at->format('H:i') }}" readonly>
-                        </div>
-                    </div>
 
                     <!-- Khách hàng -->
                     <div class="form-group mb-3">
@@ -33,6 +27,14 @@
                     <div class="form-group mb-3">
                         <label>Số điện thoại</label>
                         <input type="text" class="form-control" value="{{ $bill->customer_phone }}" readonly>
+                    </div>
+
+                    <!-- CCCD -->
+                    <div class="form-group mb-3">
+                        <label>CCCD</label>
+                        <div class="d-flex">
+                        <input type="text" class="form-control" value="{{ $bill->customer_cccd }}" readonly>
+                        </div>
                     </div>
                 </div>
             </div>
