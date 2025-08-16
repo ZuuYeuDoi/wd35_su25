@@ -15,7 +15,10 @@ class UserController extends Controller
     public function showProfile()
     {
         $user = Auth::user();
-        $bookings = Booking::where('user_id', $user->id)->with('bookingRooms.room')->get();
+        $bookings = Booking::where('user_id', $user->id)
+            ->with('bookingRooms.room')
+            ->orderBy('created_at', 'desc')
+            ->paginate(5);
         return view('client.account.profile', compact('user', 'bookings'));
     }
 
