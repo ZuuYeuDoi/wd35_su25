@@ -116,13 +116,25 @@
                                                 @endif
                                             </td>
                                          
-                                            <td>                                           
-                                                <div class="d-flex gap-1 align-items-center">
-                                                    <a href="{{ route('room.edit', $room->id) }}" class="btn btn-sm btn-warning px-2 py-1">Sửa</a>
-                                                    <form action="{{ route('room.destroy', $room->id) }}" method="POST" onsubmit="return confirm('Bạn có chắc muốn xóa?')">
+                                            <td>
+                                                <div class="d-flex justify-content-center gap-2">
+                                                    <a href="{{ route('room.edit', $room->id) }}" 
+                                                    class="btn btn-sm btn-warning d-flex justify-content-center align-items-center"
+                                                    style="width:32px; height:32px;" 
+                                                    title="Sửa">
+                                                        <i class="fas fa-edit"></i>
+                                                    </a>
+                                                    <form action="{{ route('room.destroy', $room->id) }}" 
+                                                        method="POST" 
+                                                        onsubmit="return confirm('Bạn có chắc muốn xóa?')">
                                                         @csrf
                                                         @method('DELETE')
-                                                        <button type="submit" class="btn btn-sm btn-danger px-2 py-1">Xóa</button>
+                                                        <button type="submit" 
+                                                                class="btn btn-sm btn-danger d-flex justify-content-center align-items-center"
+                                                                style="width:32px; height:32px;" 
+                                                                title="Xóa">
+                                                            <i class="fas fa-trash-alt"></i>
+                                                        </button>
                                                     </form>
                                                 </div>
                                             </td>
