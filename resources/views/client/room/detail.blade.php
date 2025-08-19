@@ -160,7 +160,7 @@
 
             <!-- ĐÁNH GIÁ VÀ BÌNH LUẬN -->
                 <!-- ĐÁNH GIÁ VÀ BÌNH LUẬN -->
-                <h4 class="mb-3">Đánh giá phòng</h4>
+                <h4 id="review" class="mb-3">Đánh giá phòng</h4>
 
                 @php
                     $fullStars = floor($avgRating);
@@ -189,8 +189,8 @@
                     @if ($canReview)
                         <form action="{{ route('reviews.store') }}" method="POST" class="mb-4 border rounded p-3 shadow-sm bg-light">
                             @csrf
-                            <input type="hidden" name="room_id" value="{{ $room->id }}">
-
+                            <input type="hidden" name="room_id" value="{{ $room->id }}"> 
+                            <input type="hidden" name="booking_id" value="{{ $booking->id ?? '' }}">
                             <div class="mb-3">
                                 <label class="form-label">Đánh giá sao</label>
                                 <div class="star-rating">

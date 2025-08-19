@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Thanh toán thành công</title>
-    <meta http-equiv="refresh" content="5;url={{ url('/') }}">
+    <meta http-equiv="refresh" content="1;url={{ url('/') }}">
     <style>
         body {
             font-family: 'Segoe UI', sans-serif;

@@ -137,6 +137,10 @@
                                             class="btn btn-sm btn-primary">
                                             <i class="fas fa-eye"></i> Xem chi tiết
                                         </a>
+                                        <a href="{{ route('room.detail', $br->room->id) }}#review"
+                                            class="btn btn-sm btn-warning ms-2 text-white">
+                                            <i class="fas fa-star"></i> Bình luận & Đánh giá
+                                        </a>
                                     </li>
                                 @endforeach
                             </ul>
