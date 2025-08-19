@@ -23,8 +23,8 @@
                 <p class="user-email">{{ $user->email }}</p>
             </div>
             <nav class="menu mt-4">
-                <a href="#profile" class="menu-item active"><i class="fas fa-user"></i> Thông tin cá nhân</a>
-                <a href="#bookings" class="menu-item"><i class="fas fa-bed"></i> Đơn đã đặt</a>
+                <a href="#bookings" class="menu-item active"><i class="fas fa-bed"></i> Đơn đã đặt</a>
+                <a href="#profile" class="menu-item"><i class="fas fa-user"></i> Thông tin cá nhân</a>
                 {{-- <a href="#services" class="menu-item"><i class="fas fa-concierge-bell"></i> Dịch vụ đã đặt</a>
                 {{-- <a href="#foods" class="menu-item"><i class="fas fa-utensils"></i> Đồ ăn đã đặt</a> --}}
             </nav>
@@ -33,7 +33,7 @@
         <div class="main-content flex-grow-1">
 
             <!-- Thông tin cá nhân -->
-            <section id="profile" class="content-section active">
+            <section id="profile" class="content-section">
                 <h2>Thông tin cá nhân</h2>
                 @if (session('success'))
                     <div class="alert alert-success mt-3">
@@ -101,7 +101,7 @@
             </section>
 
             <!-- Phòng đã đặt -->
-            <section id="bookings" class="content-section">
+            <section id="bookings" class="content-section active">
                 <h2 class="mb-4">Phòng đã đặt</h2>
 
                 @forelse ($bookings as $booking)
@@ -129,7 +129,8 @@
                                         <div class="row align-items-center">
 
                                             <div class="col">
-                                                <h6 class="mb-1">{{ $br->room->title ?? '---' }} - {{ $br->room->roomType->type ?? '---' }}</h6>
+                                                <h6 class="mb-1">{{ $br->room->title ?? '---' }} -
+                                                    {{ $br->room->roomType->type ?? '---' }}</h6>
                                                 <small>Giá: {{ number_format($br->price, 0, ',', '.') }}đ / đêm</small>
                                             </div>
                                         </div>
@@ -145,60 +146,9 @@
                 @empty
                     <p>Bạn chưa đặt phòng nào.</p>
                 @endforelse
+                {{ $bookings->appends(request()->query())->fragment('bookings')->links() }}
+
             </section>
-
-            {{-- ========= DỊCH VỤ ĐÃ ĐẶT ========= --}}
-            {{-- <section id="services" class="content-section mt-5">
-            <h2 class="mb-4">Dịch vụ đã đặt</h2>
-
-            @forelse ($serviceItems as $item)
-                <div class="card mb-3 shadow-sm">
-                    <div class="card-body d-flex justify-content-between">
-                        <div>
-                            <h5 class="card-title mb-1">{{ $item->service->name }}</h5>
-                            <small class="text-muted">
-                                Đặt lúc:{{ \Carbon\Carbon::parse($item->created_at)->format('H:i d/m/Y') }}
-                            </small>
-                        </div>
-                        <div class="text-end">
-                            <p class="mb-1 fw-semibold">
-                                {{ number_format($item->service->price, 0, ',', '.') }}đ
-                            </p>
-                            <span class="badge bg-info">{{ ucfirst($item->status) }}</span>
-                        </div>
-                    </div>
-                </div>
-            @empty
-                <p>Bạn chưa đặt dịch vụ nào.</p>
-            @endforelse
-        </section> --}}
-
-            {{-- ========= ĐỒ ĂN ĐÃ ĐẶT ========= --}}
-            {{-- <section id="foods" class="content-section mt-5">
-            <h2 class="mb-4">Đồ ăn đã đặt</h2>
-
-            @forelse ($foodItems as $item)
-                <div class="card mb-3 shadow-sm">
-                    <div class="card-body d-flex justify-content-between">
-                        <div>
-                            <h5 class="card-title mb-1">{{ $item->service->name }}</h5>
-                            <small>Số lượng: {{ $item->quantity }}</small><br>
-                            <small>Ghi chú: {{ $item->note ?? '(Không có)' }}</small>
-                        </div>
-                        <div class="text-end">
-                            <p class="mb-1 fw-semibold">
-                                {{ number_format($item->service->price, 0, ',', '.') }}đ
-                            </p>
-                            <span class="badge bg-warning text-dark">
-                                Đặt lúc: {{ $item->created_at->format('H:i d/m/Y') }}
-                            </span>
-                        </div>
-                    </div>
-                </div>
-            @empty
-                <p>Bạn chưa đặt món ăn nào.</p>
-            @endforelse
-        </section> --}}
         </div>
     </div>
 @endsection
@@ -264,4 +214,19 @@
             });
         });
     </script>
+
+    {{-- <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const hash = window.location.hash;
+            if (hash) {
+                // Ẩn hết section
+                document.querySelectorAll('.content-section').forEach(sec => sec.classList.remove('active'));
+                // Hiện section theo hash
+                const target = document.querySelector(hash);
+                if (target) {
+                    target.classList.add('active');
+                }
+            }
+        });
+    </script> --}}
 @endpush
