@@ -72,6 +72,11 @@
             <div class="col-md-auto">
                 <button class="btn btn-primary" type="submit">Tìm kiếm</button>
             </div>
+            <div class="col-md-auto">
+                        <a href="{{ route('admin.bookings.create') }}" class="btn btn-success ms-2">
+                            <i class="fas fa-plus-circle"></i> Tạo đặt phòng
+                        </a>
+                    </div>
         </div>
     </form>
 </div>
