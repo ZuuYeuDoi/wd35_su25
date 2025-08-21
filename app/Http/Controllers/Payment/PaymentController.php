@@ -13,13 +13,15 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\InvoiceMail;
+
 
 class PaymentController extends Controller
 {
     public function createPayment(Request $request)
     {
         // session(['cost_id' => $request->booking_id]);
-
 
         session(['url_prev' => url()->previous()]);
         $vnp_TmnCode = "O0VNLD6K";
@@ -99,6 +101,7 @@ class PaymentController extends Controller
                 'customer_name'  => $booking->user->name,
                 'customer_phone' => $booking->user->phone,
                 'customer_cccd' => $booking->user->cccd,
+                'customer_email' => $booking->user->email,
                 'final_amount'   => $request->vnp_Amount / 100,
                 'payment_method' => 'VNPAY',
                 'payment_date'   => now(),
@@ -107,10 +110,15 @@ class PaymentController extends Controller
                 'note'           => 'Thanh toán cọc đơn đặt ' . $booking->booking_code,
             ]);
 
+            // dd($bill, $booking);
+
             // 2️⃣ Cập nhật trạng thái Booking: đã thanh toán cọc
             $booking->update([
                 'status' => 1, // Đã thanh toán cọc
             ]);
+
+            // 3️⃣ Gửi email hóa đơn
+            Mail::to($booking->user->email)->send(new InvoiceMail($bill, $booking));
 
             // 3️⃣ Ghi lịch sử thanh toán
             Payment::create([

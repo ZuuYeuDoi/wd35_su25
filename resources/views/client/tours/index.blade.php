@@ -1,71 +1,66 @@
 @extends('client.index')
 
 @push('css')
-    <style>
-        .tour-summary {
-            background-color: #f8f5f0;
-            padding: 20px;
-            margin-bottom: 30px;
-            border-radius: 8px;
-        }
-        .room-block { margin-bottom: 30px; }
-        .image-box img {
-            width: 100%; height: 230px; object-fit: cover; border-radius: 8px;
-        }
-        .content-box .title { font-size: 18px; font-weight: bold; }
-        .price { font-size: 14px; color: #555; display: block; }
-        .box-caption { margin-top: 10px; }
-        .bx-links { list-style: none; padding-left: 0; font-size: 13px; }
-        .bx-links li::before { content: "✔ "; color: #d4a762; }
-        .muted { color: #888; font-style: italic; }
-        .badge-amenity { display: inline-block; padding: 2px 8px; border: 1px solid #eee; border-radius: 12px; margin: 2px 4px; font-size: 12px;}
-        .title-divider { border-top: 1px solid #eee; margin: 24px 0; }
-        .search-box {
-    background: #ffffff;
-    border-radius: 10px;
-    padding: 20px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-    margin-bottom: 30px;
-}
-
-.search-box label {
-    font-weight: 500;
-    font-size: 14px;
-    color: #444;
-    margin-bottom: 5px;
-}
-
-.search-box .form-control, 
-.search-box select {
-    font-size: 14px;
-    padding: 6px 10px;
-    border-radius: 6px;
-}
-
-.search-box button {
-    padding: 6px 16px;
-    font-size: 14px;
-    border-radius: 6px;
-    white-space: nowrap;
-}
-.room-card {
-    background: #fff;
-    border-radius: 8px;
-    border: 1px solid #eee;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-    transition: transform 0.2s ease;
-}
-.room-card:hover {
-    transform: translateY(-3px);
-}
-.room-card img {
-    width: 100%;
-    height: 300px;
-    object-fit: cover;
-}
-
-    </style>
-    
+<style>
+    .tour-summary {
+        background-color: #f8f5f0;
+        padding: 20px;
+        margin-bottom: 30px;
+        border-radius: 8px;
+    }
+    .room-block { margin-bottom: 30px; }
+    .image-box img {
+        width: 100%; height: 230px; object-fit: cover; border-radius: 8px;
+    }
+    .content-box .title { font-size: 18px; font-weight: bold; }
+    .price { font-size: 14px; color: #555; display: block; }
+    .box-caption { margin-top: 10px; }
+    .bx-links { list-style: none; padding-left: 0; font-size: 13px; }
+    .bx-links li::before { content: "✔ "; color: #d4a762; }
+    .muted { color: #888; font-style: italic; }
+    .badge-amenity { display: inline-block; padding: 2px 8px; border: 1px solid #eee; border-radius: 12px; margin: 2px 4px; font-size: 12px;}
+    .title-divider { border-top: 1px solid #eee; margin: 24px 0; }
+    .search-box {
+        background: #ffffff;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        margin-bottom: 30px;
+    }
+    .search-box label {
+        font-weight: 500;
+        font-size: 14px;
+        color: #444;
+        margin-bottom: 5px;
+    }
+    .search-box .form-control, 
+    .search-box select {
+        font-size: 14px;
+        padding: 6px 10px;
+        border-radius: 6px;
+    }
+    .search-box button {
+        padding: 6px 16px;
+        font-size: 14px;
+        border-radius: 6px;
+        white-space: nowrap;
+    }
+    .room-card {
+        background: #fff;
+        border-radius: 8px;
+        border: 1px solid #eee;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        transition: transform 0.2s ease;
+    }
+    .room-card:hover {
+        transform: translateY(-3px);
+    }
+    .room-card img {
+        width: 100%;
+        height: 300px;
+        object-fit: cover;
+    }
+</style>
 @endpush
 
 @section('content')
@@ -87,49 +82,49 @@
 
         {{-- 1) Form lọc --}}
         <h4 class="mb-4">Tìm tour phù hợp</h4>
-        {{-- Thông báo quy tắc --}}
-<div class="alert alert-warning py-2 mb-3" style="font-size:14px;">
-    <strong>Quy định:</strong> 
-    - 1 trẻ em cần có tối thiểu 1 người lớn đi cùng. 
-    - 1 người lớn đi cùng không quá 2 trẻ em. 
-    - Mỗi tour tối đa 30 người.
-</div>
+        <div class="alert alert-warning py-2 mb-3" style="font-size:14px;">
+            <strong>Quy định:</strong> 
+            - 1 trẻ em cần có tối thiểu 1 người lớn đi cùng. 
+            - 1 người lớn đi cùng không quá 2 trẻ em. 
+            - Mỗi tour tối đa 30 người.
+        </div>
 
-<form action="{{ route('booking.tour.search') }}" method="get" class="row g-2 align-items-end" id="tourForm">
-    <div class="col-auto">
-        <label>Ngày nhận</label>
-        <input type="date" name="check_in" class="form-control"
-            value="{{ old('check_in', $check_in ?? now()->toDateString()) }}" required>
-    </div>
-    <div class="col-auto">
-        <label>Ngày trả</label>
-        <input type="date" name="check_out" class="form-control"
-            value="{{ old('check_out', $check_out ?? now()->addDay()->toDateString()) }}" required>
-    </div>
-    <div class="col-auto">
-        <label>Hạng phòng</label>
-        <select name="preferred_room_type" class="form-control" required>
-            <option value="">-- Chọn --</option>
-            @foreach($roomTypes as $rt)
-                <option value="{{ $rt->type }}" {{ isset($preferred) && $preferred && $preferred->type === $rt->type ? 'selected' : '' }}>
-                    {{ $rt->type }}
-                </option>
-            @endforeach
-        </select>
-    </div>
-    <div class="col-auto">
-        <label>Người lớn</label>
-        <input type="number" name="adults" id="adultsInput" min="1" value="{{ old('adults', $adults ?? 1) }}" class="form-control" required>
-    </div>
-    <div class="col-auto">
-        <label>Trẻ em</label>
-        <input type="number" name="children" id="childrenInput" min="0" value="{{ old('children', $children ?? 0) }}" class="form-control" required>
-    </div>
-    <div class="col-auto">
-        <button type="submit" class="btn btn-primary">Tìm tour</button>
-    </div>
-</form>
-
+        <form action="{{ route('booking.tour.search') }}" method="get" class="row g-2 align-items-end" id="tourForm">
+            <div class="col-auto">
+                <label>Ngày nhận</label>
+                <input type="date" name="check_in" id="checkInMain" class="form-control"
+                    value="{{ old('check_in', $check_in ?? now()->addDay()->toDateString()) }}"
+                    min="{{ now()->addDay()->toDateString() }}" required>
+            </div>
+            <div class="col-auto">
+                <label>Ngày trả</label>
+                <input type="date" name="check_out" id="checkOutMain" class="form-control"
+                    value="{{ old('check_out', $check_out ?? now()->addDays(2)->toDateString()) }}"
+                    min="{{ old('check_in', $check_in ?? now()->addDay()->toDateString()) }}" required>
+            </div>
+            <div class="col-auto">
+                <label>Hạng phòng</label>
+                <select name="preferred_room_type" class="form-control" required>
+                    <option value="">-- Chọn --</option>
+                    @foreach($roomTypes as $rt)
+                        <option value="{{ $rt->type }}" {{ isset($preferred) && $preferred && $preferred->type === $rt->type ? 'selected' : '' }}>
+                            {{ $rt->type }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="col-auto">
+                <label>Người lớn</label>
+                <input type="number" name="adults" id="adultsInput" min="1" value="{{ old('adults', $adults ?? 1) }}" class="form-control" required>
+            </div>
+            <div class="col-auto">
+                <label>Trẻ em</label>
+                <input type="number" name="children" id="childrenInput" min="0" value="{{ old('children', $children ?? 0) }}" class="form-control" required>
+            </div>
+            <div class="col-auto">
+                <button type="submit" class="btn btn-primary">Tìm tour</button>
+            </div>
+        </form>
 
         {{-- 2) Phần tour gợi ý (chỉ hiện khi có $combinations) --}}
 @if(!empty($combinations))
@@ -258,58 +253,66 @@
 </section>
 
 @endsection
+
 @push('js')
 <script>
-document.getElementById('tourForm').addEventListener('submit', function(e) {
-    let adults = parseInt(document.getElementById('adultsInput').value) || 0;
-    let children = parseInt(document.getElementById('childrenInput').value) || 0;
-    let total = adults + children;
+document.addEventListener("DOMContentLoaded", function () {
+    const checkInMain = document.getElementById("checkInMain");
+    const checkOutMain = document.getElementById("checkOutMain");
 
-    // Quy tắc 1: 1 trẻ em cần có ít nhất 1 người lớn
-    if (children > 0 && adults < 1) {
-        alert("Phải có ít nhất 1 người lớn đi cùng trẻ em.");
-        e.preventDefault();
-        return false;
-    }
+    // --- Khi đổi ngày check-in thì update check-out ---
+    checkInMain.addEventListener("change", function () {
+        let checkInDate = new Date(this.value);
+        if (!isNaN(checkInDate)) {
+            let minCheckout = new Date(checkInDate);
+            minCheckout.setDate(minCheckout.getDate() + 1);
+            let minCheckoutStr = minCheckout.toISOString().split("T")[0];
 
-    // Quy tắc 2: 1 người lớn không đi kèm quá 2 trẻ em
-    if (children > adults * 2) {
-        alert("Mỗi người lớn chỉ được đi kèm tối đa 2 trẻ em.");
-        e.preventDefault();
-        return false;
-    }
-
-    // Quy tắc 3: Tổng khách <= 30
-    if (total > 30) {
-        alert("Tổng số khách tối đa là 30 người.");
-        e.preventDefault();
-        return false;
-    }
-
-    // Quy tắc 4: Kiểm tra sức chứa
-    let totalCapacity = 0;
-
-    @foreach($roomTypesList as $rt)
-        @php
-            $nameLower = strtolower($rt['name']);
-            if (strpos($nameLower, 'single') !== false) {
-                $cap = 1;
-            } elseif (strpos($nameLower, 'triple') !== false) {
-                $cap = 3;
-            } elseif (strpos($nameLower, 'twin') !== false || strpos($nameLower, 'double') !== false) {
-                $cap = 2;
-            } else {
-                $cap = 2; // mặc định
+            checkOutMain.min = minCheckoutStr;
+            if (checkOutMain.value <= this.value) {
+                checkOutMain.value = minCheckoutStr;
             }
-        @endphp
-        totalCapacity += {{ (int)($rt['available_count'] ?? 0) }} * {{ $cap }};
-    @endforeach
+        }
+        syncDatesToOtherForms();
+    });
 
-    if (total > totalCapacity) {
-        alert("Hiện không đủ sức chứa cho số lượng khách này. Sức chứa tối đa hiện tại: " + totalCapacity + " người.");
-        e.preventDefault();
-        return false;
+    // --- Khi đổi ngày check-out thì sync sang form khác ---
+    checkOutMain.addEventListener("change", syncDatesToOtherForms);
+
+    // --- Hàm đồng bộ ngày cho tất cả form thêm phòng ---
+    function syncDatesToOtherForms() {
+        const checkInVal = checkInMain.value;
+        const checkOutVal = checkOutMain.value;
+
+        document.querySelectorAll("form input[name='check_in']").forEach(el => el.value = checkInVal);
+        document.querySelectorAll("form input[name='check_out']").forEach(el => el.value = checkOutVal);
     }
+
+    // --- Validate số khách ---
+    document.getElementById('tourForm').addEventListener('submit', function(e) {
+        let adults = parseInt(document.getElementById('adultsInput').value) || 0;
+        let children = parseInt(document.getElementById('childrenInput').value) || 0;
+        let total = adults + children;
+
+        if (children > 0 && adults < 1) {
+            alert("Phải có ít nhất 1 người lớn đi cùng trẻ em.");
+            e.preventDefault();
+            return false;
+        }
+        if (children > adults * 2) {
+            alert("Mỗi người lớn chỉ được đi kèm tối đa 2 trẻ em.");
+            e.preventDefault();
+            return false;
+        }
+        if (total > 30) {
+            alert("Tổng số khách tối đa là 30 người.");
+            e.preventDefault();
+            return false;
+        }
+    });
+
+    // --- Đồng bộ ngay khi load ---
+    syncDatesToOtherForms();
 });
 </script>
 @endpush

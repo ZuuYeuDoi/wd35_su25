@@ -19,6 +19,7 @@ class Bill extends Model
         'customer_name',
         'customer_phone',
         'customer_cccd',
+        'customer_email',
         'payment_method',
         'payment_date',
         'note',
