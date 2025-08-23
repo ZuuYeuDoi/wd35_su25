@@ -119,27 +119,31 @@
 
 
                 @if ($room)
-                <h3 class="mb-4 fw-semibold mt-5" style="font-size: 26px;">Thông tin chi tiết phòng</h3>
 
-                <div class="border rounded p-4 mt-2" style="background-color: #fffefc; border: 1px solid #e7dccc;">
-                    <div class="row text-center">
-                        <div class="col-12 col-md-4 mb-2">
-                            <small class="text-muted">Loại phòng</small>
-                            <div class="fw-bold">{{ $room->roomType->name ?? 'Chưa có loại' }}</div>
-                        </div>
-                        <div class="col-12 col-md-4 mb-2">
-                            <small class="text-muted">Giường</small>
-                            <div class="fw-bold">{{ $room->roomType->bed_type }}</div>
-                        </div>
-                        <div class="col-12 col-md-4 mb-2">
-                            <small class="text-muted">Giá</small>
-                            <div class="fw-bold text-danger">{{ number_format($room->price, 0, ',', '.') }} VND</div>
+                    <h3 class="mb-4 fw-semibold mt-5" style="font-size: 26px;">Thông tin chi tiết phòng</h3>
+
+                    <div class="border rounded p-4 mt-2" style="background-color: #fffefc; border: 1px solid #e7dccc;">
+                        <div class="row text-center">
+                            <div class="col-12 col-md-3 mb-2">
+                                <small class="text-muted">Hạng phòng</small>
+                                <div class="fw-bold">{{ $room->roomType->type ?? 'Chưa có hạng' }}</div>
+                            </div>
+                            <div class="col-12 col-md-3 mb-2">
+                                <small class="text-muted">Loại phòng</small>
+                                <div class="fw-bold">{{ $room->roomType->name ?? 'Chưa có loại' }}</div>
+                            </div>
+                            <div class="col-12 col-md-3 mb-2">
+                                <small class="text-muted">Kiểu giường</small>
+                                <div class="fw-bold">{{ $room->roomType->bed_type ?? 'Chưa có thông tin' }}</div>
+                            </div>
+                            <div class="col-12 col-md-3 mb-2">
+                                <small class="text-muted">Giá</small>
+                                <div class="fw-bold text-danger">{{ number_format($room->price, 0, ',', '.') }} VND</div>
+                            </div>
                         </div>
 
                     </div>
-                </div>
                 @endif
-
                 <h4 class="mt-4">Tiện nghi</h4>
                 <div class="row">
                     @forelse ($allAmenities as $amenity)
@@ -155,7 +159,6 @@
                 </div>
                 <hr class="my-4">
 
-                <!-- ĐÁNH GIÁ VÀ BÌNH LUẬN -->
                 <!-- ĐÁNH GIÁ VÀ BÌNH LUẬN -->
                 <h4 id="review" class="mb-3">Đánh giá phòng</h4>
 
@@ -181,34 +184,35 @@
 
                 <!-- Nếu user đã login và có thể bình luận -->
                 @auth
-                @if ($canReview)
-                <form action="{{ route('reviews.store') }}" method="POST" class="mb-4 border rounded p-3 shadow-sm bg-light">
-                    @csrf
-                    <input type="hidden" name="room_id" value="{{ $room->id }}">
-                    <input type="hidden" name="booking_id" value="{{ $booking->id ?? '' }}">
-                    <div class="mb-3">
-                        <label class="form-label">Đánh giá sao</label>
-                        <div class="star-rating">
-                            @for ($i = 5; $i >= 1; $i--)
-                            <input type="radio" name="rating" id="rating{{ $i }}" value="{{ $i }}" required>
-                            <label for="rating{{ $i }}" title="{{ $i }} sao">&#9733;</label>
-                            @endfor
-                        </div>
-                    </div>
 
-                    <div class="mb-3">
-                        <label for="comment" class="form-label">Bình luận</label>
-                        <textarea name="comment" id="comment" rows="3" class="form-control" placeholder="Viết cảm nhận của bạn..." required></textarea>
-                    </div>
+    <form action="{{ route('reviews.store') }}" method="POST" class="mb-4 border rounded p-3 shadow-sm bg-light">
+        @csrf
+        <input type="hidden" name="room_id" value="{{ $room->id }}">
+        
+        <div class="mb-3">
+            <label class="form-label">Đánh giá sao</label>
+            <div class="star-rating">
+                @for ($i = 5; $i >= 1; $i--)
+                    <input type="radio" name="rating" id="rating{{ $i }}" value="{{ $i }}" required>
+                    <label for="rating{{ $i }}" title="{{ $i }} sao">&#9733;</label>
+                @endfor
+            </div>
+        </div>
 
-                    <button type="submit" class="btn btn-primary">Gửi đánh giá</button>
-                </form>
-                @else
-                <div class="alert alert-warning">
-                    Bạn chỉ có thể đánh giá khi đã đặt và trả phòng này.
-                </div>
-                @endif
-                @endauth
+        <div class="mb-3">
+            <label for="comment" class="form-label">Bình luận</label>
+            <textarea name="comment" id="comment" rows="3" class="form-control" placeholder="Viết cảm nhận của bạn..." required></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Gửi đánh giá</button>
+
+        @if (! $canReview)
+            <div class="alert alert-warning mt-2">
+                Bạn chỉ có thể đánh giá sau khi đã đặt và checkout phòng.
+            </div>
+        @endif
+    </form>
+@endauth
 
                 @guest
                 <div class="alert alert-info">
@@ -255,7 +259,6 @@
                         @endforelse
                     </div>
                 </div>
-
             </div>
 
             <!-- RIGHT -->
