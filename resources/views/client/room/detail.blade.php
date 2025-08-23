@@ -267,59 +267,67 @@
                 <div class="p-4 bg-light rounded shadow-sm">
                     <h5 class="mb-3">Đặt phòng</h5>
 
-                    <form action="{{ route('booking.addToCart') }}" method="POST">
-                        @csrf
-                        <input type="hidden" name="room_type_id" id="room_type_id" value="{{ $roomType->id }}">
+                    @php
+    $cart = session('booking_cart', []);
+    $hasCart = !empty($cart);
 
-                        <div class="mb-3">
-                            <label>Ngày nhận phòng</label>
-                            <input type="date"
-                                id="checkin"
-                                name="check_in"
-                                class="form-control"
-                                value="{{ \Carbon\Carbon::tomorrow()->format('Y-m-d') }}"
-                                min="{{ \Carbon\Carbon::tomorrow()->format('Y-m-d') }}"
-                                required>
-                        </div>
+    $defaultCheckin = $hasCart ? $cart[0]['check_in'] : \Carbon\Carbon::tomorrow()->format('Y-m-d');
+    $defaultCheckout = $hasCart ? $cart[0]['check_out'] : \Carbon\Carbon::tomorrow()->addDay()->format('Y-m-d');
+@endphp
 
-                        <div class="mb-3">
-                            <label>Ngày trả phòng</label>
-                            <input type="date"
-                                id="checkout"
-                                name="check_out"
-                                class="form-control"
-                                value="{{ \Carbon\Carbon::tomorrow()->addDay()->format('Y-m-d') }}"
-                                min="{{ \Carbon\Carbon::tomorrow()->addDay()->format('Y-m-d') }}"
-                                required>
-                        </div>
+<form action="{{ route('booking.addToCart') }}" method="POST">
+    @csrf
+    <input type="hidden" name="room_type_id" value="{{ $roomType->id }}">
 
+    <div class="mb-3">
+        <label>Ngày nhận phòng</label>
+        <input type="date"
+            name="check_in"
+            class="form-control"
+            value="{{ $defaultCheckin }}"
+            min="{{ \Carbon\Carbon::tomorrow()->format('Y-m-d') }}"
+            @if($hasCart) readonly @endif
+            required>
+    </div>
 
-                        <div class="mb-3">
-                            <label>Số lượng phòng</label>
-                            <input type="number" name="number_of_rooms" class="form-control" value="1" min="1" max="{{ $availableRoomsCount }}" required>
-                        </div>
+    <div class="mb-3">
+        <label>Ngày trả phòng</label>
+        <input type="date"
+            name="check_out"
+            class="form-control"
+            value="{{ $defaultCheckout }}"
+            min="{{ \Carbon\Carbon::tomorrow()->addDay()->format('Y-m-d') }}"
+            @if($hasCart) readonly @endif
+            required>
+    </div>
 
-                        <div class="mb-3">
-                            <label>Người lớn</label>
-                            <input type="number" name="adults" class="form-control" value="2" min="1" required>
-                        </div>
+    <div class="mb-3">
+        <label>Số lượng phòng</label>
+        <input type="number" name="number_of_rooms" class="form-control" value="1" min="1" max="{{ $availableRoomsCount }}" required>
+    </div>
 
-                        <div class="mb-3">
-                            <label>Trẻ em</label>
-                            <input type="number" name="children" class="form-control" value="0" min="0" required>
-                        </div>
-                        
-                        <p class="mt-2 text-muted">
-                            Số phòng còn trống: <span class="fw-bold text-success" id="available-count">{{ $availableRoomsCount }}</span>
-                        </p>
+    <div class="mb-3">
+        <label>Người lớn</label>
+        <input type="number" name="adults" class="form-control" value="2" min="1" required>
+    </div>
 
-                         <button type="submit" name="action" value="add" class="btn btn-secondary w-100 mb-2">
-                            + Đặt thêm loại phòng khác
-                        </button>
-                        <button type="submit" name="action" value="checkout" class="btn btn-primary w-100">
-                            Tiếp tục đặt phòng
-                        </button>
-                    </form>
+    <div class="mb-3">
+        <label>Trẻ em</label>
+        <input type="number" name="children" class="form-control" value="0" min="0" required>
+    </div>
+
+    <p class="mt-2 text-muted">
+        Số phòng còn trống: <span class="fw-bold text-success">{{ $availableRoomsCount }}</span>
+    </p>
+
+    <button type="submit" name="action" value="add" class="btn btn-secondary w-100 mb-2">
+        + Đặt thêm loại phòng khác
+    </button>
+    <button type="submit" name="action" value="checkout" class="btn btn-primary w-100">
+        Tiếp tục đặt phòng
+    </button>
+</form>
+
                 </div>
 
                 {{-- ✅ Danh sách phòng cùng loại --}}

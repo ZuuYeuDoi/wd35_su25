@@ -303,7 +303,7 @@ class BookingController extends Controller
     public function searchTours(Request $request)
     {
         $request->validate([
-            'check_in'            => 'required|date|after_or_equal:today',
+            'check_in'            => 'required|date|after:today',
             'check_out'           => 'required|date|after:check_in',
             'preferred_room_type' => 'required|exists:room_types,type',
             'adults'              => 'required|integer|min:1',
