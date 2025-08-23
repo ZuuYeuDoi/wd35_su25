@@ -78,67 +78,74 @@ class PaymentController extends Controller
         return redirect($vnp_Url);
     }
     public function paymentReturn(Request $request)
-    {
-        $txnRef = $request->input('vnp_TxnRef');
-        $parts = explode('-', $txnRef);
-        $bookingId = $parts[0] ?? null;
+{
+    $txnRef = $request->input('vnp_TxnRef');
+    $parts = explode('-', $txnRef);
+    $bookingId = $parts[0] ?? null;
 
-        if (!$bookingId) {
-            return view('client.payments.failed');
-        }
-
-        $booking = Booking::with('user')->find($bookingId);
-
-        if (!$booking) {
-            return view('client.payments.failed');
-        }
-
-        if ($request->vnp_ResponseCode === "00") {
-            // 1️⃣ Tạo Bill mới kiểu 'deposit'
-            $bill = Bill::create([
-                'booking_id'     => $booking->id,
-                'bill_type'      => 'deposit',
-                'customer_name'  => $booking->user->name,
-                'customer_phone' => $booking->user->phone,
-                'customer_cccd' => $booking->user->cccd,
-                'customer_email' => $booking->user->email,
-                'final_amount'   => $request->vnp_Amount / 100,
-                'payment_method' => 'VNPAY',
-                'payment_date'   => now(),
-                'bill_code'      => 'HD-' . now()->format('Ymd') . '-' . rand(1000, 9999),
-                'status'         => 'paid',
-                'note'           => 'Thanh toán cọc đơn đặt ' . $booking->booking_code,
-            ]);
-
-            // dd($bill, $booking);
-
-            // 2️⃣ Cập nhật trạng thái Booking: đã thanh toán cọc
-            $booking->update([
-                'status' => 1, // Đã thanh toán cọc
-            ]);
-
-            // 3️⃣ Gửi email hóa đơn
-            Mail::to($booking->user->email)->send(new InvoiceMail($bill, $booking));
-
-            // 3️⃣ Ghi lịch sử thanh toán
-            Payment::create([
-                'booking_id'     => $booking->id,
-                'pay_date'       => now(),
-                'total_price'    => $request->vnp_Amount / 100,
-                'payment_status' => 1,
-                'payment_method' => 'VNPAY',
-                'vnp_bankcode'   => $request->vnp_BankCode ?? null,
-            ]);
-
-            // day du lieu thong bao qua event
-            event(new NewBookingEvent($booking->id));
-            
-            return view('client.payments.success');
-        } else {
-            // 4️⃣ Huỷ booking nếu thanh toán thất bại
-            $booking->bookingRooms()->delete();
-            $booking->delete();
-            return view('client.payments.failed');
-        }
+    if (!$bookingId) {
+        return view('client.payments.failed');
     }
+
+    $booking = Booking::with('user')->find($bookingId);
+
+    if (!$booking) {
+        return view('client.payments.failed');
+    }
+
+    if ($request->vnp_ResponseCode === "00") {
+        // 1️⃣ Tạo Bill mới kiểu 'deposit'
+        $bill = Bill::create([
+            'booking_id'     => $booking->id,
+            'bill_type'      => 'deposit',
+            'customer_name'  => $booking->user->name,
+            'customer_phone' => $booking->user->phone,
+            'customer_cccd'  => $booking->user->cccd,
+            'customer_email' => $booking->user->email,
+            'final_amount'   => $request->vnp_Amount / 100,
+            'payment_method' => 'VNPAY',
+            'payment_date'   => now(),
+            'bill_code'      => 'HD-' . now()->format('Ymd') . '-' . rand(1000, 9999),
+            'status'         => 'paid',
+            'note'           => 'Thanh toán cọc đơn đặt ' . $booking->booking_code,
+        ]);
+
+        // 2️⃣ Cập nhật trạng thái Booking: đã thanh toán cọc + gắn bill_id
+        $booking->update([
+            'status'  => 1, // Đã thanh toán cọc
+            'bill_id' => $bill->id,
+        ]);
+
+        // 3️⃣ Gửi email hóa đơn
+        Mail::to($booking->user->email)->send(new InvoiceMail($bill, $booking));
+
+        // 4️⃣ Ghi lịch sử thanh toán
+        Payment::create([
+            'booking_id'     => $booking->id,
+            'pay_date'       => now(),
+            'total_price'    => $request->vnp_Amount / 100,
+            'payment_status' => 1,
+            'payment_method' => 'VNPAY',
+            'vnp_bankcode'   => $request->vnp_BankCode ?? null,
+        ]);
+
+        // 5️⃣ Clear giỏ hàng session
+        session()->forget('booking_cart');
+
+        // 6️⃣ Thông báo qua event
+        event(new NewBookingEvent($booking->id));
+
+        return view('client.payments.success');
+    } else {
+        // ❌ Huỷ booking nếu thanh toán thất bại
+        $booking->bookingRooms()->delete();
+        $booking->delete();
+
+        // clear giỏ hàng session
+        session()->forget('booking_cart');
+
+        return view('client.payments.failed');
+    }
+}
+
 }
