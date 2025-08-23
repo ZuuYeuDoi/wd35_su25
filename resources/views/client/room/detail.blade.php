@@ -187,32 +187,30 @@
                 <!-- Nếu user đã login và có thể bình luận -->
                 @auth
                     @if ($canReview)
-                        <form action="{{ route('reviews.store') }}" method="POST" class="mb-4 border rounded p-3 shadow-sm bg-light">
-                            @csrf
-                            <input type="hidden" name="room_id" value="{{ $room->id }}"> 
-                            <input type="hidden" name="booking_id" value="{{ $booking->id ?? '' }}">
-                            <div class="mb-3">
-                                <label class="form-label">Đánh giá sao</label>
-                                <div class="star-rating">
-                                    @for ($i = 5; $i >= 1; $i--)
-                                        <input type="radio" name="rating" id="rating{{ $i }}" value="{{ $i }}" required>
-                                        <label for="rating{{ $i }}" title="{{ $i }} sao">&#9733;</label>
-                                    @endfor
-                                </div>
-                            </div>
+    <form action="{{ route('reviews.store') }}" method="POST" class="mb-4 border rounded p-3 shadow-sm bg-light">
+        @csrf
+        <input type="hidden" name="room_id" value="{{ $room->id }}">
+        <input type="hidden" name="booking_id" value="{{ $bookingId }}">
 
-                            <div class="mb-3">
-                                <label for="comment" class="form-label">Bình luận</label>
-                                <textarea name="comment" id="comment" rows="3" class="form-control" placeholder="Viết cảm nhận của bạn..." required></textarea>
-                            </div>
+        <div class="mb-3">
+            <label class="form-label">Đánh giá sao</label>
+            <div class="star-rating">
+                @for ($i = 5; $i >= 1; $i--)
+                    <input type="radio" name="rating" id="rating{{ $i }}" value="{{ $i }}" required>
+                    <label for="rating{{ $i }}" title="{{ $i }} sao">&#9733;</label>
+                @endfor
+            </div>
+        </div>
 
-                            <button type="submit" class="btn btn-primary">Gửi đánh giá</button>
-                        </form>
-                    @else
-                        <div class="alert alert-warning">
-                            Bạn chỉ có thể đánh giá khi đã đặt và trả phòng này.
-                        </div>
-                    @endif
+        <div class="mb-3">
+            <label for="comment" class="form-label">Bình luận</label>
+            <textarea name="comment" id="comment" rows="3" class="form-control" placeholder="Viết cảm nhận của bạn..." required></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Gửi đánh giá</button>
+    </form>
+@endif
+
                 @endauth
 
                 @guest
