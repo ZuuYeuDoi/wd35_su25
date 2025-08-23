@@ -25,6 +25,13 @@ class BillController extends Controller
     {
         $booking = Booking::with(['user', 'bookingRooms.room.roomType', 'feeIncurreds'])
             ->findOrFail($id);
+
+        $missingCCCD = $booking->bookingRooms->whereNull('cccd')->count();
+
+        if ($missingCCCD > 0) {
+            return back()->with('error', 'Vui lòng nhập đủ số CCCD cho tất cả phòng trước khi nhận phòng!');
+        }
+
         $services = Service::where('status', 1)->get();
 
         // Cập nhật trạng thái booking
@@ -38,14 +45,13 @@ class BillController extends Controller
             $room->status = 2;
             $room->save();
 
-
             ManageStatusRoom::create([
-                'room_id' => $room->id,
+                'room_id'    => $room->id,
                 'booking_id' => $booking->id,
-                'status' => 2,
-                'from_date' => $booking->check_in_date,
-                'to_date' => $booking->check_out_date,
-                'note' => 'Check-in từ đơn đặt #' . $booking->id,
+                'status'     => 2,
+                'from_date'  => $booking->check_in_date,
+                'to_date'    => $booking->check_out_date,
+                'note'       => 'Check-in từ đơn đặt #' . $booking->id,
             ]);
         }
 
@@ -75,11 +81,17 @@ class BillController extends Controller
         })->values();
 
         $amenities = Amenitie::get();
-
         $costsIncurred = FeesIncurred::where('booking_id', $id)->get();
-        // dd($booking);
-        return view('admin.bills.temporary_bill', compact('booking', 'services', 'groupedItems', 'costsIncurred', 'amenities'));
+
+        return view('admin.bills.temporary_bill', compact(
+            'booking',
+            'services',
+            'groupedItems',
+            'costsIncurred',
+            'amenities'
+        ));
     }
+
 
     public function confirmPayment($id)
     {

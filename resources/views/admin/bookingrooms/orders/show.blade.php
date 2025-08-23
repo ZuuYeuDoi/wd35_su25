@@ -62,13 +62,13 @@
                                 <li>Dự kiến trả phòng: {{ \Carbon\Carbon::parse($booking->check_out_date)->format('d-m-Y') }} lúc 12:00</li>
 
                                 @if ($booking->actual_check_in || $booking->actual_check_out)
-                                    <hr>
-                                    @if ($booking->actual_check_in)
-                                        <li>Đã nhận phòng lúc: {{ \Carbon\Carbon::parse($booking->actual_check_in)->format('d-m-Y H:i') }}</li>
-                                    @endif
-                                    @if ($booking->actual_check_out)
-                                        <li>Đã trả phòng lúc: {{ \Carbon\Carbon::parse($booking->actual_check_out)->format('d-m-Y H:i') }}</li>
-                                    @endif
+                                <hr>
+                                @if ($booking->actual_check_in)
+                                <li>Đã nhận phòng lúc: {{ \Carbon\Carbon::parse($booking->actual_check_in)->format('d-m-Y H:i') }}</li>
+                                @endif
+                                @if ($booking->actual_check_out)
+                                <li>Đã trả phòng lúc: {{ \Carbon\Carbon::parse($booking->actual_check_out)->format('d-m-Y H:i') }}</li>
+                                @endif
                                 @endif
                                 <hr>
                                 <li>Tiền đã cọc: {{ number_format($booking->deposit) }}đ</li>
@@ -88,36 +88,46 @@
                     <h2 class="card-title">Danh sách phòng đã đặt</h2>
                 </div>
                 <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-striped mb-0">
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Tên phòng</th>
-                                    <th>Loại phòng</th>
-                                    <th class="text-end">Giá</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse ($booking->bookingRooms as $bookingRoom)
+                    <form action="{{ route('room_order.update_cccd', $booking->id) }}" method="POST">
+                        @csrf
+                        @method('PUT')
+                        <div class="table-responsive">
+                            <table class="table table-striped mb-0">
+                                <thead>
                                     <tr>
-                                        <td>{{ $bookingRoom->room->id }}</td>
+                                        <th>Tên phòng</th>
+                                        <th>Loại phòng</th>
+                                        <th class="text-end">Giá</th>
+                                        <th>CCCD</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @forelse ($booking->bookingRooms as $bookingRoom)
+                                    <tr>
                                         <td>{{ $bookingRoom->room->title }}</td>
                                         <td>{{ $bookingRoom->room->roomType->name }}</td>
                                         <td class="text-end">{{ number_format($bookingRoom->room->price) }}đ</td>
+                                        <td>
+                                            <input type="text" name="cccd[{{ $bookingRoom->id }}]" class="form-control" value="{{ old('cccd.' . $bookingRoom->id, $bookingRoom->cccd ?? '') }}" placeholder="Nhập CCCD">
+                                        </td>
                                     </tr>
-                                @empty
+                                    @empty
                                     <tr>
-                                        <td colspan="4" class="text-center">Không có phòng nào.</td>
+                                        <td colspan="5" class="text-center">Không có phòng nào.</td>
                                     </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="mt-3 text-end">
+                            <button type="submit" class="btn btn-success">Lưu CCCD</button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
+
 
     <!-- Dịch vụ khách đã đặt -->
     <div class="row mt-4">
@@ -128,13 +138,13 @@
                 </div>
                 <div class="card-body">
                     @if($booking->services && count($booking->services))
-                        <ul class="list-unstyled mb-0">
-                            @foreach ($booking->services as $service)
-                                <li><strong>{{ $service->name }}</strong> - {{ number_format($service->price) }}đ</li>
-                            @endforeach
-                        </ul>
+                    <ul class="list-unstyled mb-0">
+                        @foreach ($booking->services as $service)
+                        <li><strong>{{ $service->name }}</strong> - {{ number_format($service->price) }}đ</li>
+                        @endforeach
+                    </ul>
                     @else
-                        <div class="text-muted">Khách chưa chọn dịch vụ nào.</div>
+                    <div class="text-muted">Khách chưa chọn dịch vụ nào.</div>
                     @endif
                 </div>
             </div>
@@ -142,58 +152,57 @@
     </div>
 
     <!-- Phí phụ thu (Gia hạn ngày / giờ) -->
-        <div class="row mt-4">
-            <div class="col">
-                <div class="card card-modern">
-                    <div class="card-header">
-                        <h2 class="card-title">Phụ thu</h2>
-                    </div>
-                    <div class="card-body">
-                        @if($booking->feesIncurred && count($booking->feesIncurred))
-                            <ul class="list-unstyled mb-0">
-                                @foreach ($booking->feesIncurred as $fee)
-                                    <li>
-                                        <strong>{{ $fee->name }}</strong> - {{ number_format($fee->price) }}đ
-                                        <div class="text-muted small">{{ $fee->description }}</div>
-                                    </li>
-                                @endforeach
-                            </ul>
-                        @else
-                            <div class="text-muted">Không có phụ thu nào.</div>
-                        @endif
-                    </div>
+    <div class="row mt-4">
+        <div class="col">
+            <div class="card card-modern">
+                <div class="card-header">
+                    <h2 class="card-title">Phụ thu</h2>
+                </div>
+                <div class="card-body">
+                    @if($booking->feesIncurred && count($booking->feesIncurred))
+                    <ul class="list-unstyled mb-0">
+                        @foreach ($booking->feesIncurred as $fee)
+                        <li>
+                            <strong>{{ $fee->name }}</strong> - {{ number_format($fee->price) }}đ
+                            <div class="text-muted small">{{ $fee->description }}</div>
+                        </li>
+                        @endforeach
+                    </ul>
+                    @else
+                    <div class="text-muted">Không có phụ thu nào.</div>
+                    @endif
                 </div>
             </div>
         </div>
+    </div>
 
-        
-   <!-- Nút hành động -->
-       @php
+
+    <!-- Nút hành động -->
+    @php
     use Carbon\Carbon;
     $now = Carbon::now();
     $checkInDate = Carbon::parse($booking->check_in_date);
     $isSameDay = $now->isSameDay($checkInDate);
     $isInTimeRange = $now->between(
-        $checkInDate->copy()->setTime(14, 0),
-        $checkInDate->copy()->setTime(18, 0)
+    $checkInDate->copy()->setTime(14, 0),
+    $checkInDate->copy()->setTime(18, 0)
     );
-@endphp
+    @endphp
 
-@if ($booking->status == 1)
-    <div>
+    @if ($booking->status == 1)
+    <div class="mt-3">
         @if ($isSameDay && $isInTimeRange)
-            <a href="{{ route('bills.temporary', $booking->id) }}" class="btn btn-secondary px-4 py-3">
-                Nhận phòng
-            </a>
+        <a href="{{ route('bills.temporary', $booking->id) }}" class="btn btn-success px-4 py-3">
+            Nhận phòng
+        </a>
         @else
-            <button class="btn btn-secondary px-4 py-3" disabled>
-                Nhận phòng (Chỉ từ 14h - 18h ngày {{ $checkInDate->format('d/m/Y') }})
-            </button>
+        <button class="btn btn-secondary px-4 py-3" disabled>
+            Nhận phòng (Chỉ từ 14h - 18h ngày {{ $checkInDate->format('d/m/Y') }})
+        </button>
         @endif
     </div>
-    <div>
-        <form action="{{ route('room_order.cancel', $booking->id) }}" method="POST"
-            onsubmit="return confirm('Bạn có chắc chắn muốn hủy đơn này?');">
+    <div class="mt-3">
+        <form action="{{ route('room_order.cancel', $booking->id) }}" method="POST" onsubmit="return confirm('Bạn có chắc chắn muốn hủy đơn này?');">
             @csrf
             @method('PUT')
 
@@ -204,39 +213,50 @@
 
             <button type="submit" class="btn btn-danger px-4 py-3">Hủy đơn</button>
         </form>
+        <div class="mt-3" style="text-align: end;">
+            <a href="{{ route('room_order.index') }}" class="btn btn-secondary px-4 py-3">Quay lại</a>
+        </div>
     </div>
 
 
 
 
-            @elseif ($booking->status == 2)
-                <div>
-                    <a href="{{ route('bills.temporary', $booking->id) }}" class="btn btn-success px-4 py-3">
-                        Hóa đơn tạm tính
-                    </a>
-                </div>
-                <div>
-                    <a href="{{ route('room_order.extend_day', $booking->id) }}" class="btn btn-info px-4 py-3">
-                        Gia hạn ngày
-                    </a>
-                </div>
-                <div>
-                    <a href="{{ route('room_order.extend_hour', $booking->id) }}" class="btn btn-warning px-4 py-3">
-                        Gia hạn giờ
-                    </a>
-                </div>
-            @elseif ($booking->status == 3)
-                <div>
-                    <a href="{{ route('bills.show', $booking->bill_id) }}" class="btn btn-primary px-4 py-3">
-                        Xem hóa đơn
-                    </a>
-                </div>
-            @endif
-
-            <div>
-                <a href="{{ route('room_order.index') }}" class="btn btn-secondary px-4 py-3">Quay lại</a>
-            </div>
+    @elseif ($booking->status == 2)
+    <div class="mt-3" style="display: flex; align-items: center; gap: 15px; justify-content: flex-end;">
+        <div>
+            <a href="{{ route('bills.temporary', $booking->id) }}" class="btn btn-success px-4 py-3">
+                Hóa đơn tạm tính
+            </a>
         </div>
+        <div>
+            <a href="{{ route('room_order.extend_day', $booking->id) }}" class="btn btn-info px-4 py-3">
+                Gia hạn ngày
+            </a>
+        </div>
+        <div>
+            <a href="{{ route('room_order.extend_hour', $booking->id) }}" class="btn btn-warning px-4 py-3">
+                Gia hạn giờ
+            </a>
+        </div>
+        <div>
+            <a href="{{ route('room_order.index') }}" class="btn btn-secondary px-4 py-3">Quay lại</a>
+        </div>
+    </div>
+    @elseif ($booking->status == 3)
+    <div class="mt-3" style="display: flex; align-items: center; gap: 15px; justify-content: flex-end;">
+
+        <div>
+            <a href="{{ route('bills.show', $booking->bill_id) }}" class="btn btn-primary px-4 py-3">
+                Xem hóa đơn
+            </a>
+        </div>
+        <div>
+            <a href="{{ route('room_order.index') }}" class="btn btn-secondary px-4 py-3">Quay lại</a>
+        </div>
+    </div>
+    @endif
+
+
 
 </section>
 @endsection
