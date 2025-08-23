@@ -51,7 +51,7 @@
                         <li><strong>Mã hóa đơn:</strong> {{ $bill->bill_code }}</li>
                         <li><strong>Phương thức thanh toán:</strong> {{ $bill->payment_method }}</li>
                         <li><strong>Ngày thanh toán:</strong> {{ \Carbon\Carbon::parse($bill->payment_date)->format('d/m/Y') }}</li>
-                        <li><strong>VAT:</strong> {{ $bill->vat_percent }}% ({{ number_format($bill->vat_amount) }}đ)</li>
+                        <li><strong>VAT:</strong> (8%) ({{ number_format($bill->vat_amount) }}đ)</li>
                         <li><strong>Tổng thanh toán:</strong> <span class="text-danger h5">{{ number_format($bill->final_amount) }}đ</span></li>
                         <li><strong>Ghi chú:</strong> {{ $bill->note ?? '---' }}</li>
                     </ul>

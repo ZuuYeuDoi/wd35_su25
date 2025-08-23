@@ -12,54 +12,44 @@ use App\Http\Controllers\Controller;
 
 class ReviewController extends Controller
 {
-  public function store(Request $request)
-{
-    $request->validate([
-        'room_id'    => 'required|exists:rooms,id',
-        'booking_id' => 'required|exists:bookings,id',
-        'rating'     => 'required|integer|min:1|max:5',
-        'comment'    => 'required|string|max:1000',
-    ]);
+    public function store(Request $request)
+    {
+        $request->validate([
+            'room_id' => 'required|exists:rooms,id',
+            'rating'  => 'required|integer|min:1|max:5',
+            'comment' => 'required|string|max:1000',
+        ]);
 
-    $userId = Auth::id();
-    $roomId = $request->room_id;
-    $bookingId = $request->booking_id;
+        $userId = Auth::id();
+        $roomId = $request->room_id;
 
-    // Xác nhận booking này thuộc user và đã checkout
-    $booking = Booking::where('id', $bookingId)
-        ->where('user_id', $userId)
-        ->where('status', '>=', 3)
-        ->whereHas('rooms', function ($q) use ($roomId) {
-            $q->where('rooms.id', $roomId);
-        })
-        ->first();
+        // Kiểm tra user có booking nào với phòng này đã checkout không
+        $hasBooking = Booking::where('user_id', $userId)
+            ->where('status', '>=', 3) // trạng thái >= 3 = đã checkout
+            ->whereHas('rooms', fn($q) => $q->where('rooms.id', $roomId))
+            ->exists();
 
-    if (!$booking) {
-        return back()->with('error', 'Bạn chỉ có thể đánh giá sau khi đã hoàn tất đặt phòng.');
+        if (! $hasBooking) {
+            return back()->with('error', 'Bạn chỉ có thể đánh giá sau khi đã đặt phòng và checkout phòng.');
+        }
+
+        // Kiểm tra đã review phòng này chưa
+        $alreadyReviewed = Review::where('user_id', $userId)
+            ->where('room_id', $roomId)
+            ->exists();
+
+        if ($alreadyReviewed) {
+            return back()->with('error', 'Bạn đã đánh giá phòng này rồi.');
+        }
+
+        // Tạo review
+        Review::create([
+            'user_id' => $userId,
+            'room_id' => $roomId,
+            'rating'  => $request->rating,
+            'comment' => $request->comment,
+        ]);
+
+        return back()->with('success', 'Cảm ơn bạn đã đánh giá!');
     }
-
-    // Kiểm tra đã review chưa
-    $alreadyReviewed = Review::where('user_id', $userId)
-        ->where('room_id', $roomId)
-        ->where('booking_id', $booking->id)
-        ->exists();
-
-    if ($alreadyReviewed) {
-        return back()->with('error', 'Bạn đã đánh giá phòng này cho lần đặt phòng này rồi.');
-    }
-
-    // Tạo review
-    Review::create([
-        'user_id'    => $userId,
-        'room_id'    => $roomId,
-        'booking_id' => $booking->id,
-        'rating'     => $request->rating,
-        'comment'    => $request->comment,
-    ]);
-
-    return back()->with('success', 'Cảm ơn bạn đã đánh giá!');
-}
-
-
-
 }

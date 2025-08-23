@@ -122,26 +122,29 @@
 
 
                 @if ($room)
-                <h3 class="mb-4 fw-semibold mt-5" style="font-size: 26px;">Thông tin chi tiết một phòng</h3>
+                    <h3 class="mb-4 fw-semibold mt-5" style="font-size: 26px;">Thông tin chi tiết phòng</h3>
 
-                <div class="border rounded p-4 mt-2" style="background-color: #fffefc; border: 1px solid #e7dccc;">
-                    <div class="row text-center">
-                        <div class="col-12 col-md-4 mb-2">
-                            <small class="text-muted">Tên phòng</small>
-                            <div class="fw-bold">{{ $room->title }}</div>
-                        </div>
-                        <div class="col-12 col-md-4 mb-2">
-                            <small class="text-muted">Loại phòng</small>
-                            <div class="fw-bold">{{ $room->roomType->name ?? 'Chưa có loại' }}</div>
-                        </div>
-                        <div class="col-12 col-md-4 mb-2">
-                            <small class="text-muted">Giá</small>
-                            <div class="fw-bold text-danger">{{ number_format($room->price, 0, ',', '.') }} VND</div>
+                    <div class="border rounded p-4 mt-2" style="background-color: #fffefc; border: 1px solid #e7dccc;">
+                        <div class="row text-center">
+                            <div class="col-12 col-md-3 mb-2">
+                                <small class="text-muted">Hạng phòng</small>
+                                <div class="fw-bold">{{ $room->roomType->type ?? 'Chưa có hạng' }}</div>
+                            </div>
+                            <div class="col-12 col-md-3 mb-2">
+                                <small class="text-muted">Loại phòng</small>
+                                <div class="fw-bold">{{ $room->roomType->name ?? 'Chưa có loại' }}</div>
+                            </div>
+                            <div class="col-12 col-md-3 mb-2">
+                                <small class="text-muted">Kiểu giường</small>
+                                <div class="fw-bold">{{ $room->roomType->bed_type ?? 'Chưa có thông tin' }}</div>
+                            </div>
+                            <div class="col-12 col-md-3 mb-2">
+                                <small class="text-muted">Giá</small>
+                                <div class="fw-bold text-danger">{{ number_format($room->price, 0, ',', '.') }} VND</div>
+                            </div>
                         </div>
                     </div>
-                </div>
                 @endif
-
                 <h4 class="mt-4">Tiện nghi</h4>
                 <div class="row">
                     @forelse ($allAmenities as $amenity)
@@ -158,7 +161,6 @@
                 </div>
                 <hr class="my-4">
 
-            <!-- ĐÁNH GIÁ VÀ BÌNH LUẬN -->
                 <!-- ĐÁNH GIÁ VÀ BÌNH LUẬN -->
                 <h4 id="review" class="mb-3">Đánh giá phòng</h4>
 
@@ -186,12 +188,10 @@
 
                 <!-- Nếu user đã login và có thể bình luận -->
                 @auth
-                    @if ($canReview)
     <form action="{{ route('reviews.store') }}" method="POST" class="mb-4 border rounded p-3 shadow-sm bg-light">
         @csrf
         <input type="hidden" name="room_id" value="{{ $room->id }}">
-        <input type="hidden" name="booking_id" value="{{ $bookingId }}">
-
+        
         <div class="mb-3">
             <label class="form-label">Đánh giá sao</label>
             <div class="star-rating">
@@ -208,10 +208,15 @@
         </div>
 
         <button type="submit" class="btn btn-primary">Gửi đánh giá</button>
-    </form>
-@endif
 
-                @endauth
+        @if (! $canReview)
+            <div class="alert alert-warning mt-2">
+                Bạn chỉ có thể đánh giá sau khi đã đặt và checkout phòng.
+            </div>
+        @endif
+    </form>
+@endauth
+
 
                 @guest
                     <div class="alert alert-info">
@@ -259,7 +264,6 @@
                         @endforelse
                     </div>
                 </div>
-
             </div>
 
             <!-- RIGHT -->

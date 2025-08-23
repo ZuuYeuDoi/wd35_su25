@@ -117,158 +117,136 @@ class HomeController extends Controller
     }
 
 
-    public function showRoomType($id, Request $request)
-    {
-        $roomType = RoomType::with(['images', 'rooms.images_room', 'rooms.reviews.user'])->findOrFail($id);
+public function showRoomType($id, Request $request)
+{
+    $roomType = RoomType::with(['images', 'rooms.images_room', 'rooms.reviews.user'])->findOrFail($id);
 
+    $amenityIds = collect($roomType->amenities)->filter()->unique()->toArray();
+    $allAmenities = Amenitie::whereIn('id', $amenityIds)->get();
 
-        $amenityIds = collect($roomType->amenities)->filter()->unique()->toArray();
-        $allAmenities = Amenitie::whereIn('id', $amenityIds)->get();
+    $checkIn = $request->check_in ?? now()->format('Y-m-d');
+    $checkOut = $request->check_out ?? now()->addDay()->format('Y-m-d');
 
-        $checkIn = $request->check_in ?? now()->format('Y-m-d');
-        $checkOut = $request->check_out ?? now()->addDay()->format('Y-m-d');
+    $availableRoomsCount = $this->getAvailableRoomsCount($roomType->id, $checkIn, $checkOut);
 
-        $availableRoomsCount = $this->getAvailableRoomsCount($roomType->id, $checkIn, $checkOut);
+    // ✅ Lấy đúng phòng
+    $roomId = $request->room_id;
+    $room = $roomId
+        ? $roomType->rooms->firstWhere('id', $roomId)
+        : $roomType->rooms->first(fn($r) => $r->images_room->count() > 0);
 
-        // ✅ Thêm phần lấy đúng phòng
-        $roomId = $request->room_id;
-        $room = null;
+    // Lấy review
+    $reviews = $room
+        ? Review::where('room_id', $room->id)->where('status', true)->with('user')->latest()->get()
+        : collect();
 
-        if ($roomId) {
-            $room = $roomType->rooms->firstWhere('id', $roomId);
-        }
+    $avgRating     = $reviews->avg('rating');
+    $totalReviews  = $reviews->count();
+    $allReviews    = $roomType->rooms->flatMap->reviews;
+    $averageRating = $allReviews->avg('rating') ?? 0;
 
-        // Nếu không có room_id hoặc không tìm được → lấy phòng đầu tiên
-        $room = $room ?? $roomType->rooms->first(fn($r) => $r->images_room->count() > 0);
+    // ✅ Check quyền review
+    $canReview = false;
+    if (auth()->check() && $room) {
+        $hasBooking = Booking::where('user_id', auth()->id())
+            ->where('status', '>=', 3) // đã checkout
+            ->whereHas('rooms', fn($q) => $q->where('rooms.id', $room->id))
+            ->exists();
 
-        $reviews = $room
-            ? Review::where('room_id', $room->id)
-            ->where('status', true) // Chỉ lấy review được hiển thị
-            ->with('user')
-            ->latest()
-            ->get()
-            : collect();
-        $avgRating = $reviews->avg('rating');
-        $totalReviews = $reviews->count();
+        if ($hasBooking) {
+            $alreadyReviewed = Review::where('user_id', auth()->id())
+                ->where('room_id', $room->id)
+                ->exists();
 
-        $allReviews = $roomType->rooms->flatMap->reviews;
-        $averageRating = $allReviews->avg('rating') ?? 0;
-        $canReview = false;
-        $bookingId = null;
-
-        if (auth()->check() && $room) {
-            $booking = Booking::where('user_id', auth()->id())
-                ->where('status', '>=', 3)
-                ->whereHas('rooms', fn($q) => $q->where('rooms.id', $room->id))
-                ->latest()
-                ->first();
-
-            if ($booking) {
-                $alreadyReviewed = Review::where('user_id', auth()->id())
-                    ->where('room_id', $room->id)
-                    ->where('booking_id', $booking->id)
-                    ->exists();
-
-                if (! $alreadyReviewed) {
-                    $canReview = true;
-                    $bookingId = $booking->id;
-                }
+            if (! $alreadyReviewed) {
+                $canReview = true;
             }
         }
-
-
-        foreach ($roomType->rooms as $roomItem) {
-            $visibleReviews = $roomItem->reviews->where('status', true);
-            $roomItem->average_rating = $visibleReviews->avg('rating') ?? 0;
-        }
-        return view('client.room.detail', compact(
-            'roomType',
-            'allAmenities',
-            'checkIn',
-            'checkOut',
-            'availableRoomsCount',
-            'room',
-            'reviews',
-            'canReview',
-            'avgRating',
-            'totalReviews',
-            'averageRating',
-            'bookingId'
-        ));
     }
 
+    foreach ($roomType->rooms as $roomItem) {
+        $visibleReviews = $roomItem->reviews->where('status', true);
+        $roomItem->average_rating = $visibleReviews->avg('rating') ?? 0;
+    }
 
-    public function showRoom($id, Request $request)
-    {
-        $room = Room::with(['images_room', 'roomType', 'reviews.user'])->findOrFail($id);
+    return view('client.room.detail', compact(
+        'roomType',
+        'allAmenities',
+        'checkIn',
+        'checkOut',
+        'availableRoomsCount',
+        'room',
+        'reviews',
+        'canReview',
+        'avgRating',
+        'totalReviews',
+        'averageRating'
+    ));
+}
 
-        $roomType = $room->roomType;
+public function showRoom($id, Request $request)
+{
+    $room = Room::with(['images_room', 'roomType', 'reviews.user'])->findOrFail($id);
+    $roomType = $room->roomType;
 
-        // Lấy tiện nghi của loại phòng
-        $amenityIds = collect($room->amenities)->filter()->unique()->toArray();
-        $allAmenities = Amenitie::whereIn('id', $amenityIds)->get();
+    $amenityIds = collect($room->amenities)->filter()->unique()->toArray();
+    $allAmenities = Amenitie::whereIn('id', $amenityIds)->get();
 
-        // Lấy ngày check-in / check-out mặc định
-        $checkIn = $request->check_in ?? now()->format('Y-m-d');
-        $checkOut = $request->check_out ?? now()->addDay()->format('Y-m-d');
+    $checkIn = $request->check_in ?? now()->format('Y-m-d');
+    $checkOut = $request->check_out ?? now()->addDay()->format('Y-m-d');
 
-        // Tính số lượng phòng còn trống
-        $availableRoomsCount = $this->getAvailableRoomsCount($roomType->id, $checkIn, $checkOut);
+    $availableRoomsCount = $this->getAvailableRoomsCount($roomType->id, $checkIn, $checkOut);
 
-        // Lấy danh sách đánh giá
-        $reviews = Review::where('room_id', $room->id)
-            ->where('status', true) // Chỉ lấy review được hiển thị
-            ->with('user')
-            ->latest()
-            ->get();
+    $reviews = Review::where('room_id', $room->id)
+        ->where('status', true)
+        ->with('user')
+        ->latest()
+        ->get();
 
-        $avgRating = $reviews->avg('rating');
-        $totalReviews = $reviews->count();
-        $allReviews = $roomType->rooms->flatMap->reviews;
-        $averageRating = $allReviews->avg('rating') ?? 0;
-        $canReview = false;
-        $bookingId = null;
+    $avgRating     = $reviews->avg('rating');
+    $totalReviews  = $reviews->count();
+    $allReviews    = $roomType->rooms->flatMap->reviews;
+    $averageRating = $allReviews->avg('rating') ?? 0;
 
-        if (auth()->check() && $room) {
-            $booking = Booking::where('user_id', auth()->id())
-                ->where('status', '>=', 3)
-                ->whereHas('rooms', fn($q) => $q->where('rooms.id', $room->id))
-                ->latest()
-                ->first();
+    // ✅ Check quyền review
+    $canReview = false;
+    if (auth()->check() && $room) {
+        $hasBooking = Booking::where('user_id', auth()->id())
+            ->where('status', '>=', 3)
+            ->whereHas('rooms', fn($q) => $q->where('rooms.id', $room->id))
+            ->exists();
 
-            if ($booking) {
-                $alreadyReviewed = Review::where('user_id', auth()->id())
-                    ->where('room_id', $room->id)
-                    ->where('booking_id', $booking->id)
-                    ->exists();
+        if ($hasBooking) {
+            $alreadyReviewed = Review::where('user_id', auth()->id())
+                ->where('room_id', $room->id)
+                ->exists();
 
-                if (! $alreadyReviewed) {
-                    $canReview = true;
-                    $bookingId = $booking->id; 
-                }
+            if (! $alreadyReviewed) {
+                $canReview = true;
             }
         }
-
-
-        foreach ($roomType->rooms as $roomItem) {
-            $visibleReviews = $roomItem->reviews->where('status', true);
-            $roomItem->average_rating = $visibleReviews->avg('rating') ?? 0;
-        }
-        return view('client.room.detail', compact(
-            'room',
-            'roomType',
-            'allAmenities',
-            'checkIn',
-            'checkOut',
-            'availableRoomsCount',
-            'reviews',
-            'canReview',
-            'avgRating',
-            'totalReviews',
-            'averageRating',
-            'bookingId'
-        ));
     }
+
+    foreach ($roomType->rooms as $roomItem) {
+        $visibleReviews = $roomItem->reviews->where('status', true);
+        $roomItem->average_rating = $visibleReviews->avg('rating') ?? 0;
+    }
+
+    return view('client.room.detail', compact(
+        'room',
+        'roomType',
+        'allAmenities',
+        'checkIn',
+        'checkOut',
+        'availableRoomsCount',
+        'reviews',
+        'canReview',
+        'avgRating',
+        'totalReviews',
+        'averageRating'
+    ));
+}
+
 
 
 
