@@ -2,8 +2,8 @@
 @section('title1', 'Tạo đơn đặt phòng mới')
 
 @section('content')
-<div class="container my-4 d-flex justify-content-end"> 
-    <div class="card shadow-lg border-0 rounded-3" style="width: 85%;">
+<section role="main" class="content-body content-body-modern mt-0">
+    <div class="card shadow-lg border-0 rounded-3">
         <div class="card-header bg-primary text-white">
             <h4 class="mb-0">📝 Tạo đơn đặt phòng mới</h4>
         </div>
@@ -47,7 +47,7 @@
                         <select name="room_type_id" class="form-select rounded-2" required>
                             <option value="">-- Chọn loại phòng --</option>
                             @foreach($roomTypes as $roomType)
-                                <option value="{{ $roomType->id }}">{{ $roomType->name }}</option>
+                            <option value="{{ $roomType->id }}">{{ $roomType->name }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -59,5 +59,5 @@
             </form>
         </div>
     </div>
-</div>
+</section>
 @endsection
