@@ -21,6 +21,7 @@ class BookingRoom extends Model
         'children',
         'guest_name',
         'note',
+        'cccd',
     ];
 
     // Quan hệ: BookingRoom thuộc về 1 Booking

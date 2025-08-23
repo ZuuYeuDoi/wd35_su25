@@ -57,10 +57,10 @@ class BookingRoomController extends Controller
 
         $bookings = $query->paginate(10);
         $bookings->getCollection()->transform(function ($booking) {
-        $guestName = optional($booking->bookingRooms->first())->guest_name;
-        $booking->display_customer_name = $guestName ?: optional($booking->user)->name ?: '---';
-        return $booking;
-    });
+            $guestName = optional($booking->bookingRooms->first())->guest_name;
+            $booking->display_customer_name = $guestName ?: optional($booking->user)->name ?: '---';
+            return $booking;
+        });
 
         return view('admin.bookingrooms.orders.index', compact('bookings'));
     }
@@ -68,7 +68,7 @@ class BookingRoomController extends Controller
     public function show($id)
     {
         $booking = Booking::with([
-            'user', 
+            'user',
             'room.roomType',
             'bookingRooms.room.roomType',
             'payments',
@@ -99,30 +99,30 @@ class BookingRoomController extends Controller
     }
 
 
-public function cancel(Request $request, $id)
-{
-    $booking = Booking::with('bookingRooms.room')->findOrFail($id);
+    public function cancel(Request $request, $id)
+    {
+        $booking = Booking::with('bookingRooms.room')->findOrFail($id);
 
-    $booking->status = 5;
-    $booking->note = $request->note; 
-    $booking->save();
+        $booking->status = 5;
+        $booking->note = $request->note;
+        $booking->save();
 
-    foreach ($booking->bookingRooms as $bookingRoom) {
-        $room = $bookingRoom->room;
-        $room->status = 0;
-        $room->save();
+        foreach ($booking->bookingRooms as $bookingRoom) {
+            $room = $bookingRoom->room;
+            $room->status = 0;
+            $room->save();
 
-        ManageStatusRoom::where('room_id', $room->id)
-            ->where('booking_id', $booking->id)
-            ->update([
-                'status' => 0,
-                'note' => $request->note,
-            ]);
+            ManageStatusRoom::where('room_id', $room->id)
+                ->where('booking_id', $booking->id)
+                ->update([
+                    'status' => 0,
+                    'note' => $request->note,
+                ]);
+        }
+
+        return redirect()->route('room_order.index')->with('success', 'Đơn đặt phòng đã được hủy và cập nhật lý do thành công.');
     }
 
-    return redirect()->route('room_order.index')->with('success', 'Đơn đặt phòng đã được hủy và cập nhật lý do thành công.');
-}
-        
     public function showExtendHour($id)
     {
         $booking = Booking::with('bookingRooms.room')->findOrFail($id);
@@ -159,42 +159,60 @@ public function cancel(Request $request, $id)
         return view('admin.bookingrooms.orders.extend_day', compact('booking'));
     }
 
-  public function handleExtendDay(Request $request, $id)
-{
-    $request->validate([
-        'new_check_out_date' => 'required|date|after:' . $request->old_check_out_date,
-    ]);
+    public function handleExtendDay(Request $request, $id)
+    {
+        $request->validate([
+            'new_check_out_date' => 'required|date|after:' . $request->old_check_out_date,
+        ]);
 
-    $booking = Booking::with('bookingRooms.room')->findOrFail($id);
+        $booking = Booking::with('bookingRooms.room')->findOrFail($id);
 
-    $oldCheckOut = Carbon::parse($request->old_check_out_date);
-    $newCheckOut = Carbon::parse($request->new_check_out_date);
-    $checkIn = Carbon::parse($booking->check_in_date);
+        $oldCheckOut = Carbon::parse($request->old_check_out_date);
+        $newCheckOut = Carbon::parse($request->new_check_out_date);
+        $checkIn = Carbon::parse($booking->check_in_date);
 
-    $oldDays = $checkIn->diffInDays($oldCheckOut);
-    $newDays = $checkIn->diffInDays($newCheckOut);
-    $extendDays = $newDays - $oldDays;
+        $oldDays = $checkIn->diffInDays($oldCheckOut);
+        $newDays = $checkIn->diffInDays($newCheckOut);
+        $extendDays = $newDays - $oldDays;
 
-    if ($extendDays <= 0) {
-        return back()->with('error', 'Ngày mới phải lớn hơn ngày cũ.');
+        if ($extendDays <= 0) {
+            return back()->with('error', 'Ngày mới phải lớn hơn ngày cũ.');
+        }
+
+        $totalRoomFee = $booking->bookingRooms->sum('room.price') * $extendDays;
+
+        FeesIncurred::create([
+            'booking_id' => $booking->id,
+            'name' => 'Phí gia hạn ' . $extendDays . ' ngày',
+            'description' => 'Khách yêu cầu gia hạn thêm ' . $extendDays . ' ngày',
+            'price' => $totalRoomFee,
+        ]);
+
+        $booking->check_out_date = $newCheckOut;
+        $booking->save();
+
+        return redirect()->route('room_order.show', $booking->id)
+            ->with('success', "Gia hạn thêm {$extendDays} ngày. Phụ thu: " . number_format($totalRoomFee) . "đ");
     }
+    public function updateCCCD(Request $request, $id)
+    {
+        $booking = Booking::with('bookingRooms')->findOrFail($id);
 
-    $totalRoomFee = $booking->bookingRooms->sum('room.price') * $extendDays;
+        $request->validate([
+            'cccd.*' => ['required', 'digits:12'],
+        ], [
+            'cccd.*.required' => 'Vui lòng nhập số CCCD.',
+            'cccd.*.digits'   => 'CCCD phải gồm đúng 12 chữ số.',
+        ]);
 
-    FeesIncurred::create([
-        'booking_id' => $booking->id,
-        'name' => 'Phí gia hạn ' . $extendDays . ' ngày',
-        'description' => 'Khách yêu cầu gia hạn thêm ' . $extendDays . ' ngày',
-        'price' => $totalRoomFee,
-    ]);
+        foreach ($request->cccd as $bookingRoomId => $cccd) {
+            $bookingRoom = $booking->bookingRooms->where('id', $bookingRoomId)->first();
+            if ($bookingRoom) {
+                $bookingRoom->cccd = $cccd;
+                $bookingRoom->save();
+            }
+        }
 
-    $booking->check_out_date = $newCheckOut;
-    $booking->save();
-
-    return redirect()->route('room_order.show', $booking->id)
-        ->with('success', "Gia hạn thêm {$extendDays} ngày. Phụ thu: " . number_format($totalRoomFee) . "đ");
-}
-
-
-        
+        return back()->with('success', 'Cập nhật CCCD thành công!');
+    }
 }

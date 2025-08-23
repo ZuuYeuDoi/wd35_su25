@@ -204,6 +204,7 @@ Route::prefix('admin')->group(function () {
         Route::post('/room_order/{id}/extend-day', [BookingRoomController::class, 'handleExtendDay'])->name('room_order.extend_day.handle');
         Route::get('/room_order/{id}/extend-hour', [BookingRoomController::class, 'showExtendHour'])->name('room_order.extend_hour');
         Route::post('/room_order/{id}/extend-hour', [BookingRoomController::class, 'handleExtendHour'])->name('room_order.extend_hour.handle');
+        Route::put('/room_order/{id}/update-cccd', 'updateCCCD')->name('room_order.update_cccd');
     });
 
     // Quản lý Bill
