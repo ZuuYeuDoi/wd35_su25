@@ -70,29 +70,43 @@ private function calcNights($ci, $co): int
         'children'        => 'required|integer|min:0',
     ]);
 
+    $this->addItemToCart($data);
+
+    if ($request->input('action') === 'checkout') {
+        return redirect()->route('booking.cart.view');
+    }
+
+    return redirect()->route('room.indexRoom')->with('success', 'Đã thêm loại phòng vào giỏ booking.');
+}
+
+/**
+ * ✅ Hàm dùng chung để thêm 1 phòng vào giỏ
+ */
+private function addItemToCart(array $data)
+{
     $cart = session()->get('booking_cart', []);
 
-    // ✅ Nếu giỏ đã có phòng, fix ngày theo phòng đầu tiên
+    // Nếu giỏ đã có phòng → check ngày phải trùng
     if (!empty($cart)) {
         $first = $cart[0];
         if ($data['check_in'] !== $first['check_in'] || $data['check_out'] !== $first['check_out']) {
-            return back()->with('error', 'Ngày nhận/trả phải giống các phòng đã chọn trước đó.');
+            throw new \Exception('Ngày nhận/trả phải giống các phòng đã chọn trước đó.');
         }
     }
 
-    // ✅ Kiểm tra số lượng phòng trống trong DB
+    // Kiểm tra số lượng phòng trống
     $roomType = RoomType::with('rooms')->findOrFail($data['room_type_id']);
 
     $bookedRoomIds = BookingRoom::whereHas('booking', function ($q) use ($data) {
-            $q->where(function ($sub) use ($data) {
-                $sub->whereBetween('check_in_date', [$data['check_in'], $data['check_out']])
-                    ->orWhereBetween('check_out_date', [$data['check_in'], $data['check_out']]);
-            })->whereIn('status', [0,1]); // 0: chờ, 1: đã cọc
-        })->pluck('room_id')->toArray();
+        $q->where(function ($sub) use ($data) {
+            $sub->whereBetween('check_in_date', [$data['check_in'], $data['check_out']])
+                ->orWhereBetween('check_out_date', [$data['check_in'], $data['check_out']]);
+        })->whereIn('status', [0, 1]);
+    })->pluck('room_id')->toArray();
 
     $availableRooms = $roomType->rooms()->whereNotIn('id', $bookedRoomIds)->count();
 
-    // Tính số phòng trong giỏ hiện tại (cùng room_type + cùng ngày)
+    // Tính số phòng đã có trong giỏ
     $cartRoomsSameType = collect($cart)->filter(function ($line) use ($data) {
         return (int)$line['room_type_id'] === (int)$data['room_type_id']
             && $line['check_in'] === $data['check_in']
@@ -100,20 +114,20 @@ private function calcNights($ci, $co): int
     })->sum('number_of_rooms');
 
     if (($cartRoomsSameType + $data['number_of_rooms']) > $availableRooms) {
-        return back()->with('error', 'Không đủ phòng trống cho loại phòng này.');
+        throw new \Exception('Không đủ phòng trống cho loại phòng này.');
     }
 
-    // ✅ Merge item cùng loại phòng & cùng ngày để giỏ gọn gàng
+    // Merge item cùng loại phòng & cùng ngày
     $merged = false;
     foreach ($cart as &$line) {
         if (
-            (int) $line['room_type_id'] === (int) $data['room_type_id'] &&
+            (int)$line['room_type_id'] === (int)$data['room_type_id'] &&
             $line['check_in'] === $data['check_in'] &&
             $line['check_out'] === $data['check_out']
         ) {
-            $line['number_of_rooms'] += (int) $data['number_of_rooms'];
-            $line['adults']   = (int) $data['adults'];
-            $line['children'] = (int) $data['children'];
+            $line['number_of_rooms'] += (int)$data['number_of_rooms'];
+            $line['adults']   = (int)$data['adults'];
+            $line['children'] = (int)$data['children'];
             $merged = true;
             break;
         }
@@ -125,13 +139,8 @@ private function calcNights($ci, $co): int
     }
 
     session(['booking_cart' => $cart]);
-
-    if ($request->input('action') === 'checkout') {
-        return redirect()->route('booking.cart.view');
-    }
-
-    return redirect()->route('room.indexRoom')->with('success', 'Đã thêm loại phòng vào giỏ booking.');
 }
+
 
 
     /** Xóa 1 item khỏi giỏ */
@@ -425,6 +434,7 @@ private function calcNights($ci, $co): int
             'nights'        => null,
             'preferred'     => null,
             'combinations'  => null,
+            'tour_suggestions' => session()->get('tour_suggestions', []),
         ]);
     }
 public function searchTours(Request $request)
@@ -532,8 +542,7 @@ public function searchTours(Request $request)
             'bed_type' => $rt->bed_type,
             'amenities' => $rt->amenities ?? [],
             'image_url' => $imageUrl,
-            'available_count' => $availableCount,
-             'tour_suggestions' => session()->get('tour_suggestions', []), // Thêm tour_suggestions
+            'available_count' => $availableCount, 
         ];
     });
 
@@ -547,7 +556,8 @@ public function searchTours(Request $request)
         'children' => $children,
         'nights' => $nights,
         'preferred' => $preferred,
-        'combinations' => $combinations, // Sử dụng plan như combinations để tích hợp với view
+        'combinations' => $combinations,
+        'tour_suggestions' => session()->get('tour_suggestions', []), // Sử dụng plan như combinations để tích hợp với view
     ]);
 }
 
@@ -873,5 +883,30 @@ private function planAdultsByCapacity(array $roomTypes, int $adults, int $childr
 
     return back()->with('success', 'Đã thêm ' . $data['qty'] . ' phòng ' . $roomType->name . ' vào gợi ý tour.');
 }
+public function removeFromSuggestion(Request $request)
+{
+    $data = $request->validate([
+        'index' => 'required|integer|min:0',
+    ]);
+
+    $suggestions = session()->get('tour_suggestions', []);
+    $index = (int) $data['index'];
+
+    if (!array_key_exists($index, $suggestions)) {
+        return back()->with('error', 'Mục gợi ý cần xóa không tồn tại.');
+    }
+
+    unset($suggestions[$index]);
+    $suggestions = array_values($suggestions); // re-index lại
+
+    if (empty($suggestions)) {
+        session()->forget('tour_suggestions');
+    } else {
+        session(['tour_suggestions' => $suggestions]);
+    }
+
+    return back()->with('success', 'Đã xóa gợi ý.');
+}
+
 
 }

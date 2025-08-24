@@ -50,8 +50,11 @@ Route::get('/tours/search', [BookingController::class, 'searchTours'])->name('bo
 // Thêm 1 tour (gồm nhiều loại phòng) vào cart
 Route::post('/tours/add-to-cart', [BookingController::class, 'addTourToCart'])->name('booking.tour.addToCart');
 
+
 Route::post('/booking/tour/add-suggestion', [BookingController::class, 'addToSuggestion'])
     ->name('booking.tour.addToSuggestion');
+Route::delete('/booking/tour/remove-suggestion', [BookingController::class, 'removeFromSuggestion'])
+    ->name('booking.tour.removeFromSuggestion');
 
 
 
