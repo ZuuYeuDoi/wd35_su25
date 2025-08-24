@@ -13,13 +13,6 @@
 
 <section class="pt-120 pb-120">
     <div class="container">
-        @if(session('success'))
-            <div class="alert alert-success">{{ session('success') }}</div>
-        @endif
-        @if(session('error'))
-            <div class="alert alert-danger">{{ session('error') }}</div>
-        @endif
-
         @if($summary->isEmpty())
             <div class="alert alert-info">
                 Giỏ đặt phòng trống. <a href="{{ route('room.index') }}">Quay lại chọn phòng</a>
