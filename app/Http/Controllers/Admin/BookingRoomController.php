@@ -74,8 +74,18 @@ class BookingRoomController extends Controller
             'payments',
         ])->findOrFail($id);
 
-        return view('admin.bookingrooms.orders.show', compact('booking'));
+        $roomsByType = [];
+        foreach ($booking->bookingRooms as $bookingRoom) {
+            $typeId = $bookingRoom->room->room_type_id;
+            if (!isset($roomsByType[$typeId])) {
+                $roomsByType[$typeId] = Room::where('room_type_id', $typeId)->get();
+            }
+        }
+
+        return view('admin.bookingrooms.orders.show', compact('booking', 'roomsByType'));
     }
+
+
 
     public function edit($id)
     {
@@ -199,20 +209,24 @@ class BookingRoomController extends Controller
         $booking = Booking::with('bookingRooms')->findOrFail($id);
 
         $request->validate([
-            'cccd.*' => ['required', 'digits:12'],
+            'cccd.*'    => ['required', 'digits:12'],
+            'room_id.*' => ['required', 'exists:rooms,id'],
         ], [
-            'cccd.*.required' => 'Vui lòng nhập số CCCD.',
-            'cccd.*.digits'   => 'CCCD phải gồm đúng 12 chữ số.',
+            'cccd.*.required'    => 'Vui lòng nhập số CCCD.',
+            'cccd.*.digits'      => 'CCCD phải gồm đúng 12 chữ số.',
+            'room_id.*.required' => 'Vui lòng chọn phòng.',
+            'room_id.*.exists'   => 'Phòng đã chọn không tồn tại.',
         ]);
 
-        foreach ($request->cccd as $bookingRoomId => $cccd) {
-            $bookingRoom = $booking->bookingRooms->where('id', $bookingRoomId)->first();
-            if ($bookingRoom) {
-                $bookingRoom->cccd = $cccd;
-                $bookingRoom->save();
-            }
+        foreach ($booking->bookingRooms as $bookingRoom) {
+            $bookingRoomId = $bookingRoom->id;
+
+            $bookingRoom->update([
+                'cccd'    => $request->cccd[$bookingRoomId] ?? $bookingRoom->cccd,
+                'room_id' => $request->room_id[$bookingRoomId] ?? $bookingRoom->room_id,
+            ]);
         }
 
-        return back()->with('success', 'Cập nhật CCCD thành công!');
+        return back()->with('success', 'Cập nhật thông tin thành công!');
     }
 }
