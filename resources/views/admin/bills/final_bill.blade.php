@@ -174,7 +174,7 @@
                                     </tr>
                                 @endif
                                 <tr>
-                                    <<td class="text-end">VAT (8%):</td>
+                                    <td class="text-end">VAT (8%):</td>
                                     <td class="text-end">{{ number_format($bill->vat_amount, 0, ',', '.') }}đ</td>
                                 </tr>
                                 <tr class="h4">
