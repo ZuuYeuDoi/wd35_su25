@@ -104,7 +104,15 @@
                                 <tbody>
                                     @forelse ($booking->bookingRooms as $bookingRoom)
                                     <tr>
-                                        <td>{{ $bookingRoom->room->title }}</td>
+                                        <td>
+                                            <select name="room_id[{{ $bookingRoom->id }}]" class="form-select">
+                                                @foreach($roomsByType[$bookingRoom->room->room_type_id] as $room)
+                                                <option value="{{ $room->id }}" {{ $room->id == $bookingRoom->room_id ? 'selected' : '' }}>
+                                                    {{ $room->title }}
+                                                </option>
+                                                @endforeach
+                                            </select>
+                                        </td>
                                         <td>{{ $bookingRoom->room->roomType->name }}</td>
                                         <td class="text-end">{{ number_format($bookingRoom->room->price) }}đ</td>
                                         <td>
@@ -117,10 +125,11 @@
                                     </tr>
                                     @endforelse
                                 </tbody>
+
                             </table>
                         </div>
                         <div class="mt-3 text-end">
-                            <button type="submit" class="btn btn-success">Lưu CCCD</button>
+                            <button type="submit" class="btn btn-success">Lưu</button>
                         </div>
                     </form>
                 </div>
@@ -180,9 +189,12 @@
     <!-- Nút hành động -->
     @php
     use Carbon\Carbon;
-    $now = Carbon::now();
-    $checkInDate = Carbon::parse($booking->check_in_date);
-    $isSameDay = $now->isSameDay($checkInDate);
+
+    $now = Carbon::now('Asia/Ho_Chi_Minh'); 
+    $checkInDate = Carbon::parse($booking->check_in_date)->timezone('Asia/Ho_Chi_Minh');
+
+    $isSameDay = $now->toDateString() === $checkInDate->toDateString();
+
     $isInTimeRange = $now->between(
     $checkInDate->copy()->setTime(14, 0),
     $checkInDate->copy()->setTime(18, 0)
