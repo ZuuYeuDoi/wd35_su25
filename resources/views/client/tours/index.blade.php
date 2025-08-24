@@ -60,12 +60,6 @@
         height: 300px;
         object-fit: cover;
     }
-    .suggestions-list {
-        background-color: #f8f9fa;
-        padding: 15px;
-        border-radius: 8px;
-        margin-top: 20px;
-    }
 </style>
 @endpush
 
@@ -216,41 +210,9 @@
             </form>
         @endif
 
-        {{-- 3) Danh sách gợi ý đã thêm --}}
-        @if(!empty($tour_suggestions))
-            <div class="suggestions-list">
-                <h4 class="mb-3">Danh sách gợi ý đã chọn</h4>
-                <div class="row g-3">
-                    @foreach($tour_suggestions as $index => $suggestion)
-                        @php
-                            $roomType = \App\Models\RoomType::find($suggestion['room_type_id']);
-                            $nights = \Carbon\Carbon::parse($suggestion['check_in'])->diffInDays($suggestion['check_out']);
-                            $subTotal = $roomType->room_type_price * $suggestion['qty'] * $nights;
-                        @endphp
-                        <div class="col-md-4 col-sm-6 col-12">
-                            <div class="room-card p-3 h-100">
-                                <h6 class="mb-1">{{ $roomType->name }}</h6>
-                                <span class="d-block text-danger fw-bold">{{ number_format($roomType->room_type_price) }} VND / đêm</span>
-                                <span class="d-block">Số phòng: {{ $suggestion['qty'] }}</span>
-                                <span class="d-block">Thời gian: {{ $suggestion['check_in'] }} → {{ $suggestion['check_out'] }}</span>
-                                <span class="d-block">Khách: {{ $suggestion['adults'] }} người lớn, {{ $suggestion['children'] }} trẻ em</span>
-                                <p class="mb-2">Tạm tính: <strong>{{ number_format($subTotal) }} VND</strong></p>
-                                <form action="{{ route('booking.tour.removeFromSuggestion') }}" method="post" class="d-inline">
-                                    @csrf
-                                    @method('DELETE')
-                                    <input type="hidden" name="index" value="{{ $index }}">
-                                    <button type="submit" class="btn btn-outline-danger btn-sm">Xóa</button>
-                                </form>
-                            </div>
-                        </div>
-                    @endforeach
-                </div>
-            </div>
-        @endif
-
         <hr class="title-divider">
 
-        {{-- 4) Danh sách tất cả loại phòng --}}
+        {{-- 3) Danh sách tất cả loại phòng --}}
         <h4 class="mb-3">Tất cả loại phòng</h4>
         <p class="muted mb-3">
             @if(!empty($check_in) && !empty($check_out))
@@ -275,7 +237,7 @@
                                 <span class="text-muted">Chưa chọn ngày</span>
                             @endif
                         </div>
-                        {{-- Form thêm vào tour --}}
+                        {{-- Form thêm vào gợi ý --}}
                         @if(isset($rt['available_count']) && $rt['available_count'] > 0)
                             <form action="{{ route('booking.tour.addToSuggestion') }}" method="post" class="mt-3">
                                 @csrf
@@ -387,6 +349,12 @@ document.addEventListener("DOMContentLoaded", function () {
             }
             if (qty < 1) {
                 alert("Số phòng phải ít nhất là 1.");
+                e.preventDefault();
+                return false;
+            }
+            let capacity = isSingle ? 1 : 2;
+            if (capacity * qty < adults) {
+                alert(`Số phòng ${qty} không đủ chứa ${adults} người lớn (sức chứa tối đa: ${capacity} người/phòng).`);
                 e.preventDefault();
                 return false;
             }

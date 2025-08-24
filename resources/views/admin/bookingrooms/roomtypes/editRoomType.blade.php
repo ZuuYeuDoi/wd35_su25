@@ -87,7 +87,7 @@
                                             '1 giường đơn',
                                             '2 giường đơn',
                                             '1 giường đôi',
-                                            '1 giường đôi + 1 giường đơn',
+                                            '3 giường đơn',
                                             '2 giường đôi',
                                         ];
                                     @endphp
