@@ -280,12 +280,14 @@
 
                         <div class="mb-3">
                             <label>Ngày nhận phòng</label>
-                            <input type="date" name="check_in" class="form-control" value="{{ $defaultCheckin }}" min="{{ \Carbon\Carbon::tomorrow()->format('Y-m-d') }}" @if($hasCart) readonly @endif required>
+                            <input type="date" id="checkin" name="check_in" class="form-control"
+                                min="{{ \Carbon\Carbon::tomorrow()->format('Y-m-d') }}" required>
                         </div>
 
                         <div class="mb-3">
                             <label>Ngày trả phòng</label>
-                            <input type="date" name="check_out" class="form-control" value="{{ $defaultCheckout }}" min="{{ \Carbon\Carbon::tomorrow()->addDay()->format('Y-m-d') }}" @if($hasCart) readonly @endif required>
+                            <input type="date" id="checkout" name="check_out" class="form-control"
+                                min="{{ \Carbon\Carbon::tomorrow()->addDay()->format('Y-m-d') }}" required>
                         </div>
 
                         <div class="mb-3">
@@ -376,110 +378,109 @@
 
 @push('js')
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        // Lấy ngày mai (check-in)
-        const tomorrow = new Date();
-        tomorrow.setDate(tomorrow.getDate() + 1);
-        const checkinMin = tomorrow.toISOString().split('T')[0];
+document.addEventListener("DOMContentLoaded", function () {
+    const checkinInput   = document.getElementById('checkin');
+    const checkoutInput  = document.getElementById('checkout');
+    const roomTypeId     = document.getElementById('room_type_id')?.value;
+    const availableSpan  = document.getElementById('available-count');
 
-        // Lấy ngày kia (check-out mặc định ít nhất sau check-in 1 ngày)
-        const dayAfterTomorrow = new Date();
-        dayAfterTomorrow.setDate(dayAfterTomorrow.getDate() + 2);
-        const checkoutMin = dayAfterTomorrow.toISOString().split('T')[0];
+    const today = new Date();
 
-        const checkinInput = document.getElementById('checkin');
-        const checkoutInput = document.getElementById('checkout');
-        const roomTypeId = document.getElementById('room_type_id') ? .value;
-        const availableSpan = document.getElementById('available-count');
+    const tomorrow = new Date(today);
+    tomorrow.setDate(today.getDate() + 1);
+    const checkinMin = tomorrow.toISOString().split('T')[0];
+    if (checkinInput) checkinInput.min = checkinMin;
 
-        // Set min date
-        if (checkinInput) checkinInput.setAttribute('min', checkinMin);
-        if (checkoutInput) checkoutInput.setAttribute('min', checkoutMin);
+    const dayAfterTomorrow = new Date(today);
+    dayAfterTomorrow.setDate(today.getDate() + 2);
+    const checkoutMin = dayAfterTomorrow.toISOString().split('T')[0];
+    if (checkoutInput) checkoutInput.min = checkoutMin;
 
-        if (checkinInput) {
-            checkinInput.addEventListener('change', function() {
-                const checkinDate = new Date(this.value);
-                const minCheckout = new Date(checkinDate);
-                minCheckout.setDate(minCheckout.getDate() + 1);
-                const minCheckoutStr = minCheckout.toISOString().split('T')[0];
+    if (checkinInput) {
+        checkinInput.addEventListener('change', function () {
+            const checkinDate = new Date(this.value);
+            if (isNaN(checkinDate)) return;
 
-                checkoutInput.setAttribute('min', minCheckoutStr);
+            const minCheckout = new Date(checkinDate);
+            minCheckout.setDate(minCheckout.getDate() + 1);
+            const minCheckoutStr = minCheckout.toISOString().split('T')[0];
+
+            if (checkoutInput) {
+                checkoutInput.min = minCheckoutStr;
+
                 if (checkoutInput.value && checkoutInput.value <= this.value) {
                     checkoutInput.value = '';
                 }
+            }
 
-                fetchAvailability();
-            });
-        }
-
-        if (checkoutInput) {
-            checkoutInput.addEventListener('change', fetchAvailability);
-        }
-
-        function fetchAvailability() {
-            const checkIn = checkinInput ? .value;
-            const checkOut = checkoutInput ? .value;
-
-            if (!checkIn || !checkOut || !roomTypeId) return;
-
-            fetch(`{{ route('room_type.check_availability') }}?room_type_id=${roomTypeId}&check_in=${checkIn}&check_out=${checkOut}`)
-                .then(res => res.json())
-                .then(data => {
-                    if (data.status) {
-                        availableSpan.innerText = data.available;
-                        availableSpan.classList.remove('text-danger');
-                        availableSpan.classList.add('text-success');
-                    } else {
-                        availableSpan.innerText = data.message ? ? 'Lỗi';
-                        availableSpan.classList.add('text-danger');
-                    }
-                })
-                .catch(err => {
-                    availableSpan.innerText = 'Lỗi';
-                    availableSpan.classList.add('text-danger');
-                });
-        }
-
-        // 🔄 Xử lý click ảnh phụ → đổi ảnh chính
-        const thumbnails = document.querySelectorAll('.room-thumbnail');
-        const mainImage = document.getElementById('mainRoomImage');
-
-        thumbnails.forEach(function(thumb) {
-            thumb.addEventListener('click', function() {
-                const newSrc = this.getAttribute('data-src') || this.src;
-                if (mainImage && newSrc) {
-                    mainImage.setAttribute('src', newSrc);
-                }
-
-                // Highlight ảnh đang chọn
-                thumbnails.forEach(t => t.classList.remove('border-primary'));
-                this.classList.add('border-primary');
-            });
+            fetchAvailability();
         });
+    }
 
-        // Hàm đặt phòng
-        window.addToBooking = function(id, name, price) {
-            alert(`Đặt phòng: ${name} (${price.toLocaleString()} VND)`);
-        }
-        document.querySelectorAll('.filter-btn').forEach(button => {
-            button.addEventListener('click', () => {
-                // Active class
-                document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
-                button.classList.add('active');
+    if (checkoutInput) {
+        checkoutInput.addEventListener('change', fetchAvailability);
+    }
 
-                const selectedRating = button.dataset.rating;
-                const reviews = document.querySelectorAll('.single-review');
+    function fetchAvailability() {
+        const checkIn  = checkinInput?.value;
+        const checkOut = checkoutInput?.value;
 
-                reviews.forEach(review => {
-                    if (selectedRating === 'all' || review.dataset.rating === selectedRating) {
-                        review.style.display = '';
-                    } else {
-                        review.style.display = 'none';
-                    }
-                });
+        if (!checkIn || !checkOut || !roomTypeId || !availableSpan) return;
+
+        fetch(`{{ route('room_type.check_availability') }}?room_type_id=${roomTypeId}&check_in=${checkIn}&check_out=${checkOut}`)
+            .then(res => res.json())
+            .then(data => {
+                if (data.status) {
+                    availableSpan.innerText = data.available;
+                    availableSpan.classList.remove('text-danger');
+                    availableSpan.classList.add('text-success');
+                } else {
+                    availableSpan.innerText = data.message ?? 'Lỗi';
+                    availableSpan.classList.remove('text-success');
+                    availableSpan.classList.add('text-danger');
+                }
+            })
+            .catch(() => {
+                availableSpan.innerText = 'Lỗi';
+                availableSpan.classList.remove('text-success');
+                availableSpan.classList.add('text-danger');
             });
+    }
+
+    const thumbnails = document.querySelectorAll('.room-thumbnail');
+    const mainImage = document.getElementById('mainRoomImage');
+
+    thumbnails.forEach(thumb => {
+        thumb.addEventListener('click', () => {
+            const newSrc = thumb.dataset.src || thumb.src;
+            if (mainImage && newSrc) {
+                mainImage.src = newSrc;
+            }
+            thumbnails.forEach(t => t.classList.remove('border-primary'));
+            thumb.classList.add('border-primary');
         });
     });
 
+    window.addToBooking = function (id, name, price) {
+        const formattedPrice = Number(price).toLocaleString('vi-VN');
+        alert(`Đặt phòng: ${name} (${formattedPrice} VND)`);
+    };
+
+    document.querySelectorAll('.filter-btn').forEach(button => {
+        button.addEventListener('click', () => {
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+
+            const selectedRating = button.dataset.rating;
+            const reviews = document.querySelectorAll('.single-review');
+
+            reviews.forEach(review => {
+                const rating = review.dataset.rating;
+                review.style.display = (selectedRating === 'all' || rating === selectedRating) ? '' : 'none';
+            });
+        });
+    });
+});
 </script>
 @endpush
+
