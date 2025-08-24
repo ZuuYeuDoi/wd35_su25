@@ -109,7 +109,7 @@
                                         <div class="box-caption">
                                             <a href="{{ $roomTypeUrl }}" class="book-btn">Đặt phòng</a>
                                             <ul class="bx-links">
-                                                @foreach ($roomType->amenities ?? [] as $amenityId)
+                                                 @foreach (array_slice($roomType->amenities ?? [], 0, 5) as $amenityId)
                                                     @if ($allAmenities->has($amenityId))
                                                         <li>{{ $allAmenities[$amenityId]->name }}</li>
                                                     @endif
