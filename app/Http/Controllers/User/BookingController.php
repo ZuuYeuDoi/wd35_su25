@@ -706,11 +706,16 @@ private function planAdultsByCapacity(array $roomTypes, int $adults, int $childr
         }
     }
 
+    // Sắp xếp theo capacity giảm dần, sau đó giá tăng dần
+    usort($availableRoomTypes, function ($a, $b) {
+        return [-$a['capacity'], $a['unit_price']] <=> [-$b['capacity'], $b['unit_price']];
+    });
+
     $plan = [];
     $remainingAdults = $adults;
     $remainingChildren = $children;
 
-    // Lấy phòng đầu tiên (và duy nhất) từ danh sách đã lọc
+    // Lấy phòng đầu tiên (phòng có capacity cao nhất) từ danh sách đã sắp xếp
     $rt = reset($availableRoomTypes);
     $capacity = max(1, $rt['capacity']);
     $available = $rt['available'];
@@ -730,9 +735,10 @@ private function planAdultsByCapacity(array $roomTypes, int $adults, int $childr
             $remainingChildren = 0; // Giả sử trẻ em được chứa trong phòng này
         }
     }
-    // Phân bổ chính: sử dụng floor để lấy các gói đầy đủ
+    // Phân bổ chính: sử dụng ceil để tính số phòng cần
     else {
-        $need = (int) ceil(($adults + $children) / $capacity); // Tính số phòng cần, bao gồm cả trẻ em
+        $totalGuests = $adults + $children;
+        $need = (int) ceil($totalGuests / $capacity); // Tính số phòng cần
         if ($need <= $available && ($rt['supports_children'] || $children === 0)) {
             $plan[] = ['room_type' => $rt['model'], 'qty' => $need];
             $remainingAdults -= min($adults, $need * $capacity);
