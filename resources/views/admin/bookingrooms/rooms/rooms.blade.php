@@ -13,7 +13,7 @@
                             <div class="datatable-header">
                                 <div class="row align-items-center mb-3">
                                     <div class="col-12 col-lg-auto mb-3 mb-lg-0">
-                                        <a href="{{ route('room.create') }}"><button class="btn btn-primary">Thêm
+                                        <a href="{{ route('room.create') }}"><button class="btn btn-success">Thêm
                                                 phòng</button></a>
                                         <a href="{{ route('room.trash') }}"><button class="btn btn-warning">Thùng
                                                 rác</button></a>
