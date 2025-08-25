@@ -22,7 +22,7 @@
 
         @if($summary->isEmpty())
             <div class="alert alert-info">
-                Giỏ đặt phòng trống. <a href="{{ route('room.index') }}">Quay lại chọn phòng</a>
+                Giỏ đặt phòng trống. <a href="{{ route('room.indexRoom') }}">Quay lại chọn phòng</a>
             </div>
         @else
 <div class="table-responsive mb-4">
@@ -78,6 +78,7 @@
     </table>
 </div>
             <div class="d-flex justify-content-end">
+                <button class="btn btn-success" style="margin-right: 10px"><a href="{{ route ('room.indexRoom') }}">Tiếp Tục Đặt Phòng</a></button>
     <form action="{{ route('booking.cart.checkout') }}" method="POST">
         @csrf
         <button type="submit" class="btn btn-primary px-4 py-2">
