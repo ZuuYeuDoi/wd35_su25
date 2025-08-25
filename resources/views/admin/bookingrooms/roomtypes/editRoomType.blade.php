@@ -158,7 +158,7 @@
                         </div>
                     </div>
 
-                    <button type="submit" class="btn btn-primary">Cập nhật</button>
+                    <button type="submit" class="btn btn-success">Cập nhật</button>
                     <a href="{{ route('room_types.index') }}" class="btn btn-secondary mt-3">Quay lại</a>
 
                 </form>
