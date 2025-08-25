@@ -281,17 +281,21 @@
                         <div class="mb-3">
                             <label>Ngày nhận phòng</label>
                             <input type="date" id="checkin" name="check_in" class="form-control"
+
                                 value="{{ $defaultCheckin }}"
                                 min="{{ \Carbon\Carbon::tomorrow()->format('Y-m-d') }}"
                                 @if($hasCart) readonly @endif required>
+
                         </div>
 
                         <div class="mb-3">
                             <label>Ngày trả phòng</label>
                             <input type="date" id="checkout" name="check_out" class="form-control"
+
                                 value="{{ $defaultCheckout }}"
                                 min="{{ \Carbon\Carbon::tomorrow()->addDay()->format('Y-m-d') }}"
                                 @if($hasCart) readonly @endif required>
+
                         </div>
 
                         <div class="mb-3">
@@ -381,6 +385,7 @@
 
 @push('js')
 <script>
+
 document.addEventListener("DOMContentLoaded", function() {
     // Lấy ngày mai (check-in)
     const tomorrow = new Date();
@@ -412,9 +417,11 @@ document.addEventListener("DOMContentLoaded", function() {
             }
 
             // Tạo ngày checkout tối thiểu (sau check-in 1 ngày)
+
             const minCheckout = new Date(checkinDate);
             minCheckout.setDate(minCheckout.getDate() + 1);
             const minCheckoutStr = minCheckout.toISOString().split('T')[0];
+
 
             // Cập nhật thuộc tính min của checkout
             checkoutInput.setAttribute('min', minCheckoutStr);
@@ -444,9 +451,11 @@ document.addEventListener("DOMContentLoaded", function() {
                 this.value = '';
             }
 
+
             fetchAvailability();
         });
     }
+
 
     function fetchAvailability() {
         const checkIn = checkinInput?.value;
@@ -538,6 +547,7 @@ document.addEventListener("DOMContentLoaded", function() {
     };
 
     // Xử lý bộ lọc đánh giá
+
     document.querySelectorAll('.filter-btn').forEach(button => {
         button.addEventListener('click', () => {
             document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
@@ -547,14 +557,18 @@ document.addEventListener("DOMContentLoaded", function() {
             const reviews = document.querySelectorAll('.single-review');
 
             reviews.forEach(review => {
+
                 if (selectedRating === 'all' || review.dataset.rating === selectedRating) {
                     review.style.display = '';
                 } else {
                     review.style.display = 'none';
                 }
+
             });
         });
     });
 });
 </script>
+
 @endpush
+
