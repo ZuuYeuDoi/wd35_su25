@@ -706,44 +706,51 @@ private function planAdultsByCapacity(array $roomTypes, int $adults, int $childr
         }
     }
 
-    // Sắp xếp theo capacity giảm dần, sau đó giá tăng dần
+    // Tổng số khách
+    $totalGuests = $adults + $children;
+
+    // Sắp xếp theo capacity tăng dần để ưu tiên phòng có sức chứa gần với totalGuests
     usort($availableRoomTypes, function ($a, $b) {
-        return [-$a['capacity'], $a['unit_price']] <=> [-$b['capacity'], $b['unit_price']];
+        return [$a['capacity'], $a['unit_price']] <=> [$b['capacity'], $b['unit_price']];
     });
 
     $plan = [];
     $remainingAdults = $adults;
     $remainingChildren = $children;
 
-    // Lấy phòng đầu tiên (phòng có capacity cao nhất) từ danh sách đã sắp xếp
-    $rt = reset($availableRoomTypes);
-    $capacity = max(1, $rt['capacity']);
-    $available = $rt['available'];
+    // Tìm phòng có capacity >= totalGuests và có sẵn
+    $selectedRoom = null;
+    foreach ($availableRoomTypes as $rt) {
+        if ($rt['capacity'] >= $totalGuests && $rt['available'] >= 1 && ($rt['supports_children'] || $children === 0)) {
+            $selectedRoom = $rt;
+            break;
+        }
+    }
 
-    // Trường hợp đặc biệt 1: adults=1, children=0
-    if ($adults === 1 && $children === 0) {
-        if ($capacity >= 1 && $available >= 1) {
-            $plan[] = ['room_type' => $rt['model'], 'qty' => 1];
-            $remainingAdults -= 1;
+    // Nếu không tìm thấy phòng có capacity >= totalGuests, chọn phòng có capacity gần nhất nhưng đủ chứa
+    if (!$selectedRoom) {
+        foreach ($availableRoomTypes as $rt) {
+            if ($rt['available'] >= ceil($totalGuests / $rt['capacity']) && ($rt['supports_children'] || $children === 0)) {
+                $selectedRoom = $rt;
+                break;
+            }
         }
     }
-    // Trường hợp đặc biệt 2: adults=1, children > 0
-    elseif ($adults === 1 && $children > 0) {
-        if ($rt['supports_children'] && $capacity >= 2 && $available >= 1) {
-            $plan[] = ['room_type' => $rt['model'], 'qty' => 1];
-            $remainingAdults -= 1;
-            $remainingChildren = 0; // Giả sử trẻ em được chứa trong phòng này
-        }
+
+    // Nếu không tìm thấy phòng phù hợp, trả về rỗng
+    if (!$selectedRoom) {
+        return [];
     }
-    // Phân bổ chính: sử dụng ceil để tính số phòng cần
-    else {
-        $totalGuests = $adults + $children;
-        $need = (int) ceil($totalGuests / $capacity); // Tính số phòng cần
-        if ($need <= $available && ($rt['supports_children'] || $children === 0)) {
-            $plan[] = ['room_type' => $rt['model'], 'qty' => $need];
-            $remainingAdults -= min($adults, $need * $capacity);
-            $remainingChildren = 0; // Giả sử trẻ em được chứa
-        }
+
+    $capacity = max(1, $selectedRoom['capacity']);
+    $available = $selectedRoom['available'];
+
+    // Tính số phòng cần
+    $need = (int) ceil($totalGuests / $capacity);
+    if ($need <= $available) {
+        $plan[] = ['room_type' => $selectedRoom['model'], 'qty' => $need];
+        $remainingAdults -= min($adults, $need * $capacity);
+        $remainingChildren = 0; // Giả sử trẻ em được chứa
     }
 
     // Kiểm tra xem tất cả người lớn và trẻ em có được phân bổ không
