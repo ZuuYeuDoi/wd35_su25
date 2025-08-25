@@ -156,7 +156,7 @@
                     </div>
                 </div>
 
-                <button type="submit" class="btn btn-primary">Thêm mới</button>
+                <button type="submit" class="btn btn-success">Thêm mới</button>
                 <a href="{{ route('room_types.index') }}" class="btn btn-secondary">Quay lại</a>
             </form>
 
