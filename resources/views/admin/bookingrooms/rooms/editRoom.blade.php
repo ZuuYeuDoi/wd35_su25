@@ -211,7 +211,7 @@
 
                             <div class="row mt-4">
                                 <div class="col-12">
-                                    <button type="submit" class="btn btn-primary">
+                                    <button type="submit" class="btn btn-success">
                                         <i class="fas fa-save me-1"></i> Cập nhật
                                     </button>
                                     <a href="{{ route('room.index') }}" class="btn btn-secondary">

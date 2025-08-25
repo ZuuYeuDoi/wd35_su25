@@ -3,7 +3,7 @@
 @section('content')
     <section role="main" class="content-body">
         <header class="page-header">
-            <h2 class="font-weight-bold text-6">Danh sách tiên ích </h2>
+            <h2 class="font-weight-bold text-6">Danh sách tiện ích </h2>
         </header>
         <div class="row">
             <div class="col">
@@ -13,7 +13,7 @@
                             <div class="datatable-header">
                                 <div class="row align-items-center mb-3">
                                     <div class="col-12 col-lg-auto mb-3 mb-lg-0">
-                                        <a href="{{route('amenitie.create')}}"><button class="btn btn-primary">Thêm Tiện ích</button></a>
+                                        <a href="{{route('amenitie.create')}}"><button class="btn btn-success">Thêm Tiện ích</button></a>
                                         <a href="{{route('amenitie.trash')}}"><button class="btn btn-warning">Thùng rác</button></a>
                                     </div>
                                     <div class="col-12 col-lg-auto ps-lg-1">
