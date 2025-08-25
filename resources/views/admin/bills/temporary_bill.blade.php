@@ -347,6 +347,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     const serviceTable = document.querySelector('#service-table tbody');
                     const newServiceTotal = servicePrice * quantity;
 
+                    const noServiceRow = serviceTable.querySelector('.no-service-row');
+                    if (noServiceRow) {
+                        noServiceRow.remove();
+                    }
                     // Kiểm tra xem dịch vụ đã tồn tại
                     let existingRow = Array.from(serviceTable.querySelectorAll('tr')).find(tr => {
                         return tr.querySelector('td:nth-child(2)')?.innerText.trim() === serviceName;

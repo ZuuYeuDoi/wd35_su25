@@ -258,7 +258,8 @@ class BillController extends Controller
             $room->nights = $bill->stay_days ?? $room->nights;
 
             if (($bill->stay_days ?? 0) < 1) {
-                $room->total_price = 200000;
+                $room->nights = 1;
+                $room->total_price = $room->price_per_night * 1;
                 $room->in_day = true;
             } else {
                 $room->total_price = $room->price_per_night * $room->nights;

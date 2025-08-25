@@ -163,10 +163,6 @@
                                     <td class="text-end">Phụ thu:</td>
                                     <td class="text-end">{{ number_format($bill->fee_amount, 0, ',', '.') }}đ</td>
                                 </tr>
-                                <tr>
-                                    <td class="text-end">Giảm giá:</td>
-                                    <td class="text-end text-danger">-{{ number_format($bill->discount, 0, ',', '.') }}đ</td>
-                                </tr>
                                 @if($bill->booking && $bill->booking->deposit > 0)
                                     <tr>
                                         <td class="text-end">Tiền cọc đã thanh toán:</td>
