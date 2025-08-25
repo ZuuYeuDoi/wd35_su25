@@ -276,23 +276,31 @@
 
                     <form action="{{ route('booking.addToCart') }}" method="POST">
                         @csrf
-                        <input type="hidden" name="room_type_id" value="{{ $roomType->id }}">
+                        <input type="hidden" id="roomTypeId" name="room_type_id" value="{{ $roomType->id }}">
 
                         <div class="mb-3">
                             <label>Ngày nhận phòng</label>
                             <input type="date" id="checkin" name="check_in" class="form-control"
-                                min="{{ \Carbon\Carbon::tomorrow()->format('Y-m-d') }}" required>
+
+                                value="{{ $defaultCheckin }}"
+                                min="{{ \Carbon\Carbon::tomorrow()->format('Y-m-d') }}"
+                                @if($hasCart) readonly @endif required>
+
                         </div>
 
                         <div class="mb-3">
                             <label>Ngày trả phòng</label>
                             <input type="date" id="checkout" name="check_out" class="form-control"
-                                min="{{ \Carbon\Carbon::tomorrow()->addDay()->format('Y-m-d') }}" required>
+
+                                value="{{ $defaultCheckout }}"
+                                min="{{ \Carbon\Carbon::tomorrow()->addDay()->format('Y-m-d') }}"
+                                @if($hasCart) readonly @endif required>
+
                         </div>
 
                         <div class="mb-3">
                             <label>Số lượng phòng</label>
-                            <input type="number" name="number_of_rooms" class="form-control" value="1" min="1" max="{{ $availableRoomsCount }}" required>
+                            <input type="number" id="number-of-rooms" name="number_of_rooms" class="form-control" value="1" min="1" max="{{ $availableRoomsCount }}" required>
                         </div>
 
                         <div class="mb-3">
@@ -306,7 +314,7 @@
                         </div>
 
                         <p class="mt-2 text-muted">
-                            Số phòng còn trống: <span class="fw-bold text-success">{{ $availableRoomsCount }}</span>
+                            Số phòng còn trống: <span id="available-count" class="fw-bold text-success">{{ $availableRoomsCount }}</span>
                         </p>
 
                         <button type="submit" name="action" value="add" class="btn btn-secondary w-100 mb-2">
@@ -316,8 +324,7 @@
                             Tiếp tục đặt phòng
                         </button>
                     </form>
-
-                </div>
+</div>
 
                 <div class="mt-5">
                     <div class="">
@@ -378,39 +385,50 @@
 
 @push('js')
 <script>
-document.addEventListener("DOMContentLoaded", function () {
-    const checkinInput   = document.getElementById('checkin');
-    const checkoutInput  = document.getElementById('checkout');
-    const roomTypeId     = document.getElementById('room_type_id')?.value;
-    const availableSpan  = document.getElementById('available-count');
 
-    const today = new Date();
-
-    const tomorrow = new Date(today);
-    tomorrow.setDate(today.getDate() + 1);
+document.addEventListener("DOMContentLoaded", function() {
+    // Lấy ngày mai (check-in)
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
     const checkinMin = tomorrow.toISOString().split('T')[0];
-    if (checkinInput) checkinInput.min = checkinMin;
 
-    const dayAfterTomorrow = new Date(today);
-    dayAfterTomorrow.setDate(today.getDate() + 2);
+    // Lấy ngày kia (check-out mặc định ít nhất sau check-in 1 ngày)
+    const dayAfterTomorrow = new Date();
+    dayAfterTomorrow.setDate(dayAfterTomorrow.getDate() + 2);
     const checkoutMin = dayAfterTomorrow.toISOString().split('T')[0];
-    if (checkoutInput) checkoutInput.min = checkoutMin;
+
+    const checkinInput = document.getElementById('checkin');
+    const checkoutInput = document.getElementById('checkout');
+    const roomTypeId = document.getElementById('roomTypeId')?.value;
+    const availableSpan = document.getElementById('available-count');
+    const numberOfRoomsInput = document.getElementById('number-of-rooms');
+
+    // Set min date
+    if (checkinInput) checkinInput.setAttribute('min', checkinMin);
+    if (checkoutInput) checkoutInput.setAttribute('min', checkoutMin);
 
     if (checkinInput) {
-        checkinInput.addEventListener('change', function () {
+        checkinInput.addEventListener('change', function() {
+            console.log('Check-in changed:', this.value);
             const checkinDate = new Date(this.value);
-            if (isNaN(checkinDate)) return;
+            if (isNaN(checkinDate)) {
+                console.log('Invalid check-in date');
+                return;
+            }
+
+            // Tạo ngày checkout tối thiểu (sau check-in 1 ngày)
 
             const minCheckout = new Date(checkinDate);
             minCheckout.setDate(minCheckout.getDate() + 1);
             const minCheckoutStr = minCheckout.toISOString().split('T')[0];
 
-            if (checkoutInput) {
-                checkoutInput.min = minCheckoutStr;
 
-                if (checkoutInput.value && checkoutInput.value <= this.value) {
-                    checkoutInput.value = '';
-                }
+            // Cập nhật thuộc tính min của checkout
+            checkoutInput.setAttribute('min', minCheckoutStr);
+
+            // Xóa checkout nếu nó nhỏ hơn hoặc bằng checkin
+            if (checkoutInput.value && new Date(checkoutInput.value) <= checkinDate) {
+                checkoutInput.value = '';
             }
 
             fetchAvailability();
@@ -418,53 +436,117 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     if (checkoutInput) {
-        checkoutInput.addEventListener('change', fetchAvailability);
+        checkoutInput.addEventListener('change', function() {
+            console.log('Check-out changed:', this.value);
+            const checkinDate = new Date(checkinInput.value);
+            const checkoutDate = new Date(this.value);
+
+            if (isNaN(checkoutDate)) {
+                console.log('Invalid check-out date');
+                return;
+            }
+
+            // Xóa checkout nếu nó nhỏ hơn hoặc bằng checkin
+            if (checkoutDate <= checkinDate) {
+                this.value = '';
+            }
+
+
+            fetchAvailability();
+        });
     }
 
-    function fetchAvailability() {
-        const checkIn  = checkinInput?.value;
-        const checkOut = checkoutInput?.value;
 
-        if (!checkIn || !checkOut || !roomTypeId || !availableSpan) return;
+    function fetchAvailability() {
+        const checkIn = checkinInput?.value;
+        const checkOut = checkoutInput?.value;
+        console.log('fetchAvailability called with:', { checkIn, checkOut, roomTypeId });
+
+        if (!checkIn || !checkOut || !roomTypeId) {
+            console.log('Missing required fields');
+            if (availableSpan) {
+                availableSpan.innerText = 'Vui lòng chọn ngày';
+                availableSpan.classList.add('text-danger');
+            }
+            if (numberOfRoomsInput) {
+                numberOfRoomsInput.setAttribute('max', '0'); // Không cho phép chọn phòng nếu thiếu ngày
+                numberOfRoomsInput.value = '1'; // Đặt lại về 1
+            }
+            return;
+        }
 
         fetch(`{{ route('room_type.check_availability') }}?room_type_id=${roomTypeId}&check_in=${checkIn}&check_out=${checkOut}`)
-            .then(res => res.json())
+            .then(res => {
+                if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+                return res.json();
+            })
             .then(data => {
-                if (data.status) {
-                    availableSpan.innerText = data.available;
-                    availableSpan.classList.remove('text-danger');
-                    availableSpan.classList.add('text-success');
-                } else {
-                    availableSpan.innerText = data.message ?? 'Lỗi';
-                    availableSpan.classList.remove('text-success');
-                    availableSpan.classList.add('text-danger');
+                console.log('API response:', data);
+                if (availableSpan) {
+                    if (data.status) {
+                        availableSpan.innerText = data.available;
+                        availableSpan.classList.remove('text-danger');
+                        availableSpan.classList.add('text-success');
+
+                        // Cập nhật max của number_of_rooms
+                        if (numberOfRoomsInput) {
+                            numberOfRoomsInput.setAttribute('max', data.available);
+                            // Nếu giá trị hiện tại lớn hơn max mới, đặt lại về max
+                            if (parseInt(numberOfRoomsInput.value) > parseInt(data.available)) {
+                                numberOfRoomsInput.value = data.available || '1';
+                            }
+                        }
+                    } else {
+                        availableSpan.innerText = data.message ?? 'Lỗi không xác định';
+                        availableSpan.classList.add('text-danger');
+                        if (numberOfRoomsInput) {
+                            numberOfRoomsInput.setAttribute('max', '0');
+                            numberOfRoomsInput.value = '1';
+                        }
+                    }
                 }
             })
-            .catch(() => {
-                availableSpan.innerText = 'Lỗi';
-                availableSpan.classList.remove('text-success');
-                availableSpan.classList.add('text-danger');
+            .catch(err => {
+                console.error('Fetch error:', err);
+                if (availableSpan) {
+                    availableSpan.innerText = 'Lỗi kết nối';
+                    availableSpan.classList.add('text-danger');
+                }
+                if (numberOfRoomsInput) {
+                    numberOfRoomsInput.setAttribute('max', '0');
+                    numberOfRoomsInput.value = '1';
+                }
             });
     }
 
+    // Gọi fetchAvailability khi trang tải nếu cả check-in và check-out đều có giá trị
+    if (checkinInput?.value && checkoutInput?.value && roomTypeId) {
+        fetchAvailability();
+    }
+
+    // Xử lý click ảnh phụ → đổi ảnh chính
     const thumbnails = document.querySelectorAll('.room-thumbnail');
     const mainImage = document.getElementById('mainRoomImage');
 
-    thumbnails.forEach(thumb => {
-        thumb.addEventListener('click', () => {
-            const newSrc = thumb.dataset.src || thumb.src;
+    thumbnails.forEach(function(thumb) {
+        thumb.addEventListener('click', function() {
+            const newSrc = this.getAttribute('data-src') || this.src;
             if (mainImage && newSrc) {
-                mainImage.src = newSrc;
+                mainImage.setAttribute('src', newSrc);
             }
+
+            // Highlight ảnh đang chọn
             thumbnails.forEach(t => t.classList.remove('border-primary'));
-            thumb.classList.add('border-primary');
+            this.classList.add('border-primary');
         });
     });
 
-    window.addToBooking = function (id, name, price) {
-        const formattedPrice = Number(price).toLocaleString('vi-VN');
-        alert(`Đặt phòng: ${name} (${formattedPrice} VND)`);
+    // Hàm đặt phòng
+    window.addToBooking = function(id, name, price) {
+        alert(`Đặt phòng: ${name} (${price.toLocaleString()} VND)`);
     };
+
+    // Xử lý bộ lọc đánh giá
 
     document.querySelectorAll('.filter-btn').forEach(button => {
         button.addEventListener('click', () => {
@@ -475,12 +557,18 @@ document.addEventListener("DOMContentLoaded", function () {
             const reviews = document.querySelectorAll('.single-review');
 
             reviews.forEach(review => {
-                const rating = review.dataset.rating;
-                review.style.display = (selectedRating === 'all' || rating === selectedRating) ? '' : 'none';
+
+                if (selectedRating === 'all' || review.dataset.rating === selectedRating) {
+                    review.style.display = '';
+                } else {
+                    review.style.display = 'none';
+                }
+
             });
         });
     });
 });
 </script>
+
 @endpush
 
