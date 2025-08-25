@@ -80,7 +80,7 @@
 <section class="rooms-section pb-100">
     <div class="auto-container">
 
-        {{-- Hiển thị thông báo --}}
+        {{-- Hiển thị thông báo
         @if (session('success'))
             <div class="alert alert-success alert-dismissible fade show" role="alert">
                 {{ session('success') }}
@@ -96,7 +96,7 @@
                 </ul>
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
-        @endif
+        @endif --}}
 
         {{-- 1) Form lọc --}}
         <h4 class="mb-4">Tìm tour phù hợp</h4>
@@ -210,15 +210,6 @@
             </form>
         @endif
 
-        @if ($errors->any())
-            <div class="alert alert-danger">
-                <ul>
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
 
         <hr class="title-divider">
 
