@@ -22,7 +22,7 @@
                             <div class="row align-items-center mb-3">
                                 <div class="col-12 col-lg-auto mb-3 mb-lg-0">
                                     <a href="{{ route('room_types.create') }}">
-                                        <button class="btn btn-primary">Thêm loại phòng</button>
+                                        <button class="btn btn-success">Thêm loại phòng</button>
                                     </a>
                                 </div>
                                 <div class="col-12 col-lg-auto ms-auto">

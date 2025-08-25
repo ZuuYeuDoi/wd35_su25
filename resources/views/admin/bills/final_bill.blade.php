@@ -25,7 +25,6 @@
                                 Điện thoại: 0123 456 789<br />
                                 <a href="mailto:info@khachsanabc.vn">info@khachsanabc.vn</a>
                             </address>
-                            <img src="{{ asset('img/invoice-logo.png') }}" alt="Hotel Logo" class="mt-2" style="height:40px;">
                         </div>
                     </div>
                 </header>
@@ -162,10 +161,6 @@
                                 <tr>
                                     <td class="text-end">Phụ thu:</td>
                                     <td class="text-end">{{ number_format($bill->fee_amount, 0, ',', '.') }}đ</td>
-                                </tr>
-                                <tr>
-                                    <td class="text-end">Giảm giá:</td>
-                                    <td class="text-end text-danger">-{{ number_format($bill->discount, 0, ',', '.') }}đ</td>
                                 </tr>
                                 @if($bill->booking && $bill->booking->deposit > 0)
                                     <tr>

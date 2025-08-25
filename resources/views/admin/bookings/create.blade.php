@@ -54,7 +54,7 @@
                 </div>
 
                 <div class="d-flex justify-content-end mt-4">
-                    <button type="submit" class="btn btn-success rounded-2 shadow-sm">✅ Đặt phòng</button>
+                    <button type="submit" class="btn btn-success rounded-2 shadow-sm">Đặt phòng</button>
                 </div>
             </form>
         </div>

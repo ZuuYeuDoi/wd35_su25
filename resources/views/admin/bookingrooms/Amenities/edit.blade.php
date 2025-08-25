@@ -102,7 +102,7 @@
                                 </div>
                                 <div class="row mt-4">
                                     <div class="col-12">
-                                        <button type="submit" class="btn btn-primary">
+                                        <button type="submit" class="btn btn-success">
                                             <i class="fas fa-plus me-1"></i> Cập nhập
                                         </button>
                                         <a href="{{ route('amenitie.index') }}" class="btn btn-secondary">

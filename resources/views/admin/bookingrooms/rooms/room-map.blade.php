@@ -49,11 +49,9 @@
                     <h6 class="card-title fw-bold text-truncate">{{ $room->title }}</h6>
                     <div class="small mb-2">{{ $room->roomType->name ?? 'Chưa xác định' }}</div>
                     <div class="mb-2">
-                        <i class="fas fa-user fa-sm me-1"></i> {{ $room->max_people }} người
+                        <i class="fas fa-user fa-sm me-1"></i>
                     </div>
-                    <span class="badge rounded-pill bg-light text-success px-3 py-1 fw-semibold">
-                        {{ $room->status == 1 ? 'Hoạt động' : 'Không hoạt động' }}
-                    </span>
+
                 </div>
             </div>
         </div>

@@ -137,8 +137,8 @@ class BillController extends Controller
             $vatPercent = 8;
 
             // Tính số đêm thực tế
-            $actualCheckIn = $booking->actual_check_in ?? $booking->check_in_date;
-            $actualCheckOut = $booking->actual_check_out ?? $booking->check_out_date;
+            $actualCheckIn = $booking->check_in_date;
+            $actualCheckOut = $booking->check_out_date;
             $nights = max(1, Carbon::parse($actualCheckIn)->diffInDays(Carbon::parse($actualCheckOut)));
 
             // Tiền phòng
@@ -243,22 +243,21 @@ class BillController extends Controller
         $bill = Bill::with(['rooms', 'services', 'fees', 'booking.bookingRooms'])
             ->findOrFail($id);
 
-        // ✅ Tính số ngày ở
         if ($bill->booking) {
-            $checkIn = \Carbon\Carbon::parse($bill->booking->actual_check_in ?? $bill->booking->check_in_date);
-            $checkOut = \Carbon\Carbon::parse($bill->booking->actual_check_out ?? $bill->booking->check_out_date);
+            $checkIn = \Carbon\Carbon::parse( $bill->booking->check_in_date);
+            $checkOut = \Carbon\Carbon::parse( $bill->booking->check_out_date);
 
             $diff = $checkIn->floatDiffInDays($checkOut);
             $days = ($diff - floor($diff)) < 0.5 ? floor($diff) : ceil($diff);
             $bill->stay_days = $days > 0 ? $days : 0;
         }
 
-        // ✅ Tính giá phòng
         foreach ($bill->rooms as $room) {
             $room->nights = $bill->stay_days ?? $room->nights;
 
             if (($bill->stay_days ?? 0) < 1) {
-                $room->total_price = 200000;
+                $room->nights = 1;
+                $room->total_price = $room->price_per_night * 1;
                 $room->in_day = true;
             } else {
                 $room->total_price = $room->price_per_night * $room->nights;
@@ -266,7 +265,6 @@ class BillController extends Controller
             }
         }
 
-        // ❌ Không gộp dịch vụ — trả nguyên dữ liệu
         $services = $bill->services;
 
         return view('admin.bills.final_bill', compact('bill', 'services'));

@@ -26,9 +26,9 @@
                         alt="{{ $firstRoom->title ?? 'Phòng' }}">
                 </div>
                 <div class="room-info">
-                    <h2>{{ $firstRoom->title ?? 'Phòng....' }}</h2>
+
                     <div class="room-meta">
-                        <span><i class="fas fa-building"></i> Tầng 9</span>
+                        <span><i class="fas fa-building"></i> Tầng 5</span>
                         <span><i class="fas fa-users"></i> {{ $booking->adults ?? '---' }} người lớn</span>
                         <span><i class="fas fa-users"></i> {{ $booking->children ?? '---' }} trẻ em</span>
                         <span><i class="fas fa-ruler-combined"></i> 40m²</span>

@@ -13,7 +13,7 @@
                             <div class="datatable-header">
                                 <div class="row align-items-center mb-3">
                                     <div class="col-12 col-lg-auto mb-3 mb-lg-0">
-                                        <a href="{{ route('room.create') }}"><button class="btn btn-primary">Thêm
+                                        <a href="{{ route('room.create') }}"><button class="btn btn-success">Thêm
                                                 phòng</button></a>
                                         <a href="{{ route('room.trash') }}"><button class="btn btn-warning">Thùng
                                                 rác</button></a>
@@ -64,7 +64,6 @@
                                         <th>ID</th>
                                         <th>Mã Số phòng</th>
                                         <th>Loại phòng</th>
-                                        <th>Hình ảnh phòng</th>
                                         <th>Giá phòng</th>
                                         <th>Đánh giá</th>
                                         <th>Trạng thái</th>
@@ -87,12 +86,6 @@
                                                 <a href="{{ route('room.show', $room->id) }}" class="text-dark fw-semibold">
                                                     {{ $room->roomType->name ?? 'chưa có' }}
                                                 </a>
-                                            </td>
-                                            <td>
-                                                @if ($room->image_room)
-                                                    <img src="{{ asset('storage/' . $room->image_room) }}"
-                                                        alt="{{ $room->title }}" width="80">
-                                                @endif
                                             </td>
                                             <td>{{ number_format($room->price) }} VNĐ</td>
                                             @php

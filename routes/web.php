@@ -60,7 +60,7 @@ Route::delete('/booking/tour/remove-suggestion', [BookingController::class, 'rem
 
 
 // ---------------- USER ROUTES ----------------
-Route::middleware(['auth', 'checkRole:3'])->group(function () {
+Route::middleware(['auth'])->group(function () {
     Route::get('/profile', [UserController::class, 'showProfile'])->name('user.profile');
     Route::post('/profile/update', [UserController::class, 'updateProfile'])->name('user.profile.update');
     Route::get('/profile/{id}/booking', [UserController::class, 'showBooking'])->name('user.booking.detail');
