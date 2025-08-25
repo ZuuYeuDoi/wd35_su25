@@ -55,8 +55,8 @@
 
                         <!-- Nút tìm kiếm và reset -->
                         <div class="col-md-auto">
-                            <button type="submit" class="btn btn-primary">Tìm kiếm</button>
-                            <a href="{{ route('bills.index') }}" class="btn btn-outline-secondary">Xoá lọc</a>
+                            <button type="submit" class="btn btn-success">Tìm kiếm</button>
+                            <a href="{{ route('bills.index') }}" class="btn btn-danger">Xoá lọc</a>
                         </div>
                     </form>
                     <table class="table table-ecommerce-simple table-borderless table-striped mb-0"
