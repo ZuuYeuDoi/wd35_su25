@@ -743,34 +743,64 @@ private function planAdultsByCapacity(array $roomTypes, int $adults, int $childr
             }
         }
     }
-    // Trường hợp đặc biệt 3: adults lẻ >= 3 -> ưu tiên phân bổ tối ưu với phòng lớn
-    elseif ($remainingAdults >= 3) {
-        // Ưu tiên phòng lớn (2 đôi, 3 đơn) trước
-        foreach ($availableRoomTypes as $rt) {
-            if ($remainingAdults <= 0) break;
-            $capacity = $rt['capacity'];
-            $need = (int) ceil($remainingAdults / $capacity);
-            $use = min($need, $rt['available']);
-            if ($use > 0 && ($rt['supports_children'] || $remainingChildren === 0)) {
-                $plan[] = ['room_type' => $rt['model'], 'qty' => $use];
-                $remainingAdults -= $use * $capacity;
-                if ($rt['supports_children']) {
-                    $remainingChildren = 0; // Giả sử trẻ em được chứa trong các phòng này
+
+    // Phân bổ chính: sử dụng floor để lấy các gói đầy đủ, ưu tiên phòng lớn
+    foreach ($availableRoomTypes as $rt) {
+        if ($remainingAdults <= 0) break;
+        $capacity = max(1, $rt['capacity']);
+        $need = (int) floor($remainingAdults / $capacity);
+        $use = min($need, $rt['available']);
+        if ($use > 0 && ($rt['supports_children'] || $remainingChildren === 0)) {
+            // Kiểm tra và thêm hoặc tăng qty nếu đã có
+            $found = false;
+            foreach ($plan as &$p) {
+                if ($p['room_type'] === $rt['model']) {
+                    $p['qty'] += $use;
+                    $found = true;
+                    break;
                 }
+            }
+            if (!$found) {
+                $plan[] = ['room_type' => $rt['model'], 'qty' => $use];
+            }
+            $remainingAdults -= $use * $capacity;
+            if ($rt['supports_children'] && $remainingChildren > 0) {
+                $remainingChildren = 0;
             }
         }
     }
 
-    // Phân bổ còn lại (nếu remainingAdults > 0)
-    foreach ($availableRoomTypes as $rt) {
-        if ($remainingAdults <= 0) break;
-        $capacity = max(1, $rt['capacity']);
-        $need = (int) ceil($remainingAdults / $capacity);
-        $use = min($need, $rt['available']);
-        if ($use > 0 && ($rt['supports_children'] || $remainingChildren === 0)) {
-            $plan[] = ['room_type' => $rt['model'], 'qty' => $use];
-            $remainingAdults -= $use * $capacity;
-            if ($rt['supports_children']) {
+    // Xử lý phần lẻ còn lại (nếu có)
+    if ($remainingAdults > 0) {
+        // Lọc các phòng phù hợp cho phần lẻ: capacity >= remainingAdults, available >=1, supports_children nếu cần
+        $suitable = array_filter($availableRoomTypes, function($rt) use ($remainingAdults, $remainingChildren) {
+            return $rt['capacity'] >= $remainingAdults &&
+                   $rt['available'] >= 1 &&
+                   ($rt['supports_children'] || $remainingChildren === 0);
+        });
+
+        if (!empty($suitable)) {
+            // Sắp xếp suitable: ưu tiên capacity asc (giảm lãng phí), sau đó unit_price asc
+            usort($suitable, function ($a, $b) {
+                return [$a['capacity'], $a['unit_price']] <=> [$b['capacity'], $b['unit_price']];
+            });
+
+            // Lấy phòng đầu tiên phù hợp
+            $rt = $suitable[0];
+            // Thêm hoặc tăng qty
+            $found = false;
+            foreach ($plan as &$p) {
+                if ($p['room_type'] === $rt['model']) {
+                    $p['qty'] += 1;
+                    $found = true;
+                    break;
+                }
+            }
+            if (!$found) {
+                $plan[] = ['room_type' => $rt['model'], 'qty' => 1];
+            }
+            $remainingAdults -= $rt['capacity']; // Sẽ <= 0
+            if ($rt['supports_children'] && $remainingChildren > 0) {
                 $remainingChildren = 0;
             }
         }
@@ -779,7 +809,6 @@ private function planAdultsByCapacity(array $roomTypes, int $adults, int $childr
     // Kiểm tra xem tất cả người lớn và trẻ em có được phân bổ không
     return ($remainingAdults <= 0 && $remainingChildren <= 0) ? $plan : [];
 }
-
     protected function collectRoomTypes($preferredRoomType, $adults, $roomTypes)
     {
         $roomTypesFiltered = $roomTypes->where('type', $preferredRoomType);
