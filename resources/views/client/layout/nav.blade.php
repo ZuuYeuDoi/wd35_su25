@@ -6,7 +6,8 @@
             <li class="dropdown"><a href="#">Phòng</a>
                 <ul>
                     <li><a href="{{ route('room.indexRoom') }}">Danh Sách Phòng</a></li>
-                    <li><a href="{{ route('booking.tour.suggest') }}">Đặt phòng</a></li>
+                    <li><a href="{{ route('booking.tour.suggest') }}">Đặt Phòng</a></li>
+                    <li><a href="{{ route('booking.cart.view') }}">Giỏ Đặt Phòng</a></li>
                 </ul>
             </li>
             <li class="dropdown"><a href="#">Đặt tiệc & sự kiện</a>

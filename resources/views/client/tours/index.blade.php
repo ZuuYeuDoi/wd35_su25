@@ -353,11 +353,11 @@ document.addEventListener("DOMContentLoaded", function () {
                 return false;
             }
             let capacity = isSingle ? 1 : 2;
-            if (capacity * qty < adults) {
-                alert(`Số phòng ${qty} không đủ chứa ${adults} người lớn (sức chứa tối đa: ${capacity} người/phòng).`);
-                e.preventDefault();
-                return false;
-            }
+            // if (capacity * qty < adults) {
+            //     alert(`Số phòng ${qty} không đủ chứa ${adults} người lớn (sức chứa tối đa: ${capacity} người/phòng).`);
+            //     e.preventDefault();
+            //     return false;
+            // }
         });
     });
 

@@ -10,6 +10,7 @@ use App\Models\BookingRoom;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -144,48 +145,132 @@ private function addItemToCart(array $data)
 
 
     /** Xóa 1 item khỏi giỏ */
-    public function removeCartItem($index)
-    {
-        $cart = session('booking_cart', []);
-        if (isset($cart[$index])) {
-            unset($cart[$index]);
-            session(['booking_cart' => array_values($cart)]);
+ public function removeCartItem($index)
+{
+    $cart = session('booking_cart', []);
+    if (isset($cart[$index])) {
+        unset($cart[$index]);
+        $cart = array_values($cart); // Đánh lại chỉ số mảng
+        session(['booking_cart' => $cart]);
+
+        if (empty($cart)) {
+            // Trả về view với giỏ hàng rỗng
+            $summary = collect([]);
+            $total = 0;
+            $deposit = 0;
+            return view('client.checkout.cart', compact('summary', 'total', 'deposit'))
+                ->with('info', 'Giỏ hàng đã trống. Vui lòng chọn phòng.');
         }
-        return back()->with('success', 'Đã xóa phòng khỏi giỏ.');
+
+        return redirect()->route('booking.cart.view')->with('success', 'Đã xóa phòng khỏi giỏ.');
     }
 
+    return redirect()->route('booking.cart.view')->with('error', 'Mục không tồn tại.');
+}
+
     /** ✅ Hiển thị giỏ booking (trang checkout tạm) */
-    public function viewCart()
+public function viewCart()
     {
         $cart = session('booking_cart', []);
-        if (empty($cart)) {
-            return redirect()->route('room.index')->with('error', 'Bạn chưa chọn phòng nào.');
-        }
+        Log::debug('Booking Cart:', [$cart]); // Debug session data
 
         $summary = collect($cart)->map(function ($item) {
             $roomType = RoomType::find($item['room_type_id']);
-            $ci = Carbon::parse($item['check_in']);
-            $co = Carbon::parse($item['check_out']);
-            $nights = $this->calcNights($ci, $co);
-            $unit = $roomType ? $this->nightlyPriceForRoomType($roomType) : 0;
+            if (!$roomType) {
+                Log::warning('Invalid room type ID:', [$item['room_type_id'] ?? null]);
+                return null; // Bỏ qua mục không hợp lệ
+            }
 
-            return [
+            try {
+                $ci = Carbon::parse($item['check_in']);
+                $co = Carbon::parse($item['check_out']);
+                $nights = $this->calcNights($ci, $co);
+            } catch (\Exception $e) {
+                Log::error('Error parsing dates:', ['error' => $e->getMessage(), 'item' => $item]);
+                $nights = 0;
+                $ci = now();
+                $co = now();
+            }
+
+            $unit = $roomType ? $this->nightlyPriceForRoomType($roomType) : 0;
+            $availableRooms = $this->getAvailableRooms($roomType->id, $ci, $co);
+            $availableRoomsCount = $availableRooms->count();
+
+            $itemData = [
                 'room_type' => $roomType,
-                'check_in'  => $item['check_in'],
-                'check_out' => $item['check_out'],
-                'qty'       => (int) $item['number_of_rooms'],
-                'adults'    => (int) $item['adults'],
-                'children'  => (int) $item['children'],
+                'check_in'  => $item['check_in'] ?? now()->toDateString(),
+                'check_out' => $item['check_out'] ?? now()->toDateString(),
+                'qty'       => (int) ($item['number_of_rooms'] ?? 0),
+                'adults'    => (int) ($item['adults'] ?? 0),
+                'children'  => (int) ($item['children'] ?? 0),
                 'unit'      => $unit,
                 'nights'    => $nights,
-                'sub_total' => (int) $item['number_of_rooms'] * $nights * $unit,
+                'sub_total' => (int) ($item['number_of_rooms'] ?? 0) * $nights * $unit,
+                'available_rooms' => $availableRoomsCount,
             ];
-        });
+
+            Log::debug('Cart item processed:', $itemData); // Debug each item
+            return $itemData;
+        })->filter();
 
         $total = (int) $summary->sum('sub_total');
         $deposit = (int) round($total * $this->depositRate());
 
+        Log::debug('Cart summary:', ['summary' => $summary->toArray(), 'total' => $total, 'deposit' => $deposit]);
+
         return view('client.checkout.cart', compact('summary', 'total', 'deposit'));
+    }
+
+    public function updateCartItem(Request $request, $index)
+    {
+        Log::debug('Update cart item:', ['index' => $index, 'request' => $request->all()]);
+
+        $request->validate([
+            'qty' => 'required|integer|min:1',
+        ]);
+
+        $cart = session('booking_cart', []);
+        if (!isset($cart[$index])) {
+            Log::warning('Cart item not found:', ['index' => $index]);
+            return response()->json(['success' => false, 'message' => 'Mục không tồn tại.'], 400);
+        }
+
+        $roomType = RoomType::find($cart[$index]['room_type_id']);
+        if (!$roomType) {
+            Log::warning('Invalid room type:', ['room_type_id' => $cart[$index]['room_type_id']]);
+            return response()->json(['success' => false, 'message' => 'Loại phòng không hợp lệ.'], 400);
+        }
+
+        try {
+            $ci = Carbon::parse($cart[$index]['check_in']);
+            $co = Carbon::parse($cart[$index]['check_out']);
+            $availableRooms = $this->getAvailableRooms($roomType->id, $ci, $co)->count();
+        } catch (\Exception $e) {
+            Log::error('Error parsing dates in updateCartItem:', ['error' => $e->getMessage()]);
+            return response()->json(['success' => false, 'message' => 'Ngày không hợp lệ.'], 400);
+        }
+
+        $qty = (int) $request->input('qty');
+        if ($qty > $availableRooms) {
+            Log::warning('Quantity exceeds available rooms:', ['qty' => $qty, 'available' => $availableRooms]);
+            return response()->json(['success' => false, 'message' => 'Số lượng phòng vượt quá số phòng còn lại (' . $availableRooms . ').'], 400);
+        }
+
+        $cart[$index]['number_of_rooms'] = $qty;
+        session(['booking_cart' => $cart]);
+
+        $nights = $this->calcNights($ci, $co);
+        $unit = $this->nightlyPriceForRoomType($roomType);
+        $sub_total = $qty * $nights * $unit;
+
+        Log::info('Cart item updated:', ['index' => $index, 'qty' => $qty, 'sub_total' => $sub_total]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Cập nhật số lượng phòng thành công.',
+            'sub_total' => $sub_total,
+            'qty' => $qty,
+        ]);
     }
 
     /* ----------------------------------------------------------------------
@@ -510,9 +595,10 @@ public function searchTours(Request $request)
             '1 giường đôi' => 2,
             '3 giường đơn' => 3,
             '2 giường đôi' => 4,
+            '1 giường đôi + 1 giường đơn' => 3,
             default => 2, // Dự phòng
         };
-        $supportsChildren = in_array($rt->bed_type, ['2 giường đơn', '1 giường đôi', '2 giường đôi']);
+        $supportsChildren = in_array($rt->bed_type, ['2 giường đơn', '1 giường đôi', '2 giường đôi', '1 giường đôi + 1 giường đơn']);
         $available = $this->getAvailableRooms($rt->id, $checkIn, $checkOut)->count();
         $unitPrice = $this->nightlyPriceForRoomType($rt);
 
@@ -657,34 +743,64 @@ private function planAdultsByCapacity(array $roomTypes, int $adults, int $childr
             }
         }
     }
-    // Trường hợp đặc biệt 3: adults lẻ >= 3 -> ưu tiên phân bổ tối ưu với phòng lớn
-    elseif ($remainingAdults >= 3) {
-        // Ưu tiên phòng lớn (2 đôi, 3 đơn) trước
-        foreach ($availableRoomTypes as $rt) {
-            if ($remainingAdults <= 0) break;
-            $capacity = $rt['capacity'];
-            $need = (int) ceil($remainingAdults / $capacity);
-            $use = min($need, $rt['available']);
-            if ($use > 0 && ($rt['supports_children'] || $remainingChildren === 0)) {
-                $plan[] = ['room_type' => $rt['model'], 'qty' => $use];
-                $remainingAdults -= $use * $capacity;
-                if ($rt['supports_children']) {
-                    $remainingChildren = 0; // Giả sử trẻ em được chứa trong các phòng này
+
+    // Phân bổ chính: sử dụng floor để lấy các gói đầy đủ, ưu tiên phòng lớn
+    foreach ($availableRoomTypes as $rt) {
+        if ($remainingAdults <= 0) break;
+        $capacity = max(1, $rt['capacity']);
+        $need = (int) floor($remainingAdults / $capacity);
+        $use = min($need, $rt['available']);
+        if ($use > 0 && ($rt['supports_children'] || $remainingChildren === 0)) {
+            // Kiểm tra và thêm hoặc tăng qty nếu đã có
+            $found = false;
+            foreach ($plan as &$p) {
+                if ($p['room_type'] === $rt['model']) {
+                    $p['qty'] += $use;
+                    $found = true;
+                    break;
                 }
+            }
+            if (!$found) {
+                $plan[] = ['room_type' => $rt['model'], 'qty' => $use];
+            }
+            $remainingAdults -= $use * $capacity;
+            if ($rt['supports_children'] && $remainingChildren > 0) {
+                $remainingChildren = 0;
             }
         }
     }
 
-    // Phân bổ còn lại (nếu remainingAdults > 0)
-    foreach ($availableRoomTypes as $rt) {
-        if ($remainingAdults <= 0) break;
-        $capacity = max(1, $rt['capacity']);
-        $need = (int) ceil($remainingAdults / $capacity);
-        $use = min($need, $rt['available']);
-        if ($use > 0 && ($rt['supports_children'] || $remainingChildren === 0)) {
-            $plan[] = ['room_type' => $rt['model'], 'qty' => $use];
-            $remainingAdults -= $use * $capacity;
-            if ($rt['supports_children']) {
+    // Xử lý phần lẻ còn lại (nếu có)
+    if ($remainingAdults > 0) {
+        // Lọc các phòng phù hợp cho phần lẻ: capacity >= remainingAdults, available >=1, supports_children nếu cần
+        $suitable = array_filter($availableRoomTypes, function($rt) use ($remainingAdults, $remainingChildren) {
+            return $rt['capacity'] >= $remainingAdults &&
+                   $rt['available'] >= 1 &&
+                   ($rt['supports_children'] || $remainingChildren === 0);
+        });
+
+        if (!empty($suitable)) {
+            // Sắp xếp suitable: ưu tiên capacity asc (giảm lãng phí), sau đó unit_price asc
+            usort($suitable, function ($a, $b) {
+                return [$a['capacity'], $a['unit_price']] <=> [$b['capacity'], $b['unit_price']];
+            });
+
+            // Lấy phòng đầu tiên phù hợp
+            $rt = $suitable[0];
+            // Thêm hoặc tăng qty
+            $found = false;
+            foreach ($plan as &$p) {
+                if ($p['room_type'] === $rt['model']) {
+                    $p['qty'] += 1;
+                    $found = true;
+                    break;
+                }
+            }
+            if (!$found) {
+                $plan[] = ['room_type' => $rt['model'], 'qty' => 1];
+            }
+            $remainingAdults -= $rt['capacity']; // Sẽ <= 0
+            if ($rt['supports_children'] && $remainingChildren > 0) {
                 $remainingChildren = 0;
             }
         }
@@ -693,7 +809,6 @@ private function planAdultsByCapacity(array $roomTypes, int $adults, int $childr
     // Kiểm tra xem tất cả người lớn và trẻ em có được phân bổ không
     return ($remainingAdults <= 0 && $remainingChildren <= 0) ? $plan : [];
 }
-
     protected function collectRoomTypes($preferredRoomType, $adults, $roomTypes)
     {
         $roomTypesFiltered = $roomTypes->where('type', $preferredRoomType);
@@ -867,9 +982,9 @@ public function addToSuggestion(Request $request)
     // Check room type and capacity
     $roomType = RoomType::findOrFail($data['room_type_id']);
     $capacity = stripos($roomType->name, 'Single') !== false ? 1 : 2;
-    if ($capacity * $data['qty'] < $adults) {
-        return back()->withErrors(['qty' => "Số phòng {$roomType->name} không đủ chứa {$adults} người lớn (sức chứa tối đa: {$capacity} người/phòng)."]);
-    }
+    // if ($capacity * $data['qty'] < $adults) {
+    //     return back()->withErrors(['qty' => "Số phòng {$roomType->name} không đủ chứa {$adults} người lớn (sức chứa tối đa: {$capacity} người/phòng)."]);
+    // }
     if (stripos($roomType->name, 'Single') !== false && $children > 0) {
         return back()->withErrors(['room_type_id' => 'Phòng Single không hỗ trợ trẻ em (không kê được giường phụ).']);
     }

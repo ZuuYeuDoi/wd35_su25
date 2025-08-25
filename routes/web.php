@@ -40,6 +40,7 @@ Route::get('/booking/cart', [BookingController::class, 'viewCart'])->name('booki
 Route::post('/booking/cart/store', [BookingController::class, 'storeCartBooking'])->name('booking.cart.store');
 Route::get('/booking/cart/remove/{index}', [BookingController::class, 'removeCartItem'])->name('booking.cart.remove');
 Route::post('/booking/cart/checkout', [BookingController::class, 'showFinalCheckout'])->name('booking.cart.checkout');
+Route::post('/cart/update/{index}', [BookingController::class, 'updateCartItem'])->name('booking.cart.update');
 
 // Hiển thị gợi ý tour
 Route::get('/tours', [BookingController::class, 'suggestTours'])->name('booking.tour.suggest');
