@@ -30,6 +30,7 @@
             height: 250px; /* hoặc 200px nếu bạn muốn nhỏ hơn */
             overflow: hidden;
             border-radius: 10px;
+            margin-top: 15px;
         }
 
         .image-box img {
@@ -253,7 +254,7 @@
                                         <div class="box-caption">
                                             <a href="{{ $roomDetailUrl }}" class="book-btn">Đặt phòng</a>
                                             <ul class="bx-links">
-                                                @foreach ($roomType->amenities ?? [] as $amenityId)
+                                                @foreach (collect($roomType->amenities ?? [])->take(4) as $amenityId)
                                                     @if ($allAmenities->has($amenityId))
                                                         <li>{{ $allAmenities[$amenityId]->name }}</li>
                                                     @endif
