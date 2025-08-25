@@ -209,7 +209,7 @@
             <form action="{{ route('bills.confirm', $booking->id) }}" method="POST" onsubmit="return confirm('Xác nhận thanh toán đơn này?');">
                 @csrf
                 @method('PUT')
-                <button type="submit" class="btn btn-primary rounded-pill px-4">Xác nhận & Thanh toán</button>
+                <button type="submit" class="btn btn-success rounded-pill px-4">Xác nhận & Thanh toán</button>
             </form>
         </div>
     </section>
@@ -242,7 +242,7 @@
 
                         <div class="mb-3">
                             <label class="form-label">Tên chi phí</label>
-                            <input type="text" class="form-control @error('name') is-invalid @enderror" 
+                            <input type="text" class="form-control @error('name') is-invalid @enderror"
                                    name="name" id="feeName" value="{{ old('name') }}" required>
                             @error('name')
                                 <div class="invalid-feedback">{{ $message }}</div>
@@ -251,7 +251,7 @@
 
                         <div class="mb-3">
                             <label class="form-label">Mô tả</label>
-                            <textarea class="form-control @error('description') is-invalid @enderror" 
+                            <textarea class="form-control @error('description') is-invalid @enderror"
                                       name="description">{{ old('description') }}</textarea>
                             @error('description')
                                 <div class="invalid-feedback">{{ $message }}</div>
@@ -260,7 +260,7 @@
 
                         <div class="mb-3">
                             <label class="form-label">Hình ảnh (tùy chọn)</label>
-                            <input type="file" class="form-control @error('image') is-invalid @enderror" 
+                            <input type="file" class="form-control @error('image') is-invalid @enderror"
                                 name="image" accept="image/*">
                             @error('image')
                                 <div class="invalid-feedback">{{ $message }}</div>
@@ -269,7 +269,7 @@
 
                         <div class="mb-3">
                             <label class="form-label">Giá tiền</label>
-                            <input type="number" class="form-control @error('price') is-invalid @enderror" 
+                            <input type="number" class="form-control @error('price') is-invalid @enderror"
                                    name="price" id="feePrice" value="{{ old('price') }}" required min="0">
                             @error('price')
                                 <div class="invalid-feedback">{{ $message }}</div>

@@ -62,8 +62,7 @@
                 </tr>
             @endforeach
             <tr class="fw-bold table-light">
-                <td colspan="4" class="text-end">Tổng cộng:</td>
-                <td class="text-center">{{ $totalAdults + $totalChildren }}</td>
+                <td colspan="5" class="text-end">Tổng cộng:</td>
                 <td class="text-end text-primary">{{ number_format($total, 0, ',', '.') }} VND</td>
                 <td></td>
             </tr>

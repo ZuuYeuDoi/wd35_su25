@@ -3,7 +3,7 @@
 
 Xin chào **{{ $bill->customer_name }}**,
 
-Cảm ơn bạn đã đặt phòng tại khách sạn của chúng tôi.  
+Cảm ơn bạn đã đặt phòng tại khách sạn của chúng tôi.
 Dưới đây là thông tin hóa đơn:
 
 - Mã đơn đặt: **{{ $booking->booking_code }}**
@@ -13,10 +13,12 @@ Dưới đây là thông tin hóa đơn:
 - Hình thức thanh toán: {{ $bill->payment_method }}
 - Ngày thanh toán: {{ $bill->payment_date->format('d/m/Y H:i') }}
 
+**LƯU Ý: YÊU CẦU QUÝ KHÁCH ĐẾN CHECK_IN PHÒNG VÀO: 14h-18h ngày {{ $booking->check_in_date->format('d/m/Y') }}**
+
 @component('mail::button', ['url' => url('/')])
 Xem chi tiết
 @endcomponent
 
-Cảm ơn bạn đã tin tưởng sử dụng dịch vụ!  
+Cảm ơn bạn đã tin tưởng sử dụng dịch vụ!
 Khách sạn **Cimora**
 @endcomponent

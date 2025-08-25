@@ -25,7 +25,6 @@
                                 Điện thoại: 0123 456 789<br />
                                 <a href="mailto:info@khachsanabc.vn">info@khachsanabc.vn</a>
                             </address>
-                            <img src="{{ asset('img/invoice-logo.png') }}" alt="Hotel Logo" class="mt-2" style="height:40px;">
                         </div>
                     </div>
                 </header>

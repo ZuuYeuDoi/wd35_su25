@@ -28,9 +28,8 @@ class RoomController extends Controller
         $checkIn   = $request->input('check_in');
         $checkOut  = $request->input('check_out');
         $stayType  = $request->input('stay_type', 'overnight');
-        $status    = $request->input('status', 1); 
 
-        $query = Room::with('roomType')->where('status', $status);
+        $query = Room::with('roomType');
 
         if ($checkIn && $checkOut) {
             try {

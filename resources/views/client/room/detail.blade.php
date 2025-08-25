@@ -110,7 +110,21 @@
                 @else
                 <div class="alert alert-warning">Không có ảnh phòng nào được đăng.</div>
                 @endif
+                <div class="policy-container" style="font-family: Arial, sans-serif; margin: 20px;">
+                    <h5 style="color: #b22222; margin-bottom: 15px;">Chính sách dành cho Trẻ Em</h5>
 
+                    <div style="background: #fff; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); padding: 20px;">
+                        <ul style="line-height: 1.8; font-size: 16px; color: #333;">
+                            <li><strong>Dưới 6 tuổi:</strong> Miễn phí ăn sáng và ngủ chung với bố mẹ (tối đa 02 trẻ/phòng).</li>
+                            <li><strong>Từ 6 đến 11 tuổi:</strong>
+                                Ngủ chung giường với bố mẹ: <span style="color: #d32f2f; font-weight: bold;">250.000 VNĐ/trẻ/đêm</span> (bao gồm ăn sáng).
+                            </li>
+                            <li><strong>Trên 12 tuổi:</strong> Tính như người lớn:
+                                <span style="color: #d32f2f; font-weight: bold;">500.000 VNĐ/người/đêm</span> (bao gồm giường phụ & ăn sáng).
+                            </li>
+                        </ul>
+                    </div>
+                </div>
                 <!-- MÔ TẢ LOẠI PHÒNG -->
                 <h3 class="mb-4 fw-semibold" style="font-size: 26px;">Mô tả loại phòng</h3>
                 <p class="text-muted" style="line-height: 1.8; font-size: 16px;">
@@ -188,7 +202,7 @@
     <form action="{{ route('reviews.store') }}" method="POST" class="mb-4 border rounded p-3 shadow-sm bg-light">
         @csrf
         <input type="hidden" name="room_id" value="{{ $room->id }}">
-        
+
         <div class="mb-3">
             <label class="form-label">Đánh giá sao</label>
             <div class="star-rating">
