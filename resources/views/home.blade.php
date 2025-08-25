@@ -121,7 +121,7 @@
                                 <img src="{{ asset('client/images/resource/service1-1.jpg') }}" alt="">
                             </figure>
                             <div class="content-box">
-                                <h6 class="title"><a href="room-details.html">Phòng gia đình</a></h6>
+                                <h6 class="title"><a href="{{ route('room.indexRoom') }}">Phòng gia đình</a></h6>
                             </div>
                         </div>
                     </div>
@@ -132,7 +132,7 @@
                                 <img src="{{ asset('client/images/resource/service1-2.jpg') }}" alt="">
                             </figure>
                             <div class="content-box">
-                                <h6 class="title"><a href="room-details.html">Phòng giường đôi</a></h6>
+                                <h6 class="title"><a href="{{ route('room.indexRoom') }}">Phòng giường đôi</a></h6>
                             </div>
                         </div>
                     </div>
@@ -143,7 +143,7 @@
                                 <img src="{{ asset('client/images/resource/service1-3.jpg') }}" alt="">
                             </figure>
                             <div class="content-box">
-                                <h6 class="title"><a href="room-details.html">Phòng Vip</a></h6>
+                                <h6 class="title"><a href="{{ route('room.indexRoom') }}">Phòng Vip</a></h6>
                             </div>
                         </div>
                     </div>
@@ -193,8 +193,7 @@
                                 khắc.</li>
                         </ul>
                         <div class="btn-box">
-                            <a href="page-about.html" class="theme-btn btn-style-one"><span class="btn-title">Xem chi
-                                    tiết
+                            <a href="{{ route('booking.tour.suggest') }}" class="theme-btn btn-style-one"><span class="btn-title">Đặt Phòng Ngay 
                                 </span></a>
                         </div>
                     </div>
